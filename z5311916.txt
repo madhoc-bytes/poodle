@@ -1,0 +1,31 @@
+By Andy
+
+You should also include in this diary the following information (if applicable) about the
+project progress:
+- what was planned for the period since the last work diary entry.
+- what was finished.
+- what were the main technical and non-technical obstacles and how they were
+overcome (or what was tried and did not work).
+- what was not finished, why this happened, how this affects the overall project
+progress and what adjustments (if any) are needed so the success of the project is not
+endangered.
+- what is planned for the next period (e.g., next week).
+
+
+Work Diary
+
+Week 1
+Formed Group and named. Selected Scrum master, Created Jira Site.
+Decided on topic with other group members- LMS. Created chat and made meetings times and place.
+Planned potential novel functionalities.
+
+Week 2
+Decided to use Python flask for backend and ReactJs for frontend.
+Settled on the two extra (non-novel) functinalities - calender in dashboard + ChatBot
+Picked the novel functionalities - Gamification + Avatar maker.
+Split user story/acceptance critiria task and started writing them.
+I looked into APIs for hosting online lectures - zoom SDK or Video SDK.
+Started planning ideas for how website will look - storyboard using Figma.
+
+Week 3
+Edited user stories/acceptance critera and wrote out report.
