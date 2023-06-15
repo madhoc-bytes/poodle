@@ -29,3 +29,7 @@ Started planning ideas for how website will look - storyboard using Figma.
 
 Week 3
 Edited user stories/acceptance critera and wrote out report.
+Ended up changing the API for online lectures - instead of using Zoom SDK or VideoSDK, I experimented with other APIs and found Zegocloud to be easier to setup and implement.
+Finished designing the what the website would look like - drew up all pages and interactions on figma for storyboard.
+Finished project proposal.
+Started planning for next stages of assignment - timeline and deadline for sprint 1, setting up and planning database.
