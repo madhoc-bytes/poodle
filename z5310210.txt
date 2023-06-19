@@ -1,0 +1,8 @@
+Week 1
+Formed a group, decided on scrum master and created our Jira page. Decided on project topic and ideas for novel functionality. Decided on using Figma to draw storyboards. Distributed roles for working on front-end and back-end. Wrote stories and tentative acceptance criteria for all our functions. 
+
+Week 2
+Confirmed novel ideas of gamification, and chatbot with tutor. Discussed the logistics of these gamification as a group. Decided on layouts for UI and established some workflow options. Edited stories and acceptance criteria to reflect our discussion. I finished the background section of the proposal. 
+
+Week 3
+Finished figma storyboards for gamification features. Finished uploading user stories onto the Jira backlog. Wrote the system architecture section of the proposal with Yang. Finished story categories and descriptions and discussion of novelty. 
