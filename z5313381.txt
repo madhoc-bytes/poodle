@@ -1,0 +1,10 @@
+Week 1
+Group formed and named. Jira created and set up. I set up a hierarchy of folders on Google Driven for current and future stages of the project. Decided to work on the Learning Management System with team members and roughly identified additional functionalities to implement but yet to refine the specifics. Did some brainstorming with other team members with the intent to gather feedback from our tutor during or before the Week 2 tutorial. Started user stories. Haven't fully determined the software architecture for the project, leaning towards Java for backend as Jeffery and I have worked with it in the past. Will look to clarify the vision for the project in the coming week. 
+
+
+Week 2
+User stories completed on Google Drive. Additional features brainstormed and clarified with team but not fully refined (point system, leaderboard, exact implementation of gamification etc.). Completed user stories for the timeline facet of the project and determined with team that I will be working on the back end with Jeffery. Likely to use Python for backend due to overall team experience with flask. We collectively gained some valuable feedback from our tutor and will look to solve some of the problems raised with respect to gamification, online lessons, etc. Project Proposal is due next Friday so we will look to formalise all ideas for submission.
+
+Week 3
+Confirmed boundaries of additional features. Project proposal finished and submitted 2pm Friday. Personal contributions toward the proposal included the creation and discussion surrounding the tech stack diagram and contribution toward the editing of the storyboards for user stories, in particular the management of the storyboards for the timeline and forum user stories. We will start implementing the skeleton of the general system and set up a good code foundation for the whole project in the coming week. ER diagrams and schemas will be drawn up and discussed in the coming days to ensure a quality system is thoughtfully designed. 
+
