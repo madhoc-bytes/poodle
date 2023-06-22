@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 // import { useHistory } from 'react-router-dom';
-import { CssBaseline, Button, FormControl, InputLabel, Input, Typography, Paper, Box, Link, Container } from '@mui/material';
+import { Button, FormControl, InputLabel, Input, Typography, Paper, Box, Link, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   // const history = useHistory();
-  const [role, setRole] = useState('Student');
+  const [role, setRole] = useState('student');
+  const navigate = useNavigate();
 
   const handleLogin = () => {
     // You might want to validate input or connect to your backend here
+    
     console.log('pressed login yes');
+    navigate(`/${role}/dashboard`);
     // history.push('/dummy-route');
   };
 
@@ -47,18 +51,18 @@ const LoginPage = () => {
               textAlign: 'center',
               cursor: 'pointer',
               '&:first-of-type': {
-                bgcolor: role === 'Student' ? 'pink' : 'inherit',
+                bgcolor: role === 'student' ? 'pink' : 'inherit',
               },
               '&:last-of-type': {
-                bgcolor: role === 'Teacher' ? 'pink' : 'inherit',
+                bgcolor: role === 'teacher' ? 'pink' : 'inherit',
               },
             },
           }}
         >
-          <Box onClick={() => handleRoleSelect('Student')}>
+          <Box onClick={() => handleRoleSelect('student')}>
             Student
           </Box>
-          <Box onClick={() => handleRoleSelect('Teacher')}>
+          <Box onClick={() => handleRoleSelect('teacher')}>
             Teacher
           </Box>
         </Paper>

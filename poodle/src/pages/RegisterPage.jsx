@@ -5,7 +5,7 @@ import { Button, FormControl, InputLabel, Input, Typography, Paper, Box, Link, D
 const RegisterPage = () => {
   // const history = useHistory();
   const navigate = useNavigate();
-  const [role, setRole] = useState('Student');
+  const [role, setRole] = useState('student');
   const [formValues, setFormValues] = useState({
     firstName: '',
     lastName: '',
@@ -93,18 +93,18 @@ const RegisterPage = () => {
               textAlign: 'center',
               cursor: 'pointer',
               '&:first-of-type': {
-                bgcolor: role === 'Student' ? 'pink' : 'inherit',
+                bgcolor: role === 'student' ? 'pink' : 'inherit',
               },
               '&:last-of-type': {
-                bgcolor: role === 'Teacher' ? 'pink' : 'inherit',
+                bgcolor: role === 'teacher' ? 'pink' : 'inherit',
               },
             },
           }}
         >
-          <Box onClick={() => handleRoleSelect('Student')}>
+          <Box onClick={() => handleRoleSelect('student')}>
             Student
           </Box>
-          <Box onClick={() => handleRoleSelect('Teacher')}>
+          <Box onClick={() => handleRoleSelect('teacher')}>
             Teacher
           </Box>
         </Paper>
