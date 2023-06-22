@@ -4,7 +4,7 @@ import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 const NavBar = () => {
     // Need to do react router to profile page
     return (
-        <AppBar position="static">
+        <AppBar position="static" sx={{ zIndex: 22200 }}>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                     Poodle
