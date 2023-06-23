@@ -6,6 +6,8 @@ import TeacherDashboard from './pages/TeacherDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import './App.css';
 import TeacherCourseParticipants from './pages/TeacherCoursePages/TeacherCourseParticipants';
+import TeacherCourseClasses from './pages/TeacherCoursePages/TeacherCourseClasses';
+import OnlineClass from './pages/OnlineClass';
 
 function App() {
   return (
@@ -20,7 +22,12 @@ function App() {
         {/* Teacher Course pages */}
         <Route path="/teacher/:courseId/Participants" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Content" element={<TeacherCourseParticipants />} />
-        <Route path="/teacher/:courseId/Classes" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Classes" element={<TeacherCourseClasses />} />
+
+        <Route path="/:courseId/:roomId" element={<OnlineClass />} />
+
+
+
         <Route path="/teacher/:courseId/Quizzes" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Forums" element={<TeacherCourseParticipants />} />

@@ -2,38 +2,40 @@ import React, { useState } from 'react';
 import { TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Toolbar } from '@mui/material';
 import NavBar from '../../components/NavBar';
 import CourseSidebar from '../../components/CourseSidebar';
+import { useParams } from 'react-router-dom';
 
 const TeacherCourseClasses = () =>  {
-  const [students, setStudents] = useState([]);
-  const [email, setEmail] = useState('');
+    const courseId = useParams().courseId;
+    const [className, setClassName] = useState('');
 
-  const handleInputChange = (event) => {
-    setEmail(event.target.value);
-  };
-
-  const handleAddStudent = () => {
-    if (email) {
-      setStudents(prevStudents => [...prevStudents, {
-        firstName: 'dummyFirstName',
-        lastName: 'dummyLastName',
-        email: email
-      }]);
-      setEmail('');
+    const handleInputChange = (event) => {
+        setClassName(event.target.value);
     }
-  };
 
-  return (
+    const handleAddClass = () => {
+        console.log('start class');
+        // TODO: Need to make a fetch post for students.
+
+        // Should be replaced with classId
+        window.open(`/${courseId}/${className}`, '_blank');
+
+        setClassName('');
+    }
+
+    return (
     <Box sx={{ display: 'flex' }}>
-      <NavBar />
-      <CourseSidebar />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <NavBar />
+        <CourseSidebar />
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
 
-       
-        {/* Main container goes here */}
-        <>this is the class page</>
-    
-      </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <h1>Start class:</h1>
+            <TextField id="outlined-basic" label="Enter Class Name" variant="outlined" value={className} onChange={handleInputChange} />
+            <Button variant="contained" color="success" onClick={handleAddClass}>Start</Button>
+        </Box>
+
+        </Box>
     </Box>
 
   );
