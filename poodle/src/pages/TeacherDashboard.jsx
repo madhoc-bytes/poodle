@@ -23,7 +23,7 @@ const TeacherDashboard = () => {
     };
 
     const handleCardClick = (course) => {
-        navigate(`/teacher/${course}`);
+        navigate(`/teacher/${course}/Participants`);
     };
 
     const body = (

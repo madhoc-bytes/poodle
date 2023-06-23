@@ -5,7 +5,7 @@ import Register from './pages/RegisterPage'
 import TeacherDashboard from './pages/TeacherDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import './App.css';
-import TeacherCoursePage from './pages/TeacherCoursePage';
+import TeacherCourseParticipants from './pages/TeacherCoursePages/TeacherCourseParticipants';
 
 function App() {
   return (
@@ -17,15 +17,15 @@ function App() {
         <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
         <Route path="/student/dashboard" element={<StudentDashboard />} />
 
-        <Route path="/teacher/:courseId" element={<TeacherCoursePage />} />
-        <Route path="/teacher/:courseId/:coursePage" element={<TeacherCoursePage />} />
+        {/* Teacher Course pages */}
+        <Route path="/teacher/:courseId/Participants" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Content" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Classes" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Quizzes" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Forums" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Leaderboards" element={<TeacherCourseParticipants />} />
 
-        {/* <Route path="/student/dashboard" element={<Register />} />
-        
-        <Route path="/teacher/" element={<Register />} />
-        <Route path="/teacher/:courseId/participants" element={<Register />} />
-        <Route path="/" element={<Register />} />
-        <Route path="/" element={<Register />} /> */}
 
       </Routes>
     </BrowserRouter>
