@@ -1,12 +1,14 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from datetime import datetime, timedelta
+import jwt
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.secret_key = '3d6f45a5fc12445dbac2f59c3b6c7cb1'
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
-
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -16,7 +18,6 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.email}>'
 
-
 class UserSchema(ma.SQLAlchemySchema):
     class Meta:
         model = User
@@ -24,12 +25,12 @@ class UserSchema(ma.SQLAlchemySchema):
     id = ma.auto_field()
     email = ma.auto_field()
 
-user_schema = UserSchema()
-
 with app.app_context():
     db.create_all()
 
-@app.route('/api/register', methods=['POST'])
+user_schema = UserSchema()
+
+@app.route('/register', methods=['POST'])
 def register():
     email = request.json['email']
     password = request.json['password']
@@ -44,7 +45,7 @@ def register():
     return user_schema.jsonify(new_user)
 
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def login():
     email = request.json['email']
     password = request.json['password']
@@ -54,9 +55,9 @@ def login():
     if not user or user.password != password:
         return jsonify(message='Invalid email or password'), 401
 
-    # Perform additional login actions if needed
+    token = jwt.encode({'user_id': user.id, 'exp': datetime.utcnow() + timedelta(minutes=60)}, app.config['SECRET_KEY'])
 
-    return jsonify(message='Login successful')
+    return jsonify({'message': 'Login successful', 'token': token, 'user_id': user.id}), 200
 
 
 if __name__ == '__main__':
