@@ -8,6 +8,8 @@ import './App.css';
 import TeacherCourseParticipants from './pages/TeacherCoursePages/TeacherCourseParticipants';
 import TeacherCourseClasses from './pages/TeacherCoursePages/TeacherCourseClasses';
 import OnlineClass from './pages/OnlineClass';
+import StudentCourseParticipants from './pages/StudentCoursePages/StudentCourseParticipants';
+import StudentCourseClasses from './pages/StudentCoursePages/StudentCourseClasses';
 
 function App() {
   return (
@@ -24,14 +26,19 @@ function App() {
         <Route path="/teacher/:courseId/Content" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Classes" element={<TeacherCourseClasses />} />
 
-        <Route path="/:courseId/:roomId" element={<OnlineClass />} />
-
-
-
         <Route path="/teacher/:courseId/Quizzes" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Forums" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Leaderboards" element={<TeacherCourseParticipants />} />
+
+
+        {/* Student Course Pages */}
+        <Route path="/student/:courseId/Participants" element={<StudentCourseParticipants />} />
+        <Route path="/student/:courseId/Classes" element={<StudentCourseClasses />} />
+
+
+        <Route path="/:courseId/:roomId" element={<OnlineClass />} />
+
 
 
       </Routes>

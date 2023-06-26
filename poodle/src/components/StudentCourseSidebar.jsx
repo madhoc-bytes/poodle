@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 const drawerWidth = 240;
 
 const itemsList = [
-  "Participants",
+    "Participants",
   "Content",
   "Classes",
   "Quizzes",
@@ -14,7 +14,7 @@ const itemsList = [
   "Leaderboard",
 ];
 
-const CourseSidebar = () => {
+const StudentCourseSidebar = () => {
   const navigate = useNavigate();
 
   const [selected, setSelected] = useState(itemsList[0]);
@@ -22,7 +22,7 @@ const CourseSidebar = () => {
   
   const handleListItemClick = (item) => {
     setSelected(item);
-    navigate(`/teacher/${courseId}/${item}`);
+    navigate(`/student/${courseId}/${item}`);
   };
 
   return (
@@ -50,4 +50,4 @@ const CourseSidebar = () => {
   );
 }
 
-export default CourseSidebar;
+export default StudentCourseSidebar;

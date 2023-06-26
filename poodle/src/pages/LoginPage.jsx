@@ -4,7 +4,6 @@ import { Button, FormControl, InputLabel, Input, Typography, Paper, Box, Link, C
 import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
-  // const history = useHistory();
   const [role, setRole] = useState('student');
   const navigate = useNavigate();
 
@@ -21,11 +20,11 @@ const LoginPage = () => {
   };
 
   return (
-    <Container component='main' maxWidth='xs'>
+    <Container component='main' maxWidth='xs' sx={{display: 'flex', alignItems: 'center', minHeight: '100vh'}}>
       <Box
         sx={{
           display: 'flex',
-          // marginTop: 10,
+          // margin: 'auto',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',

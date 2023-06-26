@@ -1,38 +1,32 @@
 import React, { useState } from 'react';
 import { TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Toolbar } from '@mui/material';
 import NavBar from '../../components/NavBar';
-import TeacherCourseSidebar from '../../components/TeacherCourseSidebar';
 import { useParams } from 'react-router-dom';
+import StudentCourseSidebar from '../../components/StudentCourseSidebar';
 
-const TeacherCourseClasses = () =>  {
+const StudentCourseClasses = () =>  {
     const courseId = useParams().courseId;
-    const [className, setClassName] = useState('');
 
-    const handleInputChange = (event) => {
-        setClassName(event.target.value);
-    }
-
-    const handleAddClass = () => {
+    const handleJoinClass = () => {
         console.log('start class');
         // TODO: Need to make a fetch post for students.
 
         // Should be replaced with classId
-        window.open(`/${courseId}/${className}`, '_blank');
+        window.open(`/${courseId}/OnlineClass`, '_blank');
 
-        setClassName('');
+        // setClassName('');
     }
 
     return (
     <Box sx={{ display: 'flex' }}>
         <NavBar />
-        <TeacherCourseSidebar />
+        <StudentCourseSidebar />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <h1>Start class:</h1>
-            <TextField id="outlined-basic" label="Enter Class Name" variant="outlined" value={className} onChange={handleInputChange} />
-            <Button variant="contained" color="success" onClick={handleAddClass}>Start</Button>
+            <h1>Join class:</h1>
+            <Button variant="contained" color="success" onClick={handleJoinClass}>Start</Button>
         </Box>
 
         </Box>
@@ -41,4 +35,4 @@ const TeacherCourseClasses = () =>  {
   );
 }
 
-export default TeacherCourseClasses;
+export default StudentCourseClasses;

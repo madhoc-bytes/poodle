@@ -58,13 +58,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <Container sx={{
-      display: 'flex',
-      alignItems: 'center',
-      justfiyContent: 'center',
-      height: '100vh',
-      width: '100vw',
-    }}>
+    <Container component='main' maxWidth='xs' sx={{display: 'flex', alignItems: 'center', minHeight: '100vh'}}>
       <Box
         sx={{
           display: 'flex',
@@ -75,7 +69,7 @@ const RegisterPage = () => {
           gap: 2,
           backgroundColor: '#D8BFD8',
           width: '30rem',
-          height: '50rem',
+          height: '45rem',
           boxShadow: 4,
           borderRadius: 5,
         }}

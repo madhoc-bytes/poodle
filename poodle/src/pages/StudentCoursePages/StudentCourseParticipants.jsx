@@ -1,38 +1,18 @@
 import React, { useState } from 'react';
 import { TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Toolbar } from '@mui/material';
 import NavBar from '../../components/NavBar';
-import TeacherCourseSidebar from '../../components/TeacherCourseSidebar';
+import StudentCourseSidebar from '../../components/StudentCourseSidebar';
 
-const TeacherCourseParticipants = () =>  {
+const StudentCourseParticipants = () =>  {
   const [students, setStudents] = useState([]);
   const [email, setEmail] = useState('');
-
-  const handleInputChange = (event) => {
-    setEmail(event.target.value);
-  };
-
-  const handleAddStudent = () => {
-    if (email) {
-      setStudents(prevStudents => [...prevStudents, {
-        firstName: 'dummyFirstName',
-        lastName: 'dummyLastName',
-        email: email
-      }]);
-      setEmail('');
-    }
-  };
 
   return (
     <Box sx={{ display: 'flex' }}>
       <NavBar />
-      <TeacherCourseSidebar />
+      <StudentCourseSidebar />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <h1>Add student:</h1>
-            <TextField id="outlined-basic" label="Student Email" variant="outlined" value={email} onChange={handleInputChange} />
-            <Button variant="contained" color="success" onClick={handleAddStudent}>Add</Button>
-        </Box>
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
@@ -59,4 +39,4 @@ const TeacherCourseParticipants = () =>  {
   );
 }
 
-export default TeacherCourseParticipants
+export default StudentCourseParticipants;
