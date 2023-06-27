@@ -102,5 +102,28 @@ def all_students():
 
 	return courses.all_students(course_id) 
 
+@app.route('/courses/<int:course_id>/', methods=['POST'])
+def create_class():
+	token = request.headers.get('Authorization')
+	
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	
+	course_id = request.json['course_id']
+	class_name = request.json['class_name']
+
+	return courses.create_class(course_id, class_name) 
+
+@app.route('/courses/<int:course_id>/', methods=['GET'])
+def all_classes():
+	token = request.headers.get('Authorization')
+	
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	
+	course_id = request.json['course_id']
+
+	return courses.all_classes(course_id) 
+
 if __name__ == '__main__':
 	app.run(debug=True)

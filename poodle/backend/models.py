@@ -47,7 +47,7 @@ class Enrolment(db.Model):
 		self.user_id = user_id
 		self.course_id = course_id
 
-class EnrolmentSchema(db.Model):
+class EnrolmentSchema(db.SQLAlchemySchema):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), primary_key=True)
 	
