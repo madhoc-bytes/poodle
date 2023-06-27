@@ -29,7 +29,7 @@ const StudentCourseClasses = () =>  {
     const names = ['class1', 'class2', 'class3', 'class4']
 
     const handleJoinClass = (name) => {
-        window.open(`/${courseId}/OnlineClass/${name}`, '_blank');
+        window.open(`/OnlineClass/${courseId}/${name}`, '_blank');
     };
 
     return (

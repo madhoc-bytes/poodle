@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Toolbar } from '@mui/material';
+import { TextField, Button, Box, Typography, Toolbar } from '@mui/material';
 import NavBar from '../../components/NavBar';
 import TeacherCourseSidebar from '../../components/TeacherCourseSidebar';
 import { useParams } from 'react-router-dom';
@@ -17,7 +17,7 @@ const TeacherCourseClasses = () =>  {
         // TODO: Need to make a fetch post for students.
 
         // Should be replaced with classId
-        window.open(`/${courseId}/OnlineClass/${className}`, '_blank');
+        window.open(`/OnlineClass/${courseId}/${className}`, '_blank');
 
         setClassName('');
     }

@@ -1,10 +1,12 @@
 import React from 'react';
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt'
 
 const OnlineClass = () => {
-    const { courseId } = useParams().courseId;
-    const { roomId } = useParams().roomId;
+    const courseId = useParams().courseId;
+    const roomId = useParams().roomId;
+
+    console.log(courseId);
 
     const myMeeting = async (element) => {
         const appID = 1970348594;
@@ -23,6 +25,7 @@ const OnlineClass = () => {
     return (
         <div className='room-page'>
             <p>{roomId}</p>
+            <button onClick={()=> {console.log(roomId, courseId)}}>Press</button>
             <div ref={myMeeting}/>
         </div>
     )
