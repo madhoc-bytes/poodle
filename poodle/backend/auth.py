@@ -3,14 +3,16 @@ from models import User, UserSchema, db
 from datetime import datetime, timedelta
 from secrets import token_urlsafe
 from variables import secret_key
+from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import jwt
+
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
 def register(email, password):
     if User.query.filter_by(email=email).first():
-        return jsonify(message='Email already exists'), 409
+        raise BadRequest('Email already exists')
     
     new_user = User(email=email, password=password)
     db.session.add(new_user)
@@ -21,25 +23,23 @@ def login(email, password):
     user = User.query.filter_by(email=email).first()
 
     if not user or user.password != password:
-        return jsonify(message='Invalid email or password'), 401
+        raise Unauthorized('Invalid email or password')
 
-    payload = {'user_email': user.email, 'exp': datetime.utcnow() + timedelta(minutes=30)}
-    token = jwt.encode(payload, secret_key)
+    payload = {'user_id': user.id, 'exp': datetime.utcnow() + timedelta(minutes=30)}
+    token = jwt.encode(payload, secret_key, algorithm="HS256")
 
     return jsonify({'message': 'Login successful', 'token': token, 'user_id': user.id}), 200
 
+def logout(token):
+    if not token:
+        raise Unauthorized('Authorization token missing')
+    return jsonify({'message': 'Logout successful'}), 200
+
 def validate_token(token):
-    payload = jwt.decode(token, secret_key)
-
     try:
-        payload = jwt.decode(token, secret_key)
-        return payload['user_email']
+        payload = jwt.decode(token, secret_key, algorithm=["HS256"])
+        return payload['user_id']
     except jwt.ExpiredSignatureError:
-        return 'Token expired. Please log in again.'
+        raise Unauthorized('Token has expired')
     except jwt.InvalidTokenError:
-        return 'Invalid token. Please log in again.'
-
-
-    # exp = payload['exp']
-    # if datetime.utcnow() >= exp:
-    #     return jsonify(message='Token expired. Please log in again.'), 401
+        raise Unauthorized('Invalid token')

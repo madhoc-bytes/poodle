@@ -18,4 +18,11 @@ class UserSchema(ma.SQLAlchemySchema):
 
     id = ma.auto_field()
     email = ma.auto_field()
+    
+class Course(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
 
+class UserCourse(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), primary_key=True)
