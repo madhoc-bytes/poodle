@@ -41,6 +41,7 @@ def invite(user_id, course_id, student_email):
 	
 	new_enrolment = Enrolment(user_id=student_id, course_id=course_id)
 	db.session.add(new_enrolment)
+	db.session.commit()
 
 	return jsonify({'message': 'User enrolled in the course successfully'}), 200   
 

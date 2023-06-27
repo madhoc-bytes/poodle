@@ -38,7 +38,7 @@ def login(email, password):
 
     token = jwt.encode(payload, secret_key, algorithm='HS256')
 
-    return jsonify({'message': 'Login successful', 'token': token, 'user_id': user.id}), 200
+    return jsonify({'message': 'Login successful', 'token': token, 'user_id': user.id, 'is_teacher': user.is_teacher}), 200
 
 def logout(token):
     if not token:
