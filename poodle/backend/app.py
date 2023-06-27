@@ -11,6 +11,7 @@ import validate
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
+
 # init db
 from models import User, UserSchema, Course, db, ma # DON'T MOVE THIS LINE
 db.init_app(app)
