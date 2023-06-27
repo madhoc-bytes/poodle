@@ -55,7 +55,7 @@ def logout():
 	token = request.headers.get('Authorization')
 	return auth.logout(token)
 
-@app.route('/dashboard', methods=['POST'])
+@app.route('/dashboard', methods=['GET'])
 def fetch_courses():
 	token = request.headers.get('Authorization')
 
@@ -91,7 +91,7 @@ def add_user():
 
 	return courses.invite(user_id, course_id, student_email) 
 
-@app.route('/courses/<int:course_id>/students', methods=['POST'])
+@app.route('/courses/<int:course_id>/students', methods=['GET'])
 def all_students():
 	token = request.headers.get('Authorization')
 	
