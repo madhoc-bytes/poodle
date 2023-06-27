@@ -17,7 +17,7 @@ const TeacherCourseClasses = () =>  {
         // TODO: Need to make a fetch post for students.
 
         // Should be replaced with classId
-        window.open(`/${courseId}/${className}`, '_blank');
+        window.open(`/${courseId}/OnlineClass/${className}`, '_blank');
 
         setClassName('');
     }

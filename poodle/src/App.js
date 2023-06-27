@@ -37,7 +37,7 @@ function App() {
         <Route path="/student/:courseId/Classes" element={<StudentCourseClasses />} />
 
 
-        <Route path="/:courseId/:roomId" element={<OnlineClass />} />
+        <Route path="/:courseId/OnlineClass/:roomId" element={<OnlineClass />} />
 
 
 
