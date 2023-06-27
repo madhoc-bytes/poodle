@@ -41,7 +41,7 @@ def handle_not_found(e):
 # app decorators
 @app.route('/register', methods=['POST'])
 def register():
-    first_name, last_name = request.json['first_name'], request.json['last_name']
+    first_name, last_name = request.json['firstName'], request.json['lastName']
     email, password = request.json['email'], request.json['password'] 
     is_teacher = request.json['is_teacher']  
     return auth.register(email, password, first_name, last_name, is_teacher)
@@ -100,4 +100,4 @@ def add_user(course_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
