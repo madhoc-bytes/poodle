@@ -1,0 +1,28 @@
+# rego
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "password123",
+    "first_name": "John",
+    "last_name": "Doe",
+    "is_admin": True
+  }' \
+  http://localhost:5000/register
+
+# login
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "password123"
+  }' \
+  http://localhost:5000/login
+
+# create course
+curl -X POST   -H "Content-Type: application/json"   -H "Authorization: Bearer <insert token here>"   -d '{"name": "Mathematics"}'   http://localhost:5000/courses
+
+# join course
+curl -X POST \
+-H "Authorization: Bearer <token>" \
+http://localhost:5000/courses/<course_id>/join

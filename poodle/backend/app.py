@@ -4,6 +4,7 @@ from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import jwt
 import auth
+import validate
 
 # init app
 app = Flask(__name__)
@@ -38,12 +39,14 @@ def handle_not_found(e):
 # app decorators
 @app.route('/register', methods=['POST'])
 def register():
-    email,password = request.json['email'], request.json['password']
-    return auth.register(email, password)
+    first_name, last_name = request.json['first_name'], request.json['last_name']
+    email, password = request.json['email'], request.json['password'] 
+    is_teacher = request.json['is_teacher']  
+    return auth.register(email, password, first_name, last_name, is_teacher)
 
 @app.route('/login', methods=['POST'])
 def login():
-    email,password = request.json['email'], request.json['password']
+    email, password = request.json['email'], request.json['password']
     return auth.login(email, password)
 
 @app.route('/logout', methods=['POST'])
@@ -54,10 +57,12 @@ def logout():
 @app.route('/courses', methods=['POST'])
 def create_course():
     token = request.headers.get('Authorization')
-    user_id = auth.validate_token(token)
-
+    if not token:
+        raise Unauthorized('Authorization token missing')
+    user_id = validate.validate_token(token)
     name = request.json['name']
-
+    
+    #TODO: move this logic to courses
     existing_course = Course.query.filter_by(name=name).first()
     if existing_course:
         raise BadRequest('Course name already exists')
@@ -69,8 +74,9 @@ def create_course():
 
     return jsonify({'message': 'Course created successfully', 'course_id': new_course.id}), 201
 
-@app.route('/courses/<int:course_id>/join', methods=['POST'])
-def join_course(course_id):
+#TODO: add user not done yet
+@app.route('/courses/<int:course_id>/invite', methods=['POST'])
+def add_user(course_id):
     token = request.headers.get('Authorization')
     user_id = auth.validate_token(token)
 
