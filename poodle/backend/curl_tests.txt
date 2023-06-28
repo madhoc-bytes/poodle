@@ -71,7 +71,7 @@ curl -X POST \
     "course_name": "Mathematics",
     "email": "jane@example.com"
   }' \
-  http://localhost:5000/courses/1/invite
+  http://localhost:5000/Courses/Mathematics/invite
 
 curl -X POST \
   -H "Content-Type: application/json" "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" \
