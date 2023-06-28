@@ -65,9 +65,9 @@ return:
 # returns
 @app.route('/register', methods=['POST'])
 def register():
-    first_name, last_name = request.json['first_name'], request.json['last_name']
+    first_name, last_name = request.json['firstName'], request.json['lastName']
     email, password = request.json['email'], request.json['password'] 
-    is_teacher = request.json['is_teacher']  
+    is_teacher = request.json['isTeacher']  
     return auth.register(email, password, first_name, last_name, is_teacher)
 
 @app.route('/login', methods=['POST'])
