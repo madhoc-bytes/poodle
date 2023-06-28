@@ -107,7 +107,7 @@ curl -X GET \
   -d '{
     "email": "jane@example.com"
   }' \
-  http://localhost:5000/dashboard
+  http://localhost:5000/dashboard/course-list
 
 # fetch courses Teacher
 curl -X GET \
@@ -116,7 +116,7 @@ curl -X GET \
   -d '{
     "email": "john@example.com"
   }' \
-  http://localhost:5000/dashboard
+  http://localhost:5000/dashboard/course-list
 
 
 # fetch students
@@ -126,7 +126,7 @@ curl -X GET \
   -d '{
     "course_name": "Mathematics"
   }' \
-  http://localhost:5000/courses/tempstudents
+  http://localhost:5000/courses/<int:course_id>/students
 
 # add class
 curl -X POST \

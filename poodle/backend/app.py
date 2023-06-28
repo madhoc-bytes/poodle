@@ -3,10 +3,9 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
-import jwt
 import auth
 import courses
-import validate
+import validate as v
 
 # init app
 app = Flask(__name__)
@@ -41,11 +40,34 @@ def handle_not_found(e):
 	return response
 
 # app decorators
+
+'''
+headers: Authorization: Bearer <token>
+data:
+{
+  "email": "teacher1@example.com",
+  "first_name": "John",
+  "id": 3,
+  "is_teacher": true,
+  "last_name": "Doe"
+},
+
+return:
+{
+  "email": "teacher1@example.com",
+  "first_name": "John",
+  "id": 3,
+  "is_teacher": true,
+  "last_name": "Doe"
+}, <status>
+'''
+
+# returns
 @app.route('/register', methods=['POST'])
 def register():
-    first_name, last_name = request.json['firstName'], request.json['lastName']
+    first_name, last_name = request.json['first_name'], request.json['last_name']
     email, password = request.json['email'], request.json['password'] 
-    is_teacher = request.json['isTeacher']  
+    is_teacher = request.json['is_teacher']  
     return auth.register(email, password, first_name, last_name, is_teacher)
 
 @app.route('/login', methods=['POST'])
@@ -58,75 +80,63 @@ def logout():
 	token = request.headers.get('Authorization')
 	return auth.logout(token)
 
-@app.route('/dashboard', methods=['GET'])
-def fetch_courses():
+@app.route('/dashboard/course-list', methods=['GET'])
+def user_courses():
 	token = request.headers.get('Authorization')
-
 	if not token:
 		raise Unauthorized('Authorization token missing')
-	
-	email = request.json['email']
-	
-	return courses.fetch_courses(email)
+	user_id = v.validate_token(token)	
+	return courses.user_courses(user_id)
 
-@app.route('/courses', methods=['POST'])
+@app.route('/courses/create', methods=['POST'])
 def create_course():
 	token = request.headers.get('Authorization')
 
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	
-	user_id = validate.validate_token(token)
-	name = request.json['name']
+	user_id = v.validate_token(token)
+	course_name = request.json['course_name']
 	
-	return courses.create(name, user_id)
+	return courses.create(course_name, user_id)
 
-@app.route('/courses/tempinvite', methods=['POST'])
-def add_user():
-	token = request.headers.get('Authorization')
-	
+@app.route('/courses/<int:course_id>/invite', methods=['POST'])
+def add_user(course_id):
+	token = request.headers.get('Authorization')	
 	if not token:
-		raise Unauthorized('Authorization token missing')
-	
-	user_id = validate.validate_token(token)
-	course_name = request.json['course_name'] 
+		raise Unauthorized('Authorization token missing')	
+	user_id = v.validate_token(token)
 	student_email = request.json['email']
 
-	return courses.invite(user_id, course_name, student_email) 
+	return courses.invite(user_id, course_id, student_email) 
 
-@app.route('/courses/tempstudents', methods=['GET'])
-def all_students():
-	token = request.headers.get('Authorization')
-	
+@app.route('/courses/<int:course_id>/students', methods=['GET'])
+def all_students(course_id):
+	token = request.headers.get('Authorization') 	
 	if not token:
 		raise Unauthorized('Authorization token missing')
-	
-	course_name = request.json['course_name']
+	v.validate_token(token)
 
-	return courses.all_students(course_name) 
+	return courses.all_students(course_id) 
 
-@app.route('/courses/tempclass', methods=['POST'])
-def create_class():
-	token = request.headers.get('Authorization')
-	
+@app.route('/courses/<int:course_id>/create-class', methods=['POST'])
+def create_class(course_id):
+	token = request.headers.get('Authorization')	
 	if not token:
 		raise Unauthorized('Authorization token missing')
-	
-	course_name = request.json['course_name']
+	v.validate_token(token)
 	class_name = request.json['class_name']
 
-	return courses.create_class(course_name, class_name) 
+	return courses.create_class(course_id, class_name) 
 
-@app.route('/courses/tempfetchclass', methods=['GET'])
-def all_classes():
-	token = request.headers.get('Authorization')
-	
+@app.route('/courses/<int:course_id>/classes', methods=['GET'])
+def course_classes(course_id):
+	token = request.headers.get('Authorization')	
 	if not token:
 		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
 	
-	course_name = request.json['course_name']
-
-	return courses.all_classes(course_name) 
+	return courses.all_classes(course_id) 
 
 if __name__ == '__main__':
     app.run(debug=True)

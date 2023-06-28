@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -27,17 +28,30 @@ class Course(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(100), unique=True, nullable=False)
 	creator = db.Column(db.Integer, nullable=False)
-	active_classes = db.Column(db.String(1000), nullable=True)
+	online_classes = relationship('OnlineClass', backref='course', cascade='all, delete-orphan')
 
 	def __init__(self, name, creator):
 		self.name = name
 		self.creator = creator
-		active_classes = "~"
+		online_classes = "~"
 
 class CourseSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('id', 'course_name', 'creator', 'active_classes')
+		fields = ('id', 'course_name', 'creator', 'online_classes')
+
+class OnlineClass(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String(100), unique=True, nullable=False)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
 	
+	def __init__(self, name, course_id):
+		self.course_id = course_id
+		self.name = name
+
+class OnlineClassSchema(ma.SQLAlchemySchema):
+	class Meta:
+		model = OnlineClass
+		fields = ('id', 'name','course_id')	
 
 class Enrolment(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
