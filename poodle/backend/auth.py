@@ -44,3 +44,4 @@ def logout(token):
     if not token:
         raise Unauthorized('Authorization token missing')
     return jsonify({'message': 'Logout successful'}), 200
+

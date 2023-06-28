@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
@@ -9,6 +10,7 @@ import validate
 
 # init app
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 
@@ -41,10 +43,10 @@ def handle_not_found(e):
 # app decorators
 @app.route('/register', methods=['POST'])
 def register():
-	first_name, last_name = request.json['first_name'], request.json['last_name']
-	email, password = request.json['email'], request.json['password'] 
-	is_teacher = request.json['is_teacher']  
-	return auth.register(email, password, first_name, last_name, is_teacher)
+    first_name, last_name = request.json['firstName'], request.json['lastName']
+    email, password = request.json['email'], request.json['password'] 
+    is_teacher = request.json['isTeacher']  
+    return auth.register(email, password, first_name, last_name, is_teacher)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -127,4 +129,4 @@ def all_classes():
 	return courses.all_classes(course_name) 
 
 if __name__ == '__main__':
-	app.run(debug=True)
+    app.run(debug=True)
