@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Toolbar } from '@mui/material';
-import NavBar from '../../components/NavBar';
-import TeacherCourseSidebar from '../../components/TeacherCourseSidebar';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react'
+import { TextField, Button, Box, Toolbar } from '@mui/material'
+import NavBar from '../../components/NavBar'
+import TeacherCourseSidebar from '../../components/TeacherCourseSidebar'
+import { useParams } from 'react-router-dom'
 
-const TeacherCourseClasses = () =>  {
-    const courseId = useParams().courseId;
-    const [className, setClassName] = useState('');
+const TeacherCourseClasses = () => {
+  const courseId = useParams().courseId
+  const [className, setClassName] = useState('')
 
-    const handleInputChange = (event) => {
-        setClassName(event.target.value);
-    }
+  const handleInputChange = (event) => {
+    setClassName(event.target.value)
+  }
 
-    const handleAddClass = () => {
-        console.log('start class');
-        // TODO: Need to make a fetch post for students.
+  const handleAddClass = () => {
+    console.log('start class')
+    // TODO: Need to make a fetch post for students.
 
-        // Should be replaced with classId
-        window.open(`/OnlineClass/${courseId}/${className}`, '_blank');
+    // Should be replaced with classId
+    window.open(`/OnlineClass/${courseId}/${className}`, '_blank')
 
-        setClassName('');
-    }
+    setClassName('')
+  }
 
-    return (
+  return (
     <Box sx={{ display: 'flex' }}>
         <NavBar />
         <TeacherCourseSidebar />
@@ -38,7 +38,7 @@ const TeacherCourseClasses = () =>  {
         </Box>
     </Box>
 
-  );
+  )
 }
 
-export default TeacherCourseClasses;
+export default TeacherCourseClasses

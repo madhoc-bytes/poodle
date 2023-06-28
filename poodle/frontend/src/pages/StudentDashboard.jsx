@@ -1,15 +1,15 @@
-import react from 'react';
-import NavBar from '../components/NavBar';
-import { Toolbar } from '@mui/material';
+import React from 'react'
+import NavBar from '../components/NavBar'
+import { Toolbar } from '@mui/material'
 
 const StudentDashboard = () => {
-    return (
+  return (
         <>
             <NavBar />
             <Toolbar />
             This is the student dashbaor page
         </>
-    )
+  )
 }
 
-export default StudentDashboard;
+export default StudentDashboard

@@ -1,38 +1,37 @@
-import React, { useState } from 'react';
-import { Button, Box, Typography, Toolbar, Card, CardContent } from '@mui/material';
-import NavBar from '../../components/NavBar';
-import { useNavigate, useParams } from 'react-router-dom';
-import StudentCourseSidebar from '../../components/StudentCourseSidebar';
-
+import React from 'react'
+import { Button, Box, Typography, Toolbar, Card, CardContent } from '@mui/material'
+import NavBar from '../../components/NavBar'
+import { useParams } from 'react-router-dom'
+import StudentCourseSidebar from '../../components/StudentCourseSidebar'
 
 const styles = {
-    container: {
-      display: 'flex',
-      flexDirection: 'column',
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
     //   alignItems: 'center',
-      padding: '20px'
-    },
-    card: {
-      width: '400px',
-      marginBottom: '10px'
-    },
-    cardContent: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-    }
-};
+    padding: '20px'
+  },
+  card: {
+    width: '400px',
+    marginBottom: '10px'
+  },
+  cardContent: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  }
+}
 
-const StudentCourseClasses = () =>  {
-    const courseId = useParams().courseId;
+const StudentCourseClasses = () => {
+  const courseId = useParams().courseId
 
-    const names = ['class1', 'class2', 'class3', 'class4']
+  const names = ['class1', 'class2', 'class3', 'class4']
 
-    const handleJoinClass = (name) => {
-        window.open(`/OnlineClass/${courseId}/${name}`, '_blank');
-    };
+  const handleJoinClass = (name) => {
+    window.open(`/OnlineClass/${courseId}/${name}`, '_blank')
+  }
 
-    return (
+  return (
     <Box sx={{ display: 'flex' }}>
         <NavBar />
         <StudentCourseSidebar />
@@ -63,7 +62,7 @@ const StudentCourseClasses = () =>  {
         </Box>
     </Box>
 
-  );
+  )
 }
 
-export default StudentCourseClasses;
+export default StudentCourseClasses

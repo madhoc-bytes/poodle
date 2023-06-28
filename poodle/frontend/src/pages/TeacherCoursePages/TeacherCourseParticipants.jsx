@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
-import { TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Toolbar } from '@mui/material';
-import NavBar from '../../components/NavBar';
-import TeacherCourseSidebar from '../../components/TeacherCourseSidebar';
+import React, { useState } from 'react'
+import { TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Toolbar } from '@mui/material'
+import NavBar from '../../components/NavBar'
+import TeacherCourseSidebar from '../../components/TeacherCourseSidebar'
 
-const TeacherCourseParticipants = () =>  {
-  const [students, setStudents] = useState([]);
-  const [email, setEmail] = useState('');
+const TeacherCourseParticipants = () => {
+  const [students, setStudents] = useState([])
+  const [email, setEmail] = useState('')
 
   const handleInputChange = (event) => {
-    setEmail(event.target.value);
-  };
+    setEmail(event.target.value)
+  }
 
   const handleAddStudent = () => {
     if (email) {
       setStudents(prevStudents => [...prevStudents, {
         firstName: 'dummyFirstName',
         lastName: 'dummyLastName',
-        email: email
-      }]);
-      setEmail('');
+        email
+      }])
+      setEmail('')
     }
-  };
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -56,7 +56,7 @@ const TeacherCourseParticipants = () =>  {
       </Box>
     </Box>
 
-  );
+  )
 }
 
 export default TeacherCourseParticipants

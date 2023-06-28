@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Toolbar } from '@mui/material';
-import NavBar from '../../components/NavBar';
-import StudentCourseSidebar from '../../components/StudentCourseSidebar';
+import React, { useState } from 'react'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Toolbar } from '@mui/material'
+import NavBar from '../../components/NavBar'
+import StudentCourseSidebar from '../../components/StudentCourseSidebar'
 
-const StudentCourseParticipants = () =>  {
-  const [students, setStudents] = useState([]);
-  const [email, setEmail] = useState('');
+const StudentCourseParticipants = () => {
+  const [students, setStudents] = useState([])
+  // const [email, setEmail] = useState('')
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -36,7 +36,7 @@ const StudentCourseParticipants = () =>  {
       </Box>
     </Box>
 
-  );
+  )
 }
 
-export default StudentCourseParticipants;
+export default StudentCourseParticipants

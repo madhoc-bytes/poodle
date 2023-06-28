@@ -1,34 +1,34 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React from 'react'
+import { useParams } from 'react-router-dom'
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt'
 
 const OnlineClass = () => {
-    const courseId = useParams().courseId;
-    const roomId = useParams().roomId;
+  const courseId = useParams().courseId
+  const roomId = useParams().roomId
 
-    console.log(courseId);
+  console.log(courseId)
 
-    const myMeeting = async (element) => {
-        const appID = 1970348594;
-        const serverSecret = "91c96aaa9f049cef482d9fb5c01630c1";
-        const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomId, Date.now().toString(), 'username');
+  const myMeeting = async (element) => {
+    const appID = 1970348594
+    const serverSecret = '91c96aaa9f049cef482d9fb5c01630c1'
+    const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomId, Date.now().toString(), 'username')
 
-        const zp = ZegoUIKitPrebuilt.create(kitToken);
-        zp.joinRoom({
-            container:element,
-            scenario: {
-                mode: ZegoUIKitPrebuilt.VideoConference,
-            }
-        })
-    }
+    const zp = ZegoUIKitPrebuilt.create(kitToken)
+    zp.joinRoom({
+      container: element,
+      scenario: {
+        mode: ZegoUIKitPrebuilt.VideoConference
+      }
+    })
+  }
 
-    return (
+  return (
         <div className='room-page'>
             <p>{roomId}</p>
-            <button onClick={()=> {console.log(roomId, courseId)}}>Press</button>
+            <button onClick={() => { console.log(roomId, courseId) }}>Press</button>
             <div ref={myMeeting}/>
         </div>
-    )
+  )
 }
 
-export default OnlineClass;
+export default OnlineClass
