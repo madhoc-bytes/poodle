@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
-import { useLoaderData, useNavigate } from 'react-router-dom';
-import { Button, FormControl, InputLabel, Input, Typography, Paper, Box, Link, Dialog, DialogTitle, Container } from '@mui/material';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  Input,
+  Typography,
+  Paper,
+  Box,
+  Link,
+  Alert,
+} from "@mui/material";
 
 const RegisterPage = () => {
-  // const history = useHistory();
   const navigate = useNavigate();
-  const [role, setRole] = useState('student');
+  const [role, setRole] = useState("student");
   const [formValues, setFormValues] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    is_teacher: false,
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    isTeacher: false,
   });
-  const [formErrors, setFormErrors] = useState({});
-  const [open, setOpen] = useState(false);
+  const [alert, setAlert] = React.useState(false);
+  const [alertContent, setAlertContent] = React.useState("");
 
   const handleInputChange = (e) => {
     setFormValues({
@@ -25,52 +34,64 @@ const RegisterPage = () => {
   };
 
   const validateInputs = () => {
-    let errors = {};
     const emailRegex = /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/;
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    const passwordRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
-
-    if (!formValues.firstName || !/^[a-zA-Z]+$/.test(formValues.firstName)) errors.firstName = "First name must consist of letters only";
-    if (!formValues.lastName || !/^[a-zA-Z]+$/.test(formValues.lastName)) errors.lastName = "Last name must consist of letters only";
-    if (!formValues.email || !emailRegex.test(formValues.email)) errors.email = "Email must be valid";
-    if (!formValues.password || !passwordRegex.test(formValues.password)) errors.password = "Password must contain at least one character from each of the groups: letters, numbers, special characters";
-    if (formValues.password !== formValues.confirmPassword) errors.confirmPassword = "Passwords must match";
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    if (!formValues.firstName || !/^[a-zA-Z]+$/.test(formValues.firstName)) {
+      setAlertContent("First name must consist of letters only");
+      setAlert(true);
+    } else if (
+      !formValues.lastName ||
+      !/^[a-zA-Z]+$/.test(formValues.lastName)
+    ) {
+      setAlertContent("Last name must consist of letters only");
+      setAlert(true);
+    } else if (!formValues.email || !emailRegex.test(formValues.email)) {
+      setAlertContent("Email must be valid");
+      setAlert(true);
+    } else if (
+      !formValues.password ||
+      !passwordRegex.test(formValues.password)
+    ) {
+      setAlertContent(
+        "Password must be at least 8 characters and contain at least one character from each of the groups: letters, numbers and special characters"
+      );
+      setAlert(true);
+    } else if (formValues.password !== formValues.confirmPassword) {
+      setAlertContent("Passwords must match");
+      setAlert(true);
+    } else {
+      return true;
+    }
+    return false;
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
     if (validateInputs()) {
       // You might want to connect to your backend here
-      console.log('succesfully registered');
+      console.log("succesfully registered");
       console.log(formValues);
       console.log(role);
       const response = await fetch(
-        new URL('/register', 'http://localhost:5000/'),
+        new URL("/register", "http://localhost:5000/"),
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(formValues),
         }
       );
       const data = await response.json();
       if (data.error) {
-        console.log('Error');
+        setAlert(true);
+        setAlertContent("Email taken. Please use a different email");
       } else {
-        console.log('Success');
-        navigate('/dashboard');
+        console.log("Success");
+        navigate("/login");
       }
-
-
-
-      navigate('/login')
-      // history.push('/Login');
-    } else {
-      setOpen(true);
     }
   };
 
@@ -79,101 +100,140 @@ const RegisterPage = () => {
   };
 
   return (
-    <Container component='main' maxWidth='xs' sx={{display: 'flex', alignItems: 'center', minHeight: '100vh'}}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        textAlign: "center",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "Georgia, serif",
+        marginBottom: "10px",
+      }}
+    >
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          marginTop: 3,
-          alignItems: 'center',
-          justifyContent: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          backgroundColor: "white",
+          borderRadius: "25px",
+          width: "500px",
           gap: 2,
-          backgroundColor: '#D8BFD8',
-          width: '30rem',
-          height: '45rem',
-          boxShadow: 4,
-          borderRadius: 5,
+
+          // from https://ishadeed.com/article/new-facebook-css/
+          boxShadow:
+            "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
+          paddingBottom: "25px",
+          marginTop: "50px",
+          // wordBreak: "break-all",
+          padding: "0 10px 25px 10px",
         }}
       >
-        <Typography variant="h2" sx={{ mb: 4 }}>Poodle</Typography>
-        <Typography variant="h4">Register</Typography>
+        <h1 style={{ fontSize: "60px", marginBottom: "0" }}>Poodle</h1>
+        <h2>Register</h2>
         <Paper
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
+            display: "flex",
+            justifyContent: "center",
+            borderRadius: "50px",
             mb: 2,
-            '& div': {
+            "& div": {
+              borderRadius: "50px",
               flex: 1,
               p: 2,
-              textAlign: 'center',
-              cursor: 'pointer',
-              '&:first-of-type': {
-                bgcolor: role === 'student' ? 'pink' : 'inherit',
+              width: "150px",
+              textAlign: "center",
+              cursor: "pointer",
+              "&:first-of-type": {
+                bgcolor: role === "student" ? "rgb(156,39,176)" : "inherit",
               },
-              '&:last-of-type': {
-                bgcolor: role === 'teacher' ? 'pink' : 'inherit',
+              "&:last-of-type": {
+                bgcolor: role === "teacher" ? "rgb(156,39,176)" : "inherit",
               },
             },
           }}
         >
-          <Box onClick={() => handleRoleSelect('student')}>
-            Student
-          </Box>
-          <Box onClick={() => handleRoleSelect('teacher')}>
-            Teacher
-          </Box>
+          <Box onClick={() => handleRoleSelect("student")}>Student</Box>
+          <Box onClick={() => handleRoleSelect("teacher")}>Teacher</Box>
         </Paper>
+
         <Box
           component="form"
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
             maxWidth: 300,
             mb: 2,
-            '& > :not(:last-child)': {
+            "& > :not(:last-child)": {
               mb: 2, // This replaces the marginBottom from makeStyles
             },
           }}
           onSubmit={handleRegister}
         >
           <FormControl>
-            <InputLabel htmlFor="firstName">First Name</InputLabel>
-            <Input id="firstName" name="firstName" type="text" value={formValues.firstName} onChange={handleInputChange} />
+            <InputLabel>First Name</InputLabel>
+            <Input
+              name="firstName"
+              value={formValues.firstName}
+              onChange={handleInputChange}
+            />
           </FormControl>
           <FormControl>
-            <InputLabel htmlFor="lastName">Last Name</InputLabel>
-            <Input id="lastName" name="lastName" type="text" value={formValues.lastName} onChange={handleInputChange} />
+            <InputLabel>Last Name</InputLabel>
+            <Input
+              name="lastName"
+              value={formValues.lastName}
+              onChange={handleInputChange}
+            />
           </FormControl>
           <FormControl>
-            <InputLabel htmlFor="email">Email</InputLabel>
-            <Input id="email" name="email" type="email" value={formValues.email} onChange={handleInputChange} />
+            <InputLabel>Email</InputLabel>
+            <Input
+              name="email"
+              value={formValues.email}
+              onChange={handleInputChange}
+            />
           </FormControl>
           <FormControl>
-            <InputLabel htmlFor="password">Password</InputLabel>
-            <Input id="password" name="password" type="password" value={formValues.password} onChange={handleInputChange} />
+            <InputLabel>Password</InputLabel>
+            <Input
+              name="password"
+              type="password"
+              value={formValues.password}
+              onChange={handleInputChange}
+            />
           </FormControl>
           <FormControl>
-            <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
-            <Input id="confirmPassword" name="confirmPassword" type="password" value={formValues.confirmPassword} onChange={handleInputChange} />
+            <InputLabel>Confirm Password</InputLabel>
+            <Input
+              name="confirmPassword"
+              type="password"
+              value={formValues.confirmPassword}
+              onChange={handleInputChange}
+            />
           </FormControl>
-          <Button variant="contained" color="primary" type="submit">Register</Button>
+          <Button variant="contained" color="secondary" type="submit">
+            Register
+          </Button>
         </Box>
         <Typography>
-          Have an account? <Link href="/Login" variant="body1" sx={{ fontWeight: 'bold', textDecoration: 'underline' }}>Login now</Link>
+          Have an account? &nbsp;
+          <Link
+            href="/login"
+            sx={{
+              fontWeight: "bold",
+              textDecoration: "underline",
+              color: "rgb(156,39,176)",
+            }}
+          >
+            Login now
+          </Link>
         </Typography>
-        <Dialog
-          open={open}
-          onClose={() => setOpen(false)}
-        >
-          <DialogTitle id="alert-dialog-title">
-            {Object.entries(formErrors).map(([key, value]) => {
-              return (<p>{key} {value}</p>);
-            })}
-          </DialogTitle>
-        </Dialog>
+        {alert ? <Alert severity="error">{alertContent}</Alert> : <></>}
       </Box>
-    </Container>
+    </Box>
   );
 };
 
