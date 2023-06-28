@@ -32,7 +32,7 @@ class Course(db.Model):
 	def __init__(self, name, creator):
 		self.name = name
 		self.creator = creator
-		active_classes = str()
+		active_classes = "~"
 
 class CourseSchema(ma.SQLAlchemySchema):
 	class Meta:

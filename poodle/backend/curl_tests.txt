@@ -71,15 +71,25 @@ curl -X POST \
     "course_name": "Mathematics",
     "email": "jane@example.com"
   }' \
-  http://localhost:5000/Courses/Mathematics/invite
+  http://localhost:5000/Courses/tempinvite
 
 curl -X POST \
-  -H "Content-Type: application/json" "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE2ODc5MjgwNDh9.KR-AEtrHpGwBU38CR6kMao7PTbNbtmvu-Ri0pAdX8ec" \
   -d '{
     "course_name": "Mathematics",
     "email": "jane@example.com"
   }' \
-  http://localhost:5000/courses/invite
+  http://localhost:5000/courses/tempinvite
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE2ODc5MjgwNDh9.KR-AEtrHpGwBU38CR6kMao7PTbNbtmvu-Ri0pAdX8ec" \
+  -d '{
+    "course_name": "English",
+    "email": "jane@example.com"
+  }' \
+  http://localhost:5000/courses/tempinvite
 
 # invite
 curl -X POST \
@@ -88,47 +98,61 @@ curl -X POST \
     "course_name": "English",
     "email": "jane@example.com"
   }' \
-  http://localhost:5000/courses/invite
+  http://localhost:5000/courses/tempinvite
 
-# fetch courses
+# fetch courses Student
 curl -X GET \
-  -H "Content-Type: application/json" "Authorization: Bearer <insert token here>" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE2ODc5MjgwNDh9.KR-AEtrHpGwBU38CR6kMao7PTbNbtmvu-Ri0pAdX8ec" \
   -d '{
     "email": "jane@example.com"
   }' \
   http://localhost:5000/dashboard
 
-# fetch courses
+# fetch courses Teacher
 curl -X GET \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE2ODc5MjQ4NTl9.UUyQ2aIIhg2KaQc13FyCaqsYwlt_EkSyaVU3jaZfmvE" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE2ODc5MjgwNDh9.KR-AEtrHpGwBU38CR6kMao7PTbNbtmvu-Ri0pAdX8ec" \
   -d '{
     "email": "john@example.com"
   }' \
   http://localhost:5000/dashboard
 
+
+# fetch students
+curl -X GET \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE2ODc5MjQ4NTl9.UUyQ2aIIhg2KaQc13FyCaqsYwlt_EkSyaVU3jaZfmvE" \
+  -d '{
+    "course_name": "Mathematics"
+  }' \
+  http://localhost:5000/courses/tempstudents
+
 # add class
 curl -X POST \
-  -H "Content-Type: application/json" "Authorization: Bearer <insert token here>" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE2ODc5MjQ4NTl9.UUyQ2aIIhg2KaQc13FyCaqsYwlt_EkSyaVU3jaZfmvE" \
   -d '{
     "course_name": "Mathematics",
 	"class_name": "Pandy"
   }' \
-  http://localhost:5000/courses/<int:course_id>
+  http://localhost:5000/courses/tempclass
 
 # add class
 curl -X POST \
-  -H "Content-Type: application/json" "Authorization: Bearer <insert token here>" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE2ODc5MjQ4NTl9.UUyQ2aIIhg2KaQc13FyCaqsYwlt_EkSyaVU3jaZfmvE" \
   -d '{
     "course_name": "Mathematics",
 	"class_name": "Mechy"
   }' \
-  http://localhost:5000/courses/<int:course_id>
+  http://localhost:5000/courses/tempclass
 
   # fetch classes
 curl -X GET \
-  -H "Content-Type: application/json" "Authorization: Bearer <insert token here>" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE2ODc5MjQ4NTl9.UUyQ2aIIhg2KaQc13FyCaqsYwlt_EkSyaVU3jaZfmvE" \
   -d '{
     "course_name": "Mathematics"
   }' \
-  http://localhost:5000/courses/<int:course_id>
+  http://localhost:5000/courses/tempfetchclass

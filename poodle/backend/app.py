@@ -79,7 +79,7 @@ def create_course():
 	
 	return courses.create(name, user_id)
 
-@app.route('/courses/<int:course_id>/invite', methods=['POST'])
+@app.route('/courses/tempinvite', methods=['POST'])
 def add_user():
 	token = request.headers.get('Authorization')
 	
@@ -92,18 +92,18 @@ def add_user():
 
 	return courses.invite(user_id, course_name, student_email) 
 
-@app.route('/courses/<int:course_id>/students', methods=['GET'])
+@app.route('/courses/tempstudents', methods=['GET'])
 def all_students():
 	token = request.headers.get('Authorization')
 	
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	
-	course_id = request.json['course_id']
+	course_name = request.json['course_name']
 
-	return courses.all_students(course_id) 
+	return courses.all_students(course_name) 
 
-@app.route('/courses/<int:course_id>/', methods=['POST'])
+@app.route('/courses/tempclass', methods=['POST'])
 def create_class():
 	token = request.headers.get('Authorization')
 	
@@ -115,7 +115,7 @@ def create_class():
 
 	return courses.create_class(course_name, class_name) 
 
-@app.route('/courses/<int:course_id>/', methods=['GET'])
+@app.route('/courses/tempfetchclass', methods=['GET'])
 def all_classes():
 	token = request.headers.get('Authorization')
 	
