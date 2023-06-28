@@ -1,8 +1,33 @@
-import react from "react";
-import { AppBar, Toolbar, Typography, Box } from "@mui/material";
+import react, { useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Menu,
+  Button,
+  MenuItem,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
-  // Need to do react router to profile page
+  const navigate = useNavigate();
+
+  const [dropdown, setDropdown] = useState(null);
+
+  const handleOpen = (e) => {
+    setDropdown(e.currentTarget);
+  };
+
+  const handleClose = () => {
+    setDropdown(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  // TODO: Need to do react router to profile page
   return (
     <AppBar position="fixed" sx={{ zIndex: 50000, backgroundColor: "white" }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -13,16 +38,22 @@ const NavBar = () => {
         >
           Poodle
         </Typography>
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: "flex",
-            justifyContent: "flex-end",
-            color: "black",
-          }}
-        >
-          Profile
-        </Box>
+        <div>
+          <Button
+            sx={{ backgroundColor: "white", color: "black", height: "56px" }}
+            onClick={handleOpen}
+          >
+            Profile
+          </Button>
+          <Menu
+            anchorEl={dropdown}
+            open={Boolean(dropdown)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={handleClose}>View Profile</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
+        </div>
       </Toolbar>
     </AppBar>
   );
