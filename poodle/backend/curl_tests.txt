@@ -25,4 +25,4 @@ curl -X POST   -H "Content-Type: application/json"   -H "Authorization: Bearer <
 # join course
 curl -X POST \
 -H "Authorization: Bearer <token>" \
-http://localhost:5000/courses/<course_id>/join
+http://localhost:5000/courses/<int:course_id>/invite  

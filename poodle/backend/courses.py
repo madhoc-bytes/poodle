@@ -21,9 +21,9 @@ def create(course_name, user_id):
 	
 def invite(user_id, course_id, student_email):
 
-	User = User.query().get(user_id).first()
+	user = User.query().get(user_id).first()
 
-	if not User.is_teacher:
+	if not user.is_teacher:
 		raise NotFound('User permission denied')
 	
 	course = Course.query().get(course_id)

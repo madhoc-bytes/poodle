@@ -25,13 +25,13 @@ class UserSchema(ma.SQLAlchemySchema):
 	
 class Course(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	course_name = db.Column(db.String(100), unique=True, nullable=False)
+	name = db.Column(db.String(100), unique=True, nullable=False)
 	creator = db.Column(db.Integer, nullable=False)
 	active_classes = db.Column(db.String(1000), nullable=True)
 
-	def __init__(self, name, creator_id):
+	def __init__(self, name, creator):
 		self.name = name
-		self.creator = creator_id
+		self.creator = creator
 		active_classes = str()
 
 class CourseSchema(ma.SQLAlchemySchema):

@@ -87,10 +87,10 @@ def add_user():
 		raise Unauthorized('Authorization token missing')
 	
 	user_id = validate.validate_token(token)
-	course_id = request.json['course_id']
+	course_id = request.json['course_id'] #TODO: change this to course name, cos that's what the front-end will pass back (they don't have access to course ids)
 	student_email = request.json['email']
 
-	return courses.invite(user_id, course_id, student_email) 
+	return courses.invite(user_id, course_id, student_email)  #TODO: so change id to course_name, and reflect those changes in courses.py
 
 @app.route('/courses/<int:course_id>/students', methods=['GET'])
 def all_students():
