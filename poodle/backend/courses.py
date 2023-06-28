@@ -8,10 +8,6 @@ from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import jwt
 
 def create(course_name, user_id):
-	existing_course = Course.query.filter_by(name=course_name).first()
-	if existing_course:
-		raise BadRequest('Course name already exists')
-	
 	user = User.query.get(user_id)
 
 	if not user.is_teacher:
@@ -26,19 +22,18 @@ def create(course_name, user_id):
 	
 def invite(user_id, course_id, student_email):
 	user = User.query.get(user_id)
+	student = User.query.filter_by(email=student_email).first()
+ 
+	if not student:
+		raise NotFound('Student not found')
 
 	if not user.is_teacher:
 		raise Unauthorized('User permission denied')
-	
-	student = User.query.filter_by(email=student_email).first()
 
 	if student.is_teacher:
 		raise BadRequest('Each course can only have one teacher')
 
 	student_id = student.id
-
-	if not student:
-		raise NotFound('Student not found')
 	
 	enrolment = Enrolment.query.filter_by(user_id=student_id, course_id = course_id).first()
 	
@@ -52,21 +47,22 @@ def invite(user_id, course_id, student_email):
 	return jsonify({'message': 'User enrolled in the course successfully'}), 200   
 
 def user_courses(user_id):
+	user = User.query.get(user_id)
 	course_list = []
 
 	# Return List of Classes for Teacher
-	if User.is_teacher:
-		
+	if user.is_teacher:	
 		courses = Course.query.filter_by(creator=user_id).all()
 
 		for course in courses:
-			course_list.append(course.name)
+			course_list.append({'name': course.name, 'id': course.id})
 
 	# Return List of Classes for Student
 	else:
-		course_enrolments = Course.query(Course).join(Enrolment).filter(Course.id == Enrolment.course_id).filter(Enrolment.user_id==user_id).all()
+		course_enrolments = db.session.query(Course).join(Enrolment, Course.id == Enrolment.course_id).filter(Enrolment.user_id == user_id).all()
+  
 		for course in course_enrolments:
-			course_list.append(course.name)
+			course_list.append({'name': course.name, 'id': course.id})
 
 	return jsonify(course_list), 200
 
@@ -81,7 +77,7 @@ def all_students(course_id):
 
 	for enrolment in enrolments:
 		student = User.query.get(enrolment.user_id)
-		student_info.append({'name': " ".join([student.first_name,student.last_name]), 'email': student.email})
+		student_info.append({'first_name': student.first_name, 'last_name': student.last_name, 'email': student.email})
 
 	return jsonify(student_info), 200
 

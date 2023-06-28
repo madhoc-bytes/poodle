@@ -24,8 +24,7 @@ const OnlineClass = () => {
 
   return (
         <div className='room-page'>
-            <p>{roomId}</p>
-            <button onClick={() => { console.log(roomId, courseId) }}>Press</button>
+            {/* <button onClick={() => { console.log(roomId, courseId) }}>Press</button> */}
             <div ref={myMeeting}/>
         </div>
   )

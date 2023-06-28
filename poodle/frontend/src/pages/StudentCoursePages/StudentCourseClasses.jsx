@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import { Button, Box, Typography, Toolbar, Card, CardContent } from '@mui/material'
 import NavBar from '../../components/NavBar'
 import { useParams } from 'react-router-dom'
@@ -8,7 +8,6 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    //   alignItems: 'center',
     padding: '20px'
   },
   card: {
@@ -24,11 +23,35 @@ const styles = {
 
 const StudentCourseClasses = () => {
   const courseId = useParams().courseId
-
-  const names = ['class1', 'class2', 'class3', 'class4']
+  const [activeClasses, setActiveClasses] = useState([])
+  const token = localStorage.getItem('token');
 
   const handleJoinClass = (name) => {
     window.open(`/OnlineClass/${courseId}/${name}`, '_blank')
+  }
+
+  useEffect(() => {
+    fetchClasses();
+  }, [])
+
+  const fetchClasses = async () => {
+    const response = await fetch(
+      new URL(`/courses/${courseId}/classes`, 'http://localhost:5000/'),
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    const data = await response.json()
+    if (data.error) {
+      console.log('ERROR')
+    }
+    else {
+      setActiveClasses(data)
+    }
   }
 
   return (
@@ -43,14 +66,15 @@ const StudentCourseClasses = () => {
         </Box>
 
         <Box sx={styles.container}>
-            {names.map((name, index) => (
-                <Card key={index} sx={styles.card}>
+
+            {activeClasses.map((activeClass) => (
+                <Card key={activeClass.id} sx={styles.card}>
                 <CardContent sx={styles.cardContent}>
-                    <Typography variant="h6">{name}</Typography>
+                    <Typography variant="h6">{activeClass.name}</Typography>
                     <Button
                     variant="contained"
-                    color="primary"
-                    onClick={() => handleJoinClass(name)}
+                    color="secondary"
+                    onClick={() => handleJoinClass(activeClass.id)}
                     >
                     Join
                     </Button>

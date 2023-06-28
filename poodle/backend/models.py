@@ -26,14 +26,13 @@ class UserSchema(ma.SQLAlchemySchema):
 	
 class Course(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(100), unique=True, nullable=False)
+	name = db.Column(db.String(100), unique=False, nullable=False)
 	creator = db.Column(db.Integer, nullable=False)
 	online_classes = relationship('OnlineClass', backref='course', cascade='all, delete-orphan')
 
 	def __init__(self, name, creator):
 		self.name = name
 		self.creator = creator
-		online_classes = "~"
 
 class CourseSchema(ma.SQLAlchemySchema):
 	class Meta:
@@ -51,7 +50,7 @@ class OnlineClass(db.Model):
 class OnlineClassSchema(ma.SQLAlchemySchema):
 	class Meta:
 		model = OnlineClass
-		fields = ('id', 'name','course_id')	
+		fields = ('id', 'name','course_id')
 
 class Enrolment(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)

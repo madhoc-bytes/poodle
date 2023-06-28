@@ -7,7 +7,8 @@ import {
   CardContent,
   Modal,
   TextField,
-  Button
+  Button,
+  Alert
 } from '@mui/material'
 import NavBar from '../components/NavBar'
 import { useNavigate } from 'react-router-dom'
@@ -17,18 +18,17 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    //   alignItems: 'center',
     padding: '20px'
   },
   card: {
     width: '150px',
     height: '150px',
-    margin: '5px'
+    margin: '5px',
   },
   cardContent: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   }
 }
 
@@ -39,45 +39,49 @@ const TeacherDashboard = () => {
   const [open, setOpen] = useState(false)
   const [courseName, setCourseName] = useState('')
   const [courses, setCourses] = useState([])
+  const [alert, setAlert] = React.useState(false)
+  const [alertContent, setAlertContent] = React.useState('')
 
-  useEffect(() => {
-    console.log(token);
-    fetchCourses();
-  }, [])
-
-  const handleOpen = () => setOpen(true)
+  const handleOpen = () => {
+    setOpen(true)
+    setAlert(false)
+  }
   const handleClose = () => setOpen(false)
   const handleInputChange = (event) => setCourseName(event.target.value)
   
-
   const handleSubmit = async () => {
-    const response = await fetch(
-      new URL('/courses', 'http://localhost:5000/'),
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ courseName })
+    let courseNames = courses.map(obj => obj.name)
+    if (!courseNames.includes(courseName)) {
+      const response = await fetch(
+        new URL('/courses/create', 'http://localhost:5000/'),
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ courseName })
+        }
+      )
+      const data = await response.json()
+      if (data.error) {
+        console.log('ERROR')
       }
-    )
-    const data = await response.json()
-    if (data.error) {
-      console.log('ERROR')
+      else {
+        fetchCourses();
+        setCourseName('');
+        handleClose();
+      }
     }
     else {
-      console.log(data);
+      setAlert(true);
+      setAlertContent('Please submit a unique course name')
     }
-
-    if (courseName) {
-      setCourses((prevCourses) => [...prevCourses, courseName])
-      setCourseName('')
-      handleClose()
-    }
-
-
   }
+
+  useEffect(() => {
+    fetchCourses();
+  }, [])
 
   const handleCardClick = (course) => {
     navigate(`/teacher/${course}/Participants`)
@@ -85,14 +89,13 @@ const TeacherDashboard = () => {
 
   const fetchCourses = async () => {
     const response = await fetch(
-      new URL('/dashboard', 'http://localhost:5000/'),
+      new URL('/dashboard/course-list', 'http://localhost:5000/'),
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        // body: JSON.stringify({ 'email': localStorage.getItem('email') })
       }
     )
     const data = await response.json()
@@ -100,7 +103,7 @@ const TeacherDashboard = () => {
       console.log('ERROR')
     }
     else {
-      console.log(data);
+      setCourses(data);
     }
   }
 
@@ -132,6 +135,7 @@ const TeacherDashboard = () => {
       <Button variant="contained" color="primary" onClick={handleSubmit}>
         Submit
       </Button>
+      {alert ? <><br /><Alert severity="error">{alertContent}</Alert></> : <></>}
     </Box>
   )
 
@@ -145,15 +149,17 @@ const TeacherDashboard = () => {
         <Box
           sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}
         >
-          {courses.map((course, index) => (
+          {courses.map((course) => (
             <Card
-              key={index}
+              key={course.id}
               sx={styles.card}
-              onClick={() => handleCardClick(course)}
+              onClick={() => handleCardClick(course.id)}
             >
-              <CardContent sx={styles.cardContent}>
-                <Typography variant="h5" component="div">
-                  {course}
+              <CardContent sx={{
+                wordWrap: 'break-word',
+              }}>
+                <Typography variant="h7" component="div">
+                  <strong>{course.name}</strong>
                 </Typography>
               </CardContent>
             </Card>
@@ -162,12 +168,12 @@ const TeacherDashboard = () => {
             sx={{
               height: '150px',
               width: '150px',
-              m: 1,
+              margin: '5px',
               justifyContent: 'center',
               display: 'flex',
               alignItems: 'center',
-              border: '2px solid rgb(156,39,176)'
-              
+              border: '2px solid rgb(156,39,176)',
+              boxSizing: 'border-box',
             }}
             onClick={handleOpen}
           >

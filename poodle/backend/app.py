@@ -96,7 +96,7 @@ def create_course():
 		raise Unauthorized('Authorization token missing')
 	
 	user_id = v.validate_token(token)
-	course_name = request.json['course_name']
+	course_name = request.json['courseName']
 	
 	return courses.create(course_name, user_id)
 
@@ -125,7 +125,7 @@ def create_class(course_id):
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	v.validate_token(token)
-	class_name = request.json['class_name']
+	class_name = request.json['className']
 
 	return courses.create_class(course_id, class_name) 
 

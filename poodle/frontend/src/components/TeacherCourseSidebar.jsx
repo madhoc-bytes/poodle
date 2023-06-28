@@ -37,7 +37,7 @@ const TeacherCourseSidebar = () => {
         }
       }}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', height: '100%' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginTop: '56px' }}>
         <List>
           {itemsList.map((item, index) => (
             <ListItem button key={index} selected={selected === item} onClick={() => handleListItemClick(item)}>
