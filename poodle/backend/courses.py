@@ -19,29 +19,29 @@ def create(course_name, user_id):
 
 	return jsonify({'message': 'Course created successfully', 'course_id': new_course.id}), 201
 	
-def invite(user_id, course_id, student_email):
+def invite(user_id, course_name, student_email):
 
-	user = User.query().get(user_id).first()
+	user = User.query.get(user_id).first()
+	course = User.query.filter_by(name=course_name).first()
 
 	if not user.is_teacher:
 		raise NotFound('User permission denied')
 	
-	course = Course.query().get(course_id)
 	if not course:
 		raise NotFound('Course not found')
 	
-	student = User.query().filter_by(email=student_email).first()
+	student = User.query.filter_by(email=student_email).first()
 	student_id = student.user_id
 
 	if not student:
 		raise NotFound('Student not found')
 	
-	enrolment = Enrolment.query.filter_by(user_id=student_id, course_id = course_id).first()
+	enrolment = Enrolment.query.filter_by(user_id=student_id, course_id = course.id).first()
 	
 	if enrolment:
 		raise BadRequest('Student is already enrolled in the course')
 	
-	new_enrolment = Enrolment(user_id=student_id, course_id=course_id)
+	new_enrolment = Enrolment(user_id=student_id, course_id=course.id)
 	db.session.add(new_enrolment)
 	db.session.commit()
 
@@ -49,7 +49,7 @@ def invite(user_id, course_id, student_email):
 
 def fetch_courses(email):
 
-	User = User.query().filter_by(email=email).first()
+	User = User.query.filter_by(email=email).first()
 	user_id = User.id
 
 	course_list = []
@@ -57,7 +57,7 @@ def fetch_courses(email):
 	# Return List of Classes for Teacher
 	if User.is_teacher:
 		
-		courses = Course.query().filter_by(creator=user_id).all()
+		courses = Course.query.filter_by(creator=user_id).all()
 
 		for course in courses:
 			course_list.append(course.course_name)
@@ -86,9 +86,9 @@ def all_students(course_id):
 
 	return jsonify(student_info)  
 
-def create_class(course_id, class_name):
+def create_class(course_name, class_name):
 
-	course = Course.query.get(course_id)
+	course = Course.query.filter_by(name=course_name).first()
 	if not course:
 		raise NotFound('Course not found')	
 	
@@ -102,9 +102,9 @@ def create_class(course_id, class_name):
 
 	return jsonify({'message': 'Class successfully created'}), 200   
 
-def all_classes(course_id):
+def all_classes(course_name):
 
-	course = Course.query.get(course_id)
+	course = Course.query.filter_by(name=course_name).first()
 	if not course:
 		raise NotFound('Course not found')	
 	

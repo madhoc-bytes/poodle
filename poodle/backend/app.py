@@ -87,10 +87,10 @@ def add_user():
 		raise Unauthorized('Authorization token missing')
 	
 	user_id = validate.validate_token(token)
-	course_id = request.json['course_id'] #TODO: change this to course name, cos that's what the front-end will pass back (they don't have access to course ids)
+	course_name = request.json['course_name'] 
 	student_email = request.json['email']
 
-	return courses.invite(user_id, course_id, student_email)  #TODO: so change id to course_name, and reflect those changes in courses.py
+	return courses.invite(user_id, course_name, student_email) 
 
 @app.route('/courses/<int:course_id>/students', methods=['GET'])
 def all_students():
@@ -110,10 +110,10 @@ def create_class():
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	
-	course_id = request.json['course_id']
+	course_name = request.json['course_name']
 	class_name = request.json['class_name']
 
-	return courses.create_class(course_id, class_name) 
+	return courses.create_class(course_name, class_name) 
 
 @app.route('/courses/<int:course_id>/', methods=['GET'])
 def all_classes():
@@ -122,9 +122,9 @@ def all_classes():
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	
-	course_id = request.json['course_id']
+	course_name = request.json['course_name']
 
-	return courses.all_classes(course_id) 
+	return courses.all_classes(course_name) 
 
 if __name__ == '__main__':
 	app.run(debug=True)

@@ -22,7 +22,113 @@ curl -X POST \
 # create course
 curl -X POST   -H "Content-Type: application/json"   -H "Authorization: Bearer <insert token here>"   -d '{"name": "Mathematics"}'   http://localhost:5000/courses
 
-# join course
+# create course
+curl -X POST   -H "Content-Type: application/json"   -H "Authorization: Bearer <insert token here>"   -d '{"name": "English"}'   http://localhost:5000/courses
+
+# logout
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer <insert token here>" http://localhost:5000/logout
+
+# rego
 curl -X POST \
--H "Authorization: Bearer <token>" \
-http://localhost:5000/courses/<int:course_id>/invite  
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "jane@example.com",
+    "password": "password123",
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "is_teacher": false
+  }' \
+  http://localhost:5000/register
+
+
+# login
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "jane@example.com",
+    "password": "password123"
+  }' \
+  http://localhost:5000/login
+
+# logout
+\curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer <insert token here>" http://localhost:5000/logout
+
+
+# login
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "password123"
+  }' \
+  http://localhost:5000/login
+
+
+# invite
+curl -X POST \
+  -H "Content-Type: application/json" "Authorization: Bearer <insert token here>" \
+  -d '{
+    "course_name": "Mathematics",
+    "email": "jane@example.com"
+  }' \
+  http://localhost:5000/courses/1/invite
+
+curl -X POST \
+  -H "Content-Type: application/json" "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" \
+  -d '{
+    "course_name": "Mathematics",
+    "email": "jane@example.com"
+  }' \
+  http://localhost:5000/courses/invite
+
+# invite
+curl -X POST \
+  -H "Content-Type: application/json" "Authorization: Bearer <insert token here>" \
+  -d '{
+    "course_name": "English",
+    "email": "jane@example.com"
+  }' \
+  http://localhost:5000/courses/invite
+
+# fetch courses
+curl -X GET \
+  -H "Content-Type: application/json" "Authorization: Bearer <insert token here>" \
+  -d '{
+    "email": "jane@example.com"
+  }' \
+  http://localhost:5000/dashboard
+
+# fetch courses
+curl -X GET \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE2ODc5MjQ4NTl9.UUyQ2aIIhg2KaQc13FyCaqsYwlt_EkSyaVU3jaZfmvE" \
+  -d '{
+    "email": "john@example.com"
+  }' \
+  http://localhost:5000/dashboard
+
+# add class
+curl -X POST \
+  -H "Content-Type: application/json" "Authorization: Bearer <insert token here>" \
+  -d '{
+    "course_name": "Mathematics",
+	"class_name": "Pandy"
+  }' \
+  http://localhost:5000/courses/<int:course_id>
+
+# add class
+curl -X POST \
+  -H "Content-Type: application/json" "Authorization: Bearer <insert token here>" \
+  -d '{
+    "course_name": "Mathematics",
+	"class_name": "Mechy"
+  }' \
+  http://localhost:5000/courses/<int:course_id>
+
+  # fetch classes
+curl -X GET \
+  -H "Content-Type: application/json" "Authorization: Bearer <insert token here>" \
+  -d '{
+    "course_name": "Mathematics"
+  }' \
+  http://localhost:5000/courses/<int:course_id>
