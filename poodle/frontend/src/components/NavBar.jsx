@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   AppBar,
   Toolbar,
@@ -7,10 +7,47 @@ import {
   Button,
   MenuItem
 } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const NavBar = () => {
   const navigate = useNavigate()
+
+  const {courseId} = useParams();
+
+  const token = localStorage.getItem('token')
+
+  const [courseName, setCourseName] = useState('')
+
+  useEffect(() => {
+    fetchCourseName();
+  }, [])
+
+  const fetchCourseName = async () => {
+    if (!courseId) {
+      setCourseName("Dashboard")
+      return
+    }
+    
+    const response = await fetch(
+      new URL(`/courses/${courseId}/name`, 'http://localhost:5000'),
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    const data = await response.json()
+    if (data.error) {
+      console.log('ERROR')
+    }
+    else {
+      setCourseName(data.course_id);
+    }
+  }
+
+
 
   const [dropdown, setDropdown] = useState(null)
 
@@ -38,6 +75,15 @@ const NavBar = () => {
         >
           Poodle
         </Typography>
+
+        <Typography
+          variant="h4"
+          component="div"
+          sx={{ flexGrow: 1, color: 'black'}}
+        >
+          {courseName}
+        </Typography>
+
         <div>
           <Button
             sx={{ backgroundColor: 'white', color: 'black', height: '56px' }}

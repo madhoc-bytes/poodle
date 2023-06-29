@@ -8,7 +8,8 @@ import {
   Modal,
   TextField,
   Button,
-  Alert
+  Alert,
+  Toolbar
 } from '@mui/material'
 import NavBar from '../components/NavBar'
 import { useNavigate } from 'react-router-dom'
@@ -143,6 +144,7 @@ const TeacherDashboard = () => {
     <>
       <NavBar />
       <Container maxWidth="sm">
+        <Toolbar />
         <Typography variant="h3" component="h1" align="center" gutterBottom>
           Courses
         </Typography>

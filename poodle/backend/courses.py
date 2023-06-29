@@ -19,7 +19,11 @@ def create(course_name, user_id):
 	db.session.commit()
 
 	return jsonify({'message': 'Course created successfully', 'course_id': new_course.id}), 201
-	
+
+def id_to_name(course_id):
+	course = Course.query.get(course_id)
+	return jsonify({'course_id': course.name}), 200
+
 def invite(user_id, course_id, student_email):
 	user = User.query.get(user_id)
 	student = User.query.filter_by(email=student_email).first()
@@ -90,7 +94,7 @@ def create_class(course_id, class_name):
 	db.session.add(new_class)
 	db.session.commit()
 
-	return jsonify({'message': 'Class successfully created'}), 200   
+	return jsonify({'message': 'Class successfully created', 'class_id': new_class.id}), 200   
 
 def all_classes(course_id):
 	# Check if the course exists
