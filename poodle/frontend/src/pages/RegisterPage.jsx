@@ -22,7 +22,7 @@ const RegisterPage = () => {
     password: '',
     confirmPassword: ''
   })
-  const [alert, setAlert] = React.useState(false)
+  const [alertError, setAlert] = React.useState(false)
   const [alertContent, setAlertContent] = React.useState('')
 
   const handleInputChange = (e) => {
@@ -88,6 +88,7 @@ const RegisterPage = () => {
       } else {
         console.log('Success')
         navigate('/login')
+        alert('Successfully registered an account')
       }
     }
   }
@@ -228,7 +229,7 @@ const RegisterPage = () => {
             Login now
           </Link>
         </Typography>
-        {alert ? <Alert severity="error">{alertContent}</Alert> : <></>}
+        {alertError ? <Alert severity="error">{alertContent}</Alert> : <></>}
       </Box>
     </Box>
   )
