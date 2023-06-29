@@ -1,63 +1,142 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
+import auth
+import courses
+import validate as v
 
+# init app
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-
-    def __repr__(self):
-        return f'<User {self.email}>'
-
-
-class UserSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = User
-
-    id = ma.auto_field()
-    email = ma.auto_field()
-
-user_schema = UserSchema()
-
+# init db
+from models import User, UserSchema, Course, db, ma # DON'T MOVE THIS LINE
+db.init_app(app)
+ma.init_app(app)
 with app.app_context():
-    db.create_all()
+	db.create_all()
 
-@app.route('/api/register', methods=['POST'])
+# Error Handling
+@app.errorhandler(BadRequest)
+def handle_bad_request(e):
+	response = jsonify({'message': 'Bad request', 'error': str(e)})
+	response.status_code = e.code
+	return response
+
+@app.errorhandler(Unauthorized)
+def handle_unauthorized(e):
+	response = jsonify({'message': 'Unauthorized', 'error': str(e)})
+	response.status_code = e.code
+	return response
+
+@app.errorhandler(NotFound)
+def handle_not_found(e):
+	response = jsonify({'message': 'Not found', 'error': str(e)})
+	response.status_code = e.code
+	return response
+
+# app decorators
+
+'''
+headers: Authorization: Bearer <token>
+data:
+{
+  "email": "teacher1@example.com",
+  "first_name": "John",
+  "id": 3,
+  "is_teacher": true,
+  "last_name": "Doe"
+},
+
+return:
+{
+  "email": "teacher1@example.com",
+  "first_name": "John",
+  "id": 3,
+  "is_teacher": true,
+  "last_name": "Doe"
+}, <status>
+'''
+
+# returns
+@app.route('/register', methods=['POST'])
 def register():
-    email = request.json['email']
-    password = request.json['password']
+    first_name, last_name = request.json['firstName'], request.json['lastName']
+    email, password = request.json['email'], request.json['password'] 
+    is_teacher = request.json['isTeacher']  
+    return auth.register(email, password, first_name, last_name, is_teacher)
 
-    if User.query.filter_by(email=email).first():
-        return jsonify(message='Email already exists'), 409
-
-    new_user = User(email=email, password=password)
-    db.session.add(new_user)
-    db.session.commit()
-
-    return user_schema.jsonify(new_user)
-
-
-@app.route('/api/login', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def login():
-    email = request.json['email']
-    password = request.json['password']
+	email, password = request.json['email'], request.json['password']
+	return auth.login(email, password)
 
-    user = User.query.filter_by(email=email).first()
+@app.route('/logout', methods=['POST'])
+def logout():
+	token = request.headers.get('Authorization')
+	return auth.logout(token)
 
-    if not user or user.password != password:
-        return jsonify(message='Invalid email or password'), 401
+@app.route('/dashboard/course-list', methods=['GET'])
+def user_courses():
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	user_id = v.validate_token(token)	
+	return courses.user_courses(user_id)
 
-    # Perform additional login actions if needed
+@app.route('/courses/create', methods=['POST'])
+def create_course():
+	token = request.headers.get('Authorization')
 
-    return jsonify(message='Login successful')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	
+	user_id = v.validate_token(token)
+	course_name = request.json['courseName']
+	
+	return courses.create(course_name, user_id)
 
+@app.route('/courses/<int:course_id>/invite', methods=['POST'])
+def add_user(course_id):
+	token = request.headers.get('Authorization')	
+	if not token:
+		raise Unauthorized('Authorization token missing')	
+	user_id = v.validate_token(token)
+	student_email = request.json['email']
+
+	return courses.invite(user_id, course_id, student_email) 
+
+@app.route('/courses/<int:course_id>/students', methods=['GET'])
+def all_students(course_id):
+	token = request.headers.get('Authorization') 	
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+
+	return courses.all_students(course_id) 
+
+@app.route('/courses/<int:course_id>/create-class', methods=['POST'])
+def create_class(course_id):
+	token = request.headers.get('Authorization')	
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+	class_name = request.json['className']
+
+	return courses.create_class(course_id, class_name) 
+
+@app.route('/courses/<int:course_id>/classes', methods=['GET'])
+def course_classes(course_id):
+	token = request.headers.get('Authorization')	
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+	
+	return courses.all_classes(course_id) 
 
 if __name__ == '__main__':
     app.run(debug=True)
