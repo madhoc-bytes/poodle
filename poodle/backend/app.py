@@ -88,6 +88,15 @@ def user_courses():
 	user_id = v.validate_token(token)	
 	return courses.user_courses(user_id)
 
+@app.route('/courses/<int:course_id>/name', methods=['GET'])
+def get_course_name(course_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+
+	return courses.id_to_name(course_id)
+
 @app.route('/courses/create', methods=['POST'])
 def create_course():
 	token = request.headers.get('Authorization')

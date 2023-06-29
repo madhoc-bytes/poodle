@@ -77,11 +77,14 @@ const TeacherCourseClasses = () => {
     }
     else {
       console.log(data)
+      window.open(`/OnlineClass/${courseId}/${data.class_id}`, '_blank')
     }
     console.log('start class')
-
-    window.open(`/OnlineClass/${courseId}/${className}`, '_blank')
-
+    
+    // Make a fetch to get the classId from class name
+      
+    
+    
     setClassName('')
     fetchClasses()
   }
