@@ -10,6 +10,9 @@ import TeacherCourseClasses from './pages/TeacherCoursePages/TeacherCourseClasse
 import OnlineClass from './pages/OnlineClass'
 import StudentCourseParticipants from './pages/StudentCoursePages/StudentCourseParticipants'
 import StudentCourseClasses from './pages/StudentCoursePages/StudentCourseClasses'
+import TeacherCourseContent from './pages/TeacherCoursePages/TeacherCourseContent'
+import TeacherCourseAssignments from './pages/TeacherCoursePages/TeacherCourseAssignments'
+import StudentCourseAssignments from './pages/StudentCoursePages/StudentCourseAssignments'
 
 function App () {
   return (
@@ -23,20 +26,20 @@ function App () {
 
         {/* Teacher Course pages */}
         <Route path="/teacher/:courseId/Participants" element={<TeacherCourseParticipants />} />
-        <Route path="/teacher/:courseId/Content" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Content" element={<TeacherCourseContent />} />
         <Route path="/teacher/:courseId/Classes" element={<TeacherCourseClasses />} />
 
         <Route path="/teacher/:courseId/Quizzes" element={<TeacherCourseParticipants />} />
-        <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseAssignments />} />
         <Route path="/teacher/:courseId/Forums" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Leaderboards" element={<TeacherCourseParticipants />} />
 
         {/* Student Course Pages */}
         <Route path="/student/:courseId/Participants" element={<StudentCourseParticipants />} />
         <Route path="/student/:courseId/Classes" element={<StudentCourseClasses />} />
+        <Route path="/student/:courseId/Assignments" element={<StudentCourseAssignments />} />
 
         <Route path="/OnlineClass/:courseId/:roomId" element={<OnlineClass />} />
-
       </Routes>
     </BrowserRouter>
 
