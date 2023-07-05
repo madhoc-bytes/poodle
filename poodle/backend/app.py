@@ -63,27 +63,20 @@ def logout():
 # COURSES: BASICS
 @app.route('/dashboard/course-list', methods=['GET'])
 def user_courses():
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
+	token = get_token(request)
 	user_id = v.validate_token(token)	
 	return courses.user_courses(user_id)
 
 @app.route('/courses/<int:course_id>/name', methods=['GET'])
 def get_course_name(course_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
+	token = get_token(request)
 	v.validate_token(token)
 
 	return courses.id_to_name(course_id)
 
 @app.route('/courses/create', methods=['POST'])
 def create_course():
-	token = request.headers.get('Authorization')
-
-	if not token:
-		raise Unauthorized('Authorization token missing')
+	token = get_token(request)
 	
 	user_id = v.validate_token(token)
 	course_name = request.json['courseName']
@@ -92,9 +85,7 @@ def create_course():
 
 @app.route('/courses/<int:course_id>/invite', methods=['POST'])
 def add_user(course_id):
-	token = request.headers.get('Authorization')	
-	if not token:
-		raise Unauthorized('Authorization token missing')	
+	token = get_token(request)
 	user_id = v.validate_token(token)
 	student_email = request.json['email']
 
@@ -102,9 +93,7 @@ def add_user(course_id):
 
 @app.route('/courses/<int:course_id>/students', methods=['GET'])
 def all_students(course_id):
-	token = request.headers.get('Authorization') 	
-	if not token:
-		raise Unauthorized('Authorization token missing')
+	token = get_token(request)
 	v.validate_token(token)
 
 	return courses.all_students(course_id) 
@@ -112,9 +101,7 @@ def all_students(course_id):
 # COURSES: ONLINE CLASSES
 @app.route('/courses/<int:course_id>/create-class', methods=['POST'])
 def create_class(course_id):
-	token = request.headers.get('Authorization')	
-	if not token:
-		raise Unauthorized('Authorization token missing')
+	token = get_token(request)
 	v.validate_token(token)
 	class_name = request.json['className']
 
@@ -122,9 +109,7 @@ def create_class(course_id):
 
 @app.route('/courses/<int:course_id>/classes', methods=['GET'])
 def course_classes(course_id):
-	token = request.headers.get('Authorization')	
-	if not token:
-		raise Unauthorized('Authorization token missing')
+	token = get_token(request)
 	v.validate_token(token)
 	
 	return classes.getAll(course_id)
@@ -132,18 +117,20 @@ def course_classes(course_id):
 # COURSES: CONTENT
 @app.route('/courses/<int:course_id>/create-folder', methods=['POST'])
 def create_folder(course_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	
+	token = get_token(request)	
 	user_id = v.validate_token(token)
+	
 	folder_name = request.json['folderName']
 	return content.create_folder(folder_name, user_id, course_id)
-    
 
 
 # HELPERS
-#TODO: create a getToken helper
+def get_token(request):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	else:
+		return token
 
 if __name__ == '__main__':
     app.run(debug=True)
