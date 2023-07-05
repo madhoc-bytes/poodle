@@ -40,28 +40,6 @@ def handle_not_found(e):
 	return response
 
 # app decorators
-
-'''
-headers: Authorization: Bearer <token>
-data:
-{
-  "email": "teacher1@example.com",
-  "first_name": "John",
-  "id": 3,
-  "is_teacher": true,
-  "last_name": "Doe"
-},
-
-return:
-{
-  "email": "teacher1@example.com",
-  "first_name": "John",
-  "id": 3,
-  "is_teacher": true,
-  "last_name": "Doe"
-}, <status>
-'''
-
 # returns
 @app.route('/register', methods=['POST'])
 def register():

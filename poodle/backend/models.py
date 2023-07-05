@@ -5,6 +5,18 @@ from sqlalchemy.orm import relationship
 db = SQLAlchemy()
 ma = Marshmallow()
 
+
+'''
+Schemas to define for making queries: 
+
+course_schema = CourseSchema()
+courses_schema = CourseSchema(many=True)
+folder_schema = FolderSchema()
+folders_schema = FolderSchema(many=True)
+file_schema = FileSchema()
+files_schema = FileSchema(many=True)
+'''
+
 class User(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	first_name = db.Column(db.String(50), nullable=False)
@@ -35,8 +47,68 @@ class Course(db.Model):
 		self.creator = creator
 
 class CourseSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Course
+
+    id = ma.auto_field()
+    name = ma.auto_field()
+    creator = ma.auto_field()
+    folders = ma.Nested('FolderSchema', many=True)
+
+
+class Enrolment(db.Model):
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), primary_key=True)
+	
+	def __init__(self, user_id, course_id):
+		self.user_id = user_id
+		self.course_id = course_id
+
+class EnrolmentSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('id', 'course_name', 'creator', 'online_classes')
+		fields = ('user_id', 'course_id')
+
+class Folder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    name = db.Column(db.String(100), unique=False, nullable=False)
+    date_created = db.Column(db.Date, nullable=False)
+    files = relationship('File', backref='folder', cascade='all, delete-orphan')
+
+    def __init__(self, course_id, name, date_created):
+        self.course_id = course_id
+        self.name = name
+        self.date_created = date_created
+
+class FolderSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Folder
+
+    id = ma.auto_field()
+    name = ma.auto_field()
+    date_created = ma.auto_field()
+    files = ma.Nested('FileSchema', many=True)
+
+class File(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'), nullable=False)
+    name = db.Column(db.String(100), unique=False, nullable=False)
+    date_created = db.Column(db.Date, nullable=False)
+    file_path = db.Column(db.String(255), unique=False, nullable=False)
+
+    def __init__(self, folder_id, name, date_created, file_path):
+        self.folder_id = folder_id
+        self.name = name
+        self.date_created = date_created
+        self.file_path = file_path
+	
+class FileSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = File
+    id = ma.auto_field()
+    name = ma.auto_field()
+    date_created = ma.auto_field()
+    file_path = ma.auto_field()
 
 class OnlineClass(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -52,15 +124,5 @@ class OnlineClassSchema(ma.SQLAlchemySchema):
 		model = OnlineClass
 		fields = ('id', 'name','course_id')
 
-class Enrolment(db.Model):
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), primary_key=True)
-	
-	def __init__(self, user_id, course_id):
-		self.user_id = user_id
-		self.course_id = course_id
 
-class EnrolmentSchema(ma.SQLAlchemySchema):
-	class Meta:
-		fields = ('user_id', 'course_id')
 	
