@@ -45,10 +45,10 @@ def handle_not_found(e):
 # AUTH
 @app.route('/register', methods=['POST'])
 def register():
-    first_name, last_name = request.json['firstName'], request.json['lastName']
-    email, password = request.json['email'], request.json['password'] 
-    is_teacher = request.json['isTeacher']  
-    return auth.register(email, password, first_name, last_name, is_teacher)
+	first_name, last_name = request.json['firstName'], request.json['lastName']
+	email, password = request.json['email'], request.json['password'] 
+	is_teacher = request.json['isTeacher']  
+	return auth.register(email, password, first_name, last_name, is_teacher)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -123,6 +123,24 @@ def create_folder(course_id):
 	folder_name = request.json['folderName']
 	return content.create_folder(folder_name, user_id, course_id)
 
+@app.route('/courses/<int:folder_id>/create-file', methods=['POST'])
+def upload_file(folder_id):
+	token = get_token(request)	
+	user_id = v.validate_token(token)
+
+	file = request.files['file']
+	file_name = file.filename
+	data = file.read()
+
+	return content.create_file(file_name, user_id, folder_id, data)
+
+# App Route
+@app.route('/course/<int:course_id>', methods=['GET'])
+def get_course_content(course_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return content.get_course_content(user_id, course_id)
 
 # HELPERS
 def get_token(request):
@@ -133,4 +151,4 @@ def get_token(request):
 		return token
 
 if __name__ == '__main__':
-    app.run(debug=True)
+	app.run(debug=True)

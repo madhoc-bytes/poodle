@@ -26,6 +26,10 @@ def id_to_name(course_id):
 	return jsonify({'course_id': course.name}), 200
 
 def invite(user_id, course_id, student_email):
+	course = Course.query.get(course_id)
+	if not course:
+		raise NotFound('Course not found')
+	
 	user = User.query.get(user_id)
 	student = User.query.filter_by(email=student_email).first()
  

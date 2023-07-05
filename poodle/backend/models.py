@@ -90,36 +90,54 @@ class OnlineClass(db.Model):
 	def __init__(self, name, course_id):
 		self.course_id = course_id
 		self.name = name
+class FileSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = File
 
-class CourseSchema(ma.SQLAlchemySchema):
+class FolderSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Folder
+        include_relationships = True
+
+    files = ma.Nested(FileSchema, many=True)
+
+class CourseSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Course
-        fields = ('id', 'name', 'creator', 'online_classes')
+        include_relationships = True
 
-    folders = ma.Nested('FolderSchema', many=True)
+    folders = ma.Nested(FolderSchema, many=True)
+# class CourseSchema(ma.SQLAlchemySchema):
+#     class Meta:
+#         model = Course
+#         include_relationships = True
+#         fields = ('id', 'name', 'creator', 'online_classes', "folders")
+
+#     folders = ma.Nested('FolderSchema', many=True)
+
+# class FolderSchema(ma.SQLAlchemySchema):
+#     class Meta:
+#         model = Folder
+
+#     id = ma.auto_field()
+#     name = ma.auto_field()
+#     date_created = ma.auto_field()
+#     files = ma.Nested('FileSchema', many=True)
+
+# class FileSchema(ma.SQLAlchemySchema):
+#     class Meta:
+#         model = File
+
+#     id = ma.auto_field()
+#     name = ma.auto_field()
+#     date_created = ma.auto_field()
+#     data = ma.auto_field()
 
 class EnrolmentSchema(ma.SQLAlchemySchema):
     class Meta:
         model = Enrolment
         fields = ('user_id', 'course_id')
 	
-class FolderSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = Folder
-
-    id = ma.auto_field()
-    name = ma.auto_field()
-    date_created = ma.auto_field()
-    files = ma.Nested('FileSchema', many=True)
-
-class FileSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = File
-
-    id = ma.auto_field()
-    name = ma.auto_field()
-    date_created = ma.auto_field()
-    data = ma.auto_field()
 
 class OnlineClassSchema(ma.SQLAlchemySchema):
 	class Meta:

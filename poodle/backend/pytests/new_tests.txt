@@ -2,7 +2,7 @@
 BASE_URL="http://localhost:5000"
 
 # TOKEN
-AUTH_TOKEN="Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODg1MzE5MDJ9.W-C-Hl0jfYiMdet_sa5Q_acIP11ERoCcQPhucms4uig"  # Replace with a valid authorization token
+AUTH_TOKEN="Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODg1Mzg5NjR9.UEH_DPBIDhtWNvl43HL6XlI1Pm0thLlbiEuC1P37tDY"  # Replace with a valid authorization token
 
 #rego teacher
 FIRST_NAME="John"
@@ -51,7 +51,7 @@ curl -X POST \
   }' \
   $BASE_URL/login
 
-
+AUTH_TOKEN="Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODg1NDA4ODB9.uJe3Tx8-ku4aMERMMCNhg5e6boopRGgW6yDjbjrU_mU"  # Replace with a valid authorization token
 
 # course list
 curl -X GET \
@@ -117,6 +117,15 @@ curl -X POST \
     "folderName": "'"$FOLDER_NAME"'"
   }' \
   $BASE_URL/courses/$COURSE_ID/create-folder
+
+
+# get content
+COURSE_ID=1  # Replace with the desired course ID
+
+curl -X GET \
+  -H "Authorization: $AUTH_TOKEN" \
+  $BASE_URL/course/$COURSE_ID
+
 
 
 
