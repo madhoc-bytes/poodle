@@ -1,0 +1,123 @@
+# set url
+BASE_URL="http://localhost:5000"
+
+# TOKEN
+AUTH_TOKEN="Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODg1MzE5MDJ9.W-C-Hl0jfYiMdet_sa5Q_acIP11ERoCcQPhucms4uig"  # Replace with a valid authorization token
+
+#rego teacher
+FIRST_NAME="John"
+LAST_NAME="Doe"
+EMAIL="john.doe@example.com"
+PASSWORD="password123"
+IS_TEACHER=true  # Set to "true" if the user is a teacher
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "'"$FIRST_NAME"'",
+    "lastName": "'"$LAST_NAME"'",
+    "email": "'"$EMAIL"'",
+    "password": "'"$PASSWORD"'",
+    "isTeacher": '$IS_TEACHER'
+  }' \
+  http://localhost:5000/register
+
+# REgo student
+FIRST_NAME="Jane"
+LAST_NAME="Doe"
+EMAIL="student@example.com"
+PASSWORD="password123"
+IS_TEACHER=false
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "'"$FIRST_NAME"'",
+    "lastName": "'"$LAST_NAME"'",
+    "email": "'"$EMAIL"'",
+    "password": "'"$PASSWORD"'",
+    "isTeacher": '$IS_TEACHER'
+  }' \
+  http://localhost:5000/register
+
+# Login
+EMAIL="john.doe@example.com"
+PASSWORD="password123"
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "'"$EMAIL"'",
+    "password": "'"$PASSWORD"'"
+  }' \
+  $BASE_URL/login
+
+
+
+# course list
+curl -X GET \
+  -H "Authorization: $AUTH_TOKEN" \
+  $BASE_URL/dashboard/course-list
+
+# create course
+COURSE_NAME="My Course"
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "courseName": "'"$COURSE_NAME"'"
+  }' \
+  $BASE_URL/courses/create
+
+# add student to course
+COURSE_ID=1  
+STUDENT_EMAIL="student@example.com"  
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "'"$STUDENT_EMAIL"'"
+  }' \
+  $BASE_URL/courses/$COURSE_ID/invite
+
+# see course students
+COURSE_ID=1  # Replace with the desired course ID
+
+curl -X GET \
+  -H "Authorization: $AUTH_TOKEN" \
+  $BASE_URL/courses/$COURSE_ID/students
+
+#new online class
+COURSE_ID=1  # Replace with the desired course ID
+CLASS_NAME="Class 1"  # Replace with the desired class name
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "className": "'"$CLASS_NAME"'"
+  }' \
+  $BASE_URL/courses/$COURSE_ID/create-class
+
+# see online classes of a course
+COURSE_ID=1  # Replace with the desired course ID
+
+curl -X GET \
+  -H "Authorization: $AUTH_TOKEN" \
+  $BASE_URL/courses/$COURSE_ID/classes
+
+# create folder
+COURSE_ID=1  # Replace with the desired course ID
+FOLDER_NAME="My Folder"  # Replace with the desired folder name
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "folderName": "'"$FOLDER_NAME"'"
+  }' \
+  $BASE_URL/courses/$COURSE_ID/create-folder
+
+
+
+

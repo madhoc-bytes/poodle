@@ -42,20 +42,11 @@ class Course(db.Model):
 	name = db.Column(db.String(100), unique=False, nullable=False)
 	creator = db.Column(db.Integer, nullable=False)
 	online_classes = relationship('OnlineClass', backref='course', cascade='all, delete-orphan')
+	folders = relationship('Folder', backref='course', cascade='all, delete-orphan')
 
 	def __init__(self, name, creator):
 		self.name = name
 		self.creator = creator
-
-class CourseSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = Course
-
-    id = ma.auto_field()
-    name = ma.auto_field()
-    creator = ma.auto_field()
-    folders = ma.Nested('FolderSchema', many=True)
-
 
 class Enrolment(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -64,10 +55,6 @@ class Enrolment(db.Model):
 	def __init__(self, user_id, course_id):
 		self.user_id = user_id
 		self.course_id = course_id
-
-class EnrolmentSchema(ma.SQLAlchemySchema):
-	class Meta:
-		fields = ('user_id', 'course_id')
 
 class Folder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -81,14 +68,6 @@ class Folder(db.Model):
         self.name = name
         self.date_created = date_created
 
-class FolderSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = Folder
-
-    id = ma.auto_field()
-    name = ma.auto_field()
-    date_created = ma.auto_field()
-    files = ma.Nested('FileSchema', many=True)
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -103,6 +82,35 @@ class File(db.Model):
         self.date_created = date_created
         self.data = data
 
+class OnlineClass(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String(100), unique=True, nullable=False)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+	
+	def __init__(self, name, course_id):
+		self.course_id = course_id
+		self.name = name
+
+class CourseSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Course
+        fields = ('id', 'name', 'creator', 'online_classes')
+
+    folders = ma.Nested('FolderSchema', many=True)
+
+class EnrolmentSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Enrolment
+        fields = ('user_id', 'course_id')
+	
+class FolderSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Folder
+
+    id = ma.auto_field()
+    name = ma.auto_field()
+    date_created = ma.auto_field()
+    files = ma.Nested('FileSchema', many=True)
 
 class FileSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -112,15 +120,6 @@ class FileSchema(ma.SQLAlchemySchema):
     name = ma.auto_field()
     date_created = ma.auto_field()
     data = ma.auto_field()
-
-class OnlineClass(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(100), unique=True, nullable=False)
-	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-	
-	def __init__(self, name, course_id):
-		self.course_id = course_id
-		self.name = name
 
 class OnlineClassSchema(ma.SQLAlchemySchema):
 	class Meta:

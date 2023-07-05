@@ -4,7 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
-import courses
+import courses.courses as courses
+import courses.content as content
+import courses.classes as classes
 import validate as v
 
 # init app
@@ -14,7 +16,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 
 # init db
-from models import User, UserSchema, Course, db, ma # DON'T MOVE THIS LINE
+from models import db, ma # DON'T MOVE THIS LINE
 db.init_app(app)
 ma.init_app(app)
 with app.app_context():
@@ -40,7 +42,7 @@ def handle_not_found(e):
 	return response
 
 # app decorators
-# returns
+# AUTH
 @app.route('/register', methods=['POST'])
 def register():
     first_name, last_name = request.json['firstName'], request.json['lastName']
@@ -58,6 +60,7 @@ def logout():
 	token = request.headers.get('Authorization')
 	return auth.logout(token)
 
+# COURSES: BASICS
 @app.route('/dashboard/course-list', methods=['GET'])
 def user_courses():
 	token = request.headers.get('Authorization')
@@ -106,6 +109,7 @@ def all_students(course_id):
 
 	return courses.all_students(course_id) 
 
+# COURSES: ONLINE CLASSES
 @app.route('/courses/<int:course_id>/create-class', methods=['POST'])
 def create_class(course_id):
 	token = request.headers.get('Authorization')	
@@ -114,7 +118,7 @@ def create_class(course_id):
 	v.validate_token(token)
 	class_name = request.json['className']
 
-	return courses.create_class(course_id, class_name) 
+	return classes.create(course_id, class_name) 
 
 @app.route('/courses/<int:course_id>/classes', methods=['GET'])
 def course_classes(course_id):
@@ -123,7 +127,23 @@ def course_classes(course_id):
 		raise Unauthorized('Authorization token missing')
 	v.validate_token(token)
 	
-	return courses.all_classes(course_id) 
+	return classes.getAll(course_id)
+
+# COURSES: CONTENT
+@app.route('/courses/<int:course_id>/create-folder', methods=['POST'])
+def create_folder(course_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	
+	user_id = v.validate_token(token)
+	folder_name = request.json['folderName']
+	return content.create_folder(folder_name, user_id, course_id)
+    
+
+
+# HELPERS
+#TODO: create a getToken helper
 
 if __name__ == '__main__':
     app.run(debug=True)
