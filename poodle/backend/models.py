@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from sqlalchemy.orm import relationship
+from sqlalchemy import LargeBinary
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -94,21 +95,23 @@ class File(db.Model):
     folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'), nullable=False)
     name = db.Column(db.String(100), unique=False, nullable=False)
     date_created = db.Column(db.Date, nullable=False)
-    file_path = db.Column(db.String(255), unique=False, nullable=False)
+    data = db.Column(LargeBinary, nullable=False)
 
-    def __init__(self, folder_id, name, date_created, file_path):
+    def __init__(self, folder_id, name, date_created, data):
         self.folder_id = folder_id
         self.name = name
         self.date_created = date_created
-        self.file_path = file_path
-	
+        self.data = data
+
+
 class FileSchema(ma.SQLAlchemySchema):
     class Meta:
         model = File
+
     id = ma.auto_field()
     name = ma.auto_field()
     date_created = ma.auto_field()
-    file_path = ma.auto_field()
+    data = ma.auto_field()
 
 class OnlineClass(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
