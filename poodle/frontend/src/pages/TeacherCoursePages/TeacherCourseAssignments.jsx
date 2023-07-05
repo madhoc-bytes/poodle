@@ -68,7 +68,7 @@ function EditAssignmentForm({ assignment, onSave }) {
         <Button variant="contained" color="secondary">Create</Button> */}
         <form>
             <TextField label="Title" name="title" onChange={handleChange} />
-            <TextField label="Due Date" name ="dueDate" type="date" onChange={handleChange} />
+            <TextField name ="dueDate" type="date" onChange={handleChange} />
             <TextField label="Max Marks" name="maxMarks" type="number" onChange={handleChange} />
             <TextField label="Description" name="description" onChange={handleChange} />
             <Button>Update</Button>

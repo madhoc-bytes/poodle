@@ -86,7 +86,7 @@ const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
 
   return (
     <React.Fragment>
-      <ListItem onClick={handleToggle} style={listItemStyle}>
+      <ListItem sx={{margin: '10px', backgroundColor: '#a3a3a3'}} onClick={handleToggle} style={listItemStyle}>
         <ListItemIcon>
           <FolderIcon />
         </ListItemIcon>
