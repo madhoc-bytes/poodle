@@ -1,12 +1,11 @@
 
 from flask import jsonify
-from models import User, Course, Enrolment, UserSchema, OnlineClass, OnlineClassSchema, db 
+from models import User, Course, Enrolment, Folder, OnlineClass, OnlineClassSchema, db 
 from datetime import datetime, timedelta
-from secrets import token_urlsafe
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
-import jwt
 
+# BASICS
 def create(course_name, user_id):
 	user = User.query.get(user_id)
 
@@ -22,9 +21,15 @@ def create(course_name, user_id):
 
 def id_to_name(course_id):
 	course = Course.query.get(course_id)
+	if not course:
+		raise NotFound('Course not found')	
 	return jsonify({'course_id': course.name}), 200
 
 def invite(user_id, course_id, student_email):
+	course = Course.query.get(course_id)
+	if not course:
+		raise NotFound('Course not found')
+	
 	user = User.query.get(user_id)
 	student = User.query.filter_by(email=student_email).first()
  
@@ -85,25 +90,5 @@ def all_students(course_id):
 
 	return jsonify(student_info), 200
 
-def create_class(course_id, class_name):
-	course = Course.query.get(course_id)
-	if not course:
-		raise NotFound('Course not found')	
-	new_class = OnlineClass(name=class_name, course_id=course_id)
-	
-	db.session.add(new_class)
-	db.session.commit()
 
-	return jsonify({'message': 'Class successfully created', 'class_id': new_class.id}), 200   
 
-def all_classes(course_id):
-	# Check if the course exists
-    course = Course.query.get(course_id)
-    if not course:
-        return jsonify({'message': 'Course not found'}), 404
-
-    # Retrieve the online classes for the given course
-    online_classes = OnlineClass.query.filter_by(course_id=course_id).all()
-    online_class_schema = OnlineClassSchema()
-    return online_class_schema.jsonify(online_classes, many=True), 200
-	
