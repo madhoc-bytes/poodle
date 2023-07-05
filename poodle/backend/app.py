@@ -5,6 +5,7 @@ from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
 import courses
+import quiz
 import validate as v
 
 # init app
@@ -146,6 +147,82 @@ def course_classes(course_id):
 	v.validate_token(token)
 	
 	return courses.all_classes(course_id) 
+
+@app.route('/courses/<int:course_id>/quiz_list', methods=['GET'])
+def user_quizzes(course_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	user_id = v.validate_token(token)
+
+	return quiz.user_quizzes_course(user_id, course_id)
+
+@app.route('/courses/<int:course_id>/quiz/<int:quiz_id>/name', methods=['GET'])
+def get_quiz_name(course_id, quiz_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+
+	return quiz.get_quiz_name(course_id, quiz_id)
+
+@app.route('/courses/<int:course_id>/quiz/create', methods=['POST'])
+def create_quiz(course_id):
+	token = request.headers.get('Authorization')
+
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	
+	user_id = v.validate_token(token)
+	quiz_name = request.json['quizName']
+	due_date = request.json['dueDate']
+
+	return quiz.create_quiz(quiz_name, user_id, course_id, due_date)
+
+@app.route('/courses/<int:course_id>/quiz/<int:quiz_id>/questions', methods=['GET'])
+def quiz_questions(course_id, quiz_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+
+	return quiz.get_quiz_questions(course_id, quiz_id)
+
+@app.route('/course/<int:course_id>/quiz/<int:quiz_id>/questions/create', methods=['POST'])
+def create_question(course_id, quiz_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+
+	question = request.json['question']
+	time_limit = request.json['timeLimit']
+	points = request.json['points']
+	is_multi = request.json['isMulti']
+
+	return quiz.create_question(course_id, quiz_id, question, time_limit, points, is_multi)	
+
+@app.route('/course/<int:course_id>/quiz/<int:quiz_id>/question/<int:question_id>/answers', methods=['GET'])
+def get_quiz_question_answers(course_id, quiz_id, question_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+
+	return quiz.get_quiz_question_answers(course_id, quiz_id, question_id)
+
+@app.route('/course/<int:course_id>/quiz/<int:quiz_id>/question/<int:question_id>/answers/create', methods=['POST'])
+def create_answer(course_id, quiz_id, question_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+
+	answer = request.json['answer']
+	is_correct = request.json['isCorrect']
+
+	return quiz.create_answer(course_id, quiz_id, question_id, answer, is_correct)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
