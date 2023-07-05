@@ -98,12 +98,11 @@ def create_class(course_id, class_name):
 
 def all_classes(course_id):
 	# Check if the course exists
-    course = Course.query.get(course_id)
-    if not course:
-        return jsonify({'message': 'Course not found'}), 404
+	course = Course.query.get(course_id)
+	if not course:
+		return jsonify({'message': 'Course not found'}), 404
 
-    # Retrieve the online classes for the given course
-    online_classes = OnlineClass.query.filter_by(course_id=course_id).all()
-    online_class_schema = OnlineClassSchema()
-    return online_class_schema.jsonify(online_classes, many=True), 200
-	
+	# Retrieve the online classes for the given course
+	online_classes = OnlineClass.query.filter_by(course_id=course_id).all()
+	online_class_schema = OnlineClassSchema()
+	return online_class_schema.jsonify(online_classes, many=True), 200

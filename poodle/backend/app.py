@@ -6,6 +6,7 @@ from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
 import courses
 import quiz
+import assignment
 import validate as v
 
 # init app
@@ -223,6 +224,50 @@ def create_answer(course_id, quiz_id, question_id):
 
 	return quiz.create_answer(course_id, quiz_id, question_id, answer, is_correct)
 
+@app.route('/course/<int:course_id>/assignment_list', methods=['GET'])
+def get_assignments(course_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	user_id = v.validate_token(token)
+
+	return assignment.get_assignments_course(user_id, course_id)
+
+@app.route('/course/<int:course_id>/assignments/<int:ass_id>/name', methods=['GET'])
+def get_ass_name(course_id, ass_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+
+	return assignment.get_ass_name(course_id, ass_id)
+
+@app.route('/course/<int:course_id>/assignments', methods=['GET'])
+def get_ass(course_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	v.validate_token(token)
+
+	return assignment.all_ass(course_id)
+
+@app.route('/course/<int:course_id>/assignments/create', methods=['POST'])
+def create_assignment(course_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	user_id = v.validate_token(token)
+
+	title = request.json['title']
+	due_date = request.json['due_date']
+	description = request.json['description']
+	marks = request.json['marks']
+	num_sub = request.json['num_sub']
+
+	return assignment.create_assignment(user_id, course_id, title, due_date, description, marks, num_sub)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
+	

@@ -93,6 +93,9 @@ def user_quizzes_course(user_id, course_id):
 
 	if not user:
 		raise NotFound('User not found')
+	
+	if not course:
+		raise NotFound('Course not found')
 
 	# Return List of Quizzes for Teacher
 	if user.is_teacher:	
@@ -103,7 +106,7 @@ def user_quizzes_course(user_id, course_id):
 		quizzes = Quiz.query.filter_by(creator=user_id, course_id=course_id).all()
 
 		for quiz in quizzes:
-			quiz_list.append({'name': quiz.name, 'id': quiz.id})
+			quiz_list.append({'name': quiz.name, 'id': quiz.id, 'due_date': quiz.due_date})
 
 	# Return List of Quizzes for Student
 	else:
@@ -115,7 +118,7 @@ def user_quizzes_course(user_id, course_id):
 
 		quizzes = Quiz.query.filter_by(course_id=course_id).all()
 		for quiz in quizzes:
-			quiz_list.append({'name': quiz.name, 'id': quiz.id})
+			quiz_list.append({'name': quiz.name, 'id': quiz.id, 'due_date': quiz.due_date})
 
 	return jsonify(quiz_list), 200
 
