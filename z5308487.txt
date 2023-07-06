@@ -25,3 +25,7 @@ Week 4
 - Started on backend and frontend
 
 Week 5
+- Completed the backend tasks for sprint 1
+
+Week 6
+- Began work on quizzes and assignments for sprint 2

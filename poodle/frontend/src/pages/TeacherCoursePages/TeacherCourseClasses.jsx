@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { TextField, Button, Box, Toolbar, Card, CardContent, Typography } from '@mui/material'
+import { TextField, Button, Box, Toolbar, Card, CardContent, Typography, Grid, List } from '@mui/material'
 import NavBar from '../../components/NavBar'
 import TeacherCourseSidebar from '../../components/TeacherCourseSidebar'
 import { useParams } from 'react-router-dom'
+import { styled } from '@mui/material/styles';
 
 const styles = {
   container: {
@@ -123,7 +124,7 @@ const TeacherCourseClasses = () => {
                 </Card>
             ))}
         </Box>
-
+        
         </Box>
     </Box>
 
