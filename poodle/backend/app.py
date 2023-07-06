@@ -129,13 +129,14 @@ def upload_file(folder_id):
 	user_id = v.validate_token(token)
 
 	file = request.files['file']
-	file_name = file.filename
+	# file_name = secure_filename(file.fileName)
+	file_name = request.form.get('fileName')
 	data = file.read()
 
 	return content.create_file(file_name, user_id, folder_id, data)
 
 # App Route
-@app.route('/course/<int:course_id>', methods=['GET'])
+@app.route('/courses/<int:course_id>/content', methods=['GET'])
 def get_course_content(course_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)

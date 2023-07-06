@@ -14,7 +14,7 @@ import TeacherCourseContent from './pages/TeacherCoursePages/TeacherCourseConten
 import TeacherCourseAssignments from './pages/TeacherCoursePages/TeacherCourseAssignments'
 import StudentCourseAssignments from './pages/StudentCoursePages/StudentCourseAssignments'
 
-function App () {
+function App() {
   return (
     <BrowserRouter>
       <Routes>

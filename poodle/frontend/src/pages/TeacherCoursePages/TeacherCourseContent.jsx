@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Grid, Typography, IconButton, Box, Toolbar, Collapse, ListItemSecondaryAction, ListItemIcon, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import NavBar from '../../components/NavBar';
-import TeacherCourseSidebar from '../../components/TeacherCourseSidebar';
+import CourseSidebar from '../../components/CourseSidebar';
 import FolderIcon from '@mui/icons-material/Folder';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -11,6 +11,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import { ExpandMore, ExpandLess } from '@mui/icons-material';
 import { Delete } from '@mui/icons-material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { useParams } from 'react-router';
 
 const folderListStyle = {
   backgroundColor: '#f5f5f5', // Set the background color to grey
@@ -21,7 +22,10 @@ const listItemStyle = {
   marginBottom: '8px', // Add margin bottom between list items
 };
 
+
 const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
+  const token = localStorage.getItem('token');
+
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [newFileTitle, setNewFileTitle] = useState('');
@@ -50,31 +54,30 @@ const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
     setNewFile(null);
   };
 
-  const handleCreateFile = () => {
+  const handleCreateFile = async () => {
     // Perform create file logic here
     const formData = new FormData();
-    formData.append('folderId', folder.id);
-    formData.append('title', newFileTitle);
+    formData.append('fileName', newFileTitle);
     formData.append('file', newFile);
 
     // TODO: Make a fetch request to create a file when backend is ready
-    fetch('/createFile', {
-      method: 'POST',
-      body: formData
-    })
-      .then((response) => {
-        if (response.ok) {
-          // Handle successful file creation
-          console.log('File created successfully');
-        } else {
-          // Handle error case
-          throw new Error('Failed to create file');
-        }
-      })
-      .catch((error) => {
-        // Handle errors
-        console.error(error);
-      });
+    const response = await fetch(
+      new URL(`/courses/2/create-file`, 'http://localhost:5000/'),
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData
+      }
+    )
+    const data = await response.json();
+    if (data.error) {
+      console.log('ERROR')
+    }
+    else {
+      console.log(data.message)
+    }
 
     handleCloseModal();
   };
@@ -129,7 +132,7 @@ const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
       </Collapse>
 
       <Dialog open={openModal} onClose={handleCloseModal}>
-        <DialogTitle>Create new file</DialogTitle>
+        <DialogTitle>Add a file</DialogTitle>
         <DialogContent>
           <TextField
             label="Title"
@@ -145,9 +148,8 @@ const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
             onChange={handleFileChange}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal}>Cancel</Button>
-          <Button onClick={handleCreateFile}>Create</Button>
+        <DialogActions sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <Button variant="contained" color="secondary" onClick={handleCreateFile}>Create</Button>
         </DialogActions>
       </Dialog>
 
@@ -158,8 +160,12 @@ const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
 
 
 const TeacherCourseContent = () => {
+  const token = localStorage.getItem('token');
+
   const [folderName, setFolderName] = useState('');
   const [folders, setFolders] = useState([]);
+
+  const courseId = useParams().courseId;
 
   // Dummy content will be replaced by folders when backend is ready
   const dummyContent = [
@@ -194,17 +200,57 @@ const TeacherCourseContent = () => {
     }
   ]
 
+  const getContent = async () => {
+    const response = await fetch(
+      new URL(`/courses/${courseId}/content`, 'http://localhost:5000/'),
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    const data = await response.blob();
+    if (data.error) {
+      console.log('eerrrr')
+    } else 
+      console.log(data)
+  }
+
+  useEffect(() => {
+    getContent();
+  }, [])
+
   const handleFolderNameChange = (event) => {
     setFolderName(event.target.value);
   };
 
-  const handleCreateFolder = () => {
+  const handleCreateFolder = async () => {
     // Make sure folder name isn't empty
     if (folderName.trim() !== '') {
-      // TODO: Make a fetch request to create a folder when backend is ready 
-
+      // TODO: Make a fetch request to create a folder when backend is ready
+      const response = await fetch(
+        new URL(`/courses/${courseId}/create-folder`, 'http://localhost:5000/'),
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ 'folderName': folderName })
+        }
+      )
+      const data = await response.json();
+      if (data.error) {
+        console.log('eerrrr')
+      } else 
+        console.log(data.folder_id)
       console.log("Creating folder with name: " + folderName);
       setFolderName('');
+    }
+    else {
+      alert('meow')
     }
   };
 
@@ -220,7 +266,7 @@ const TeacherCourseContent = () => {
     <>
     <Box sx={{ display: 'flex' }}>
         <NavBar />
-        <TeacherCourseSidebar />
+        <CourseSidebar />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
 

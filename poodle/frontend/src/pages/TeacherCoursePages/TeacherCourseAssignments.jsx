@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Box, TextField, Container, List, ListItem, ListItemText, Toolbar, Drawer, Grid, Typography } from '@mui/material';
 import NavBar from '../../components/NavBar';
-import TeacherCourseSidebar from '../../components/TeacherCourseSidebar';
+import CourseSidebar from '../../components/CourseSidebar';
 import { useParams } from 'react-router';
 // import AdapterDayjs from '@mui/x/AdapterDayjs';
 // import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -103,7 +103,7 @@ const TeacherCourseAssignments = () => {
     return (
         <Box sx={{ display: 'flex' }}>
             <NavBar />
-            <TeacherCourseSidebar />
+            <CourseSidebar />
             <Box component="main" sx={{ flexGrow: 1, p: 3}}>
             <Toolbar />
 

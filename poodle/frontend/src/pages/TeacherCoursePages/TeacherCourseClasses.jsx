@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { TextField, Button, Box, Toolbar, Card, CardContent, Typography, Grid, List } from '@mui/material'
 import NavBar from '../../components/NavBar'
-import TeacherCourseSidebar from '../../components/TeacherCourseSidebar'
+import CourseSidebar from '../../components/CourseSidebar'
 import { useParams } from 'react-router-dom'
 import { styled } from '@mui/material/styles';
 
@@ -93,7 +93,7 @@ const TeacherCourseClasses = () => {
   return (
     <Box sx={{ display: 'flex' }}>
         <NavBar />
-        <TeacherCourseSidebar />
+        <CourseSidebar />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
 
