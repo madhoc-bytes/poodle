@@ -136,8 +136,8 @@ def upload_file(folder_id):
 	return content.create_file(file_name, user_id, folder_id, file)
 
 # fetch a file
-@app.route('/courses/<int:course_id>/<int:file_id>', methods=['GET'])
-def get_file(course_id, file_id):
+@app.route('/courses/<int:file_id>', methods=['GET'])
+def get_file(file_id):
 	token = get_token(request)
 	v.validate_token(token)
 
