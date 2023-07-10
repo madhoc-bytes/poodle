@@ -75,17 +75,21 @@ const NavBar = () => {
         <Typography
           variant="h4"
           component="div"
-          sx={{ flexGrow: 1, color: "rgb(156,39,176)" }}
+          sx={{
+            color: "rgb(156,39,176)",
+            cursor: "pointer",
+            "&:hover": {
+              fontSize: "2.3rem",
+              backgroundColor: "#f0f0f0",
+            },
+            width: "130px",
+          }}
           onClick={handleDashboardClick}
         >
           Poodle
         </Typography>
 
-        <Typography
-          variant="h4"
-          component="div"
-          sx={{ flexGrow: 1, color: "black" }}
-        >
+        <Typography variant="h4" component="div" sx={{ color: "black" }}>
           {courseName}
         </Typography>
 

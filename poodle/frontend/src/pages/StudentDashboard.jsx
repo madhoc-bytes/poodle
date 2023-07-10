@@ -24,6 +24,12 @@ const styles = {
     width: "150px",
     height: "150px",
     margin: "5px",
+    transition: "all 0.15s ease-in-out",
+    cursor: "pointer",
+    "&:hover": {
+      transform: "scale(1.05)",
+      backgroundColor: "#ffe6ee",
+    },
   },
   cardContent: {
     display: "flex",

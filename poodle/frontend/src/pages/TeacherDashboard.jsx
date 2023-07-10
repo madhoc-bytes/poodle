@@ -25,6 +25,12 @@ const styles = {
     width: "150px",
     height: "150px",
     margin: "5px",
+    transition: "all 0.15s ease-in-out",
+    cursor: "pointer",
+    "&:hover": {
+      transform: "scale(1.05)",
+      backgroundColor: "rgb(149,117,222)",
+    },
   },
   cardContent: {
     display: "flex",
@@ -182,10 +188,18 @@ const TeacherDashboard = () => {
               alignItems: "center",
               border: "2px solid rgb(156,39,176)",
               boxSizing: "border-box",
+              transition: "all 0.15s ease-in-out",
+              cursor: "pointer",
+              color: "rgb(156,39,176)",
+              "&:hover": {
+                transform: "scale(1.05)",
+                color: "white",
+                backgroundColor: "rgb(156,39,176)",
+              },
             }}
             onClick={handleOpen}
           >
-            <AddIcon style={{ color: "rgb(156,39,176)", fontSize: 65 }} />
+            <AddIcon style={{ fontSize: 65 }} />
           </Card>
         </Box>
         <Modal open={open} onClose={handleClose}>
