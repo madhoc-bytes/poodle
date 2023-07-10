@@ -13,6 +13,7 @@ import StudentCourseClasses from './pages/StudentCoursePages/StudentCourseClasse
 import TeacherCourseContent from './pages/TeacherCoursePages/TeacherCourseContent'
 import TeacherCourseAssignments from './pages/TeacherCoursePages/TeacherCourseAssignments'
 import StudentCourseAssignments from './pages/StudentCoursePages/StudentCourseAssignments'
+import StudentCourseQuizzes from './pages/StudentCoursePages/StudentCourseQuizzes'
 
 function App() {
   return (
@@ -38,6 +39,8 @@ function App() {
         <Route path="/student/:courseId/Participants" element={<StudentCourseParticipants />} />
         <Route path="/student/:courseId/Classes" element={<StudentCourseClasses />} />
         <Route path="/student/:courseId/Assignments" element={<StudentCourseAssignments />} />
+        <Route path="/student/:courseId/Quizzes" element={<StudentCourseQuizzes />} />
+
 
         <Route path="/OnlineClass/:courseId/:roomId" element={<OnlineClass />} />
       </Routes>
