@@ -51,7 +51,7 @@ curl -X POST \
   }' \
   $BASE_URL/login
 
-AUTH_TOKEN="Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODg1NDA4ODB9.uJe3Tx8-ku4aMERMMCNhg5e6boopRGgW6yDjbjrU_mU"  # Replace with a valid authorization token
+AUTH_TOKEN="Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODg5OTg1OTR9.88Zrfo8vHG0BMe-mQzdIU0Q7_DBgBfEvZnlmZMTM6mY"  # Replace with a valid authorization token
 
 # course list
 curl -X GET \
@@ -118,6 +118,15 @@ curl -X POST \
   }' \
   $BASE_URL/courses/$COURSE_ID/create-folder
 
+# create file
+FOLDER_ID=1  # Replace with the desired folder ID
+FILE_PATH="assignment.py"  # Replace with the path to the file you want to upload
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -F "file=@$FILE_PATH" \
+  $BASE_URL/courses/$FOLDER_ID/create-file
+
 
 # get content
 COURSE_ID=1  # Replace with the desired course ID
@@ -125,6 +134,17 @@ COURSE_ID=1  # Replace with the desired course ID
 curl -X GET \
   -H "Authorization: $AUTH_TOKEN" \
   $BASE_URL/course/$COURSE_ID
+
+# search
+QUERY="DNE"  # Replace with the desired search query
+
+curl -X GET \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "'"$QUERY"'"
+  }' \
+  $BASE_URL/course/$COURSE_ID/content/search
 
 
 

@@ -74,13 +74,13 @@ class File(db.Model):
     folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'), nullable=False)
     name = db.Column(db.String(100), unique=False, nullable=False)
     date_created = db.Column(db.Date, nullable=False)
-    data = db.Column(LargeBinary, nullable=False)
+    file_path = db.Column(db.String(100), unique=False, nullable=False)
 
-    def __init__(self, folder_id, name, date_created, data):
+    def __init__(self, folder_id, name, date_created, file_path):
         self.folder_id = folder_id
         self.name = name
         self.date_created = date_created
-        self.data = data
+        self.file_path = file_path
 
 class OnlineClass(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -90,6 +90,7 @@ class OnlineClass(db.Model):
 	def __init__(self, name, course_id):
 		self.course_id = course_id
 		self.name = name
+
 class FileSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = File

@@ -132,17 +132,33 @@ def upload_file(folder_id):
 
 	file = request.files['file']
 	file_name = file.filename
-	data = file.read()
 
-	return content.create_file(file_name, user_id, folder_id, data)
+	return content.create_file(file_name, user_id, folder_id, file)
 
-# App Route
-@app.route('/course/<int:course_id>', methods=['GET'])
+# fetch a file
+@app.route('/courses/<int:course_id>/<int:file_id>', methods=['GET'])
+def get_file(course_id, file_id):
+	token = get_token(request)
+	v.validate_token(token)
+
+	return content.get_file(file_id)
+
+@app.route('/course/<int:course_id>/content', methods=['GET'])
 def get_course_content(course_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	return content.get_course_content(user_id, course_id)
+
+# search
+@app.route('/course/<int:course_id>/content/search', methods=['GET'])
+def search_content(course_id):
+	token = get_token(request)
+	v.validate_token(token)
+
+	query = request.json['query']
+	return content.search(course_id, query)
+
 
 # HELPERS
 def get_token(request):

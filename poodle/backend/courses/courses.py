@@ -4,6 +4,7 @@ from models import User, Course, Enrolment, Folder, OnlineClass, OnlineClassSche
 from datetime import datetime, timedelta
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
+import os
 
 # BASICS
 def create(course_name, user_id):
@@ -16,6 +17,10 @@ def create(course_name, user_id):
 
 	db.session.add(new_course)
 	db.session.commit()
+
+	# create folder to store files for course in fsh
+	path = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(new_course.id))
+	os.makedirs(path)	
 
 	return jsonify({'message': 'Course created successfully', 'course_id': new_course.id}), 201
 
