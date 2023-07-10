@@ -107,31 +107,6 @@ class CourseSchema(ma.SQLAlchemyAutoSchema):
         include_relationships = True
 
     folders = ma.Nested(FolderSchema, many=True)
-# class CourseSchema(ma.SQLAlchemySchema):
-#     class Meta:
-#         model = Course
-#         include_relationships = True
-#         fields = ('id', 'name', 'creator', 'online_classes', "folders")
-
-#     folders = ma.Nested('FolderSchema', many=True)
-
-# class FolderSchema(ma.SQLAlchemySchema):
-#     class Meta:
-#         model = Folder
-
-#     id = ma.auto_field()
-#     name = ma.auto_field()
-#     date_created = ma.auto_field()
-#     files = ma.Nested('FileSchema', many=True)
-
-# class FileSchema(ma.SQLAlchemySchema):
-#     class Meta:
-#         model = File
-
-#     id = ma.auto_field()
-#     name = ma.auto_field()
-#     date_created = ma.auto_field()
-#     data = ma.auto_field()
 
 class EnrolmentSchema(ma.SQLAlchemySchema):
     class Meta:
