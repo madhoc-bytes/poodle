@@ -6,7 +6,7 @@ const StudentQuizPage = () => {
         "name": "Quiz 1",
         "quizId": 1,
         "timeStarted": "2023-07-01T15:30:00.000Z",
-        "timeLimit": 1000000,
+        "timeLimit": 1030400,
         "questions": [
             {
             "question": "What is a penguin?",

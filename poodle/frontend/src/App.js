@@ -16,6 +16,7 @@ import StudentCourseAssignments from './pages/StudentCoursePages/StudentCourseAs
 import StudentCourseQuizzes from './pages/StudentCoursePages/StudentCourseQuizzes'
 import StudentQuizPage from './pages/StudentCoursePages/StudentQuizPage'
 import TeacherCourseQuizzes from './pages/TeacherCoursePages/TeacherCourseQuizzes'
+import TeacherEditQuiz from './pages/TeacherCoursePages/TeacherEditQuiz'
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/teacher/:courseId/Classes" element={<TeacherCourseClasses />} />
 
         <Route path="/teacher/:courseId/Quizzes" element={<TeacherCourseQuizzes />} />
+        <Route path="/teacher/editquiz/:quizId" element={<TeacherEditQuiz />} />
         <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseAssignments />} />
         <Route path="/teacher/:courseId/Forums" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Leaderboards" element={<TeacherCourseParticipants />} />

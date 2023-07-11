@@ -1,11 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Grid, TextField, Typography, Checkbox, FormControlLabel, Box, Radio, RadioGroup, Dialog, DialogTitle, DialogActions, Toolbar, DialogContent } from '@mui/material';
+import { Button, Grid, TextField, Typography, Checkbox, FormControlLabel, Box, Radio, RadioGroup, Dialog, DialogTitle, DialogActions, Toolbar, DialogContent, List, ListItem, ListItemText } from '@mui/material';
 import NavBar from "../../components/NavBar";
 import { useParams } from "react-router";
 import CourseSidebar from "../../components/CourseSidebar";
 
+const quizzes = [
+    {
+      "name": "Quiz 1",
+      "id": 1,
+      "isDeployed": false
+    },
+    {
+      "name": "Quiz 2",
+      "id": 2,
+      "isDeployed": false
+    },
+    {
+      "name": "Quiz 3",
+      "id": 3,
+      "isDeployed": true
+    }
+];
 
 const TeacherCourseQuizzes = () => {
+    // const [quizzes, setQuizzes] = useState([]);
 
     const [openModal, setOpenModal] = useState(false);
     const [newQuizName, setNewQuizName] = useState('');
@@ -23,6 +41,40 @@ const TeacherCourseQuizzes = () => {
         setNewQuizTimeLimit(60);
         setNewQuizDueDate('');
     };
+
+    useEffect(() => {
+        // fetchQuizzes();
+    }, []);
+
+    const fetchQuizzes = async () => {
+        // fetch quizzes here
+        const response = await fetch(
+            // Change the URL when backend is ready
+            new URL(`/courses/${useParams().courseId}/quizzes`, 'http://localhost:5000/'),
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            }
+        )
+        const data = await response.json()
+        if (data.error) {
+            console.log('ERROR')
+        }
+        else {
+            setQuizzes(data)
+            console.log(data);
+        }
+    }
+
+    const handleDeployQuiz = (quizId) => {
+        // handle deploying quiz here
+
+        console.log(`Deploying quiz ${quizId}`);
+        window.open(`/teacher/editquiz/${quizId}`, '_blank');
+    }
 
     const handleCreateQuiz = async () => {
         // Perform some checks
@@ -58,9 +110,26 @@ const TeacherCourseQuizzes = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <h1>Course Quizzes</h1>
             </Box>
-                <Button variant="contained" color="secondary" onClick={handleOpenModal}>Create Quiz</Button>
+            {/* Move this button below anywhere */}
+            <Button variant="contained" color="secondary" onClick={handleOpenModal}>Create Quiz</Button>
             
-            
+            {/* List of quizzes here */}
+            <List>
+                {quizzes.map((quiz) => (
+                    <ListItem key={quiz.id} divider>
+                        <ListItemText primary={quiz.name} />
+                        <Button
+                            variant="contained"
+                            color={quiz.isDeployed ? "secondary" : "primary"}
+                            disabled={quiz.isDeployed}
+                            onClick={() => handleDeployQuiz(quiz.id)}
+                        >
+                            {quiz.isDeployed ? "Deployed" : "Edit"}
+                        </Button>
+                    </ListItem>
+                ))}
+            </List>
+
 
             <Dialog open={openModal} onClose={handleCloseModal}>
                 <DialogTitle>Create Quiz</DialogTitle>
