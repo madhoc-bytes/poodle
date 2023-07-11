@@ -55,6 +55,15 @@ const QuizCard = ({ quiz }) => {
         due_date.getHours() < 12 ? "AM" : "PM"
     }`;
 
+    const handleAttemptQuiz = (quizId) => {
+        // Send a POST request with time right now to backend
+        let timeStarted = new Date().getTime()
+        // Post request
+        
+
+        // Open a new tab with the quiz
+        window.open(`/student/quizpage/${quizId}`, '_blank')
+    } 
     // Might need to format time limit also
 
     return (
@@ -67,7 +76,7 @@ const QuizCard = ({ quiz }) => {
                 {/* Only attempt button is clickable */}
                 <Typography variant="body2">Time limit: {quiz.timeLimit} </Typography>
                 {quiz.status == "ATTEMPT"
-                    ? <Button variant="contained">Attempt</Button>
+                    ? <Button variant="contained" onClick={() => handleAttemptQuiz(quiz.id)}>Attempt</Button>
                     : quiz.status == "IN PROGRESS"
                         ? <Button variant="contained" disabled>IN PROGRESS</Button>
                         : <Button variant="contained" disabled>COMPLETE</Button>
