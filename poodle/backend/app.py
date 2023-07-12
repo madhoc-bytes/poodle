@@ -278,13 +278,20 @@ def create_assignment(course_id):
 	user_id = v.validate_token(token)
 
 	title = request.json['title']
-	due_date = request.json['due_date']
 	description = request.json['description']
-	marks = request.json['marks']
-	num_sub = request.json['num_sub']
+	due_date = request.json['dueDate']
+	max_marks = request.json['maxMarks']
 
-	return assignment.create_assignment(user_id, course_id, title, due_date, description, marks, num_sub)
+	return assignment.create_assignment(user_id, course_id, title, description, due_date, max_marks)
 
+@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/collect', methods=['GET'])
+def collect_submissions(course_id, assignment_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	user_id = v.validate_token(token)
+
+	return assignment.collect_submissions(user_id, course_id, assignment_id)
 ## TO DO 
 ## Store Assignment Files (fsh)
 ## Create a Class for Assignments

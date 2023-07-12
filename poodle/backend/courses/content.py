@@ -40,9 +40,9 @@ def create_file(file_name, user_id, folder_id, file):
 	db.session.add(new_file)
 	db.session.commit()
 	
-	# save locally to fsh	
+	# save locally to fsh content	
 	unique_name = str(new_file.id) + ' ' + file_name
-	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(folder.course_id), unique_name)
+	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(folder.course_id), 'content' ,unique_name)
 	file.save(destination)
 
 	# update file_path in database

@@ -1,10 +1,11 @@
 from flask import jsonify
-from models import User, Course, Enrolment, Assignment, Question, Answer, UserSchema, AssignmentSchema, db
+from models import User, Course, Enrolment, Assignment, Question, Answer, UserSchema, AssignmentSchema, CourseSchema, db
 from datetime import datetime, timedelta
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
+import os
 
-def create_assignment(user_id, course_id, title, due_date, description, marks, num_sub):
+def create_assignment(user_id, course_id, title, description, due_date, max_marks):
 	user = User.query.get(user_id)
 	
 	if not user.is_teacher:
@@ -15,25 +16,30 @@ def create_assignment(user_id, course_id, title, due_date, description, marks, n
 	
 	if not title:
 		raise BadRequest('Title cannot be empty')
-
-	if not due_date:
-		raise BadRequest('Due date cannot be empty')
 	
 	if not description:
 		raise BadRequest('Description cannot be empty')
 	
-	if not marks:
+	if not due_date:
+		raise BadRequest('Due date cannot be empty')
+	
+	if not max_marks:
 		raise BadRequest('Maximum marks cannot be empty')	
 	
-	if not num_sub:
-		raise BadRequest('Number of submissions cannot be empty')
-	
-	new_assignment = Assignment(creator=user_id, course_id=course_id, title=title, due_date=due_date, description=description, max_marks=marks, number_of_submissions=num_sub)
+
+	new_assignment = Assignment(course_id=course_id, title=title,description=description, due_date=due_date, max_marks=max_marks)
 
 	db.session.add(new_assignment)
 	db.session.commit()
+	
+	# Make a new folder for the assignments
+	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh/ass', str(course_id), 'content', new_assignment.id)
+	os.makedirs(destination)
 
 	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
+
+# TO DO: Upload Spec, Submit Assignment, Update Mark, Retrieve Mark, Retrieve Submission (Filter, retrieve last submission)
+# Get all submissions from assignment_id, filter by student_id, sort in desc, and grab latest.
 
 def get_assignments_course(user_id, course_id):
 	user = User.query.get(user_id)
