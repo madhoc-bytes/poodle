@@ -43,6 +43,8 @@ class Course(db.Model):
 	creator = db.Column(db.Integer, nullable=False)
 	online_classes = relationship('OnlineClass', backref='course', cascade='all, delete-orphan')
 	folders = relationship('Folder', backref='course', cascade='all, delete-orphan')
+	assignment = relationship('Assignment', backref='course', cascade='all, delete-orphan')
+
 
 	def __init__(self, name, creator):
 		self.name = name
@@ -193,30 +195,44 @@ class QuizAttemptSchema(ma.SQLAlchemySchema):
 
 
 class Assignment(db.Model):
-	ass_id = db.Column(db.Integer, primary_key=True)
-	creator = db.Column(db.Integer, nullable=False)
+	id = db.Column(db.Integer, primary_key=True)
 	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
 	title = db.Column(db.String(100), nullable=False)
 	due_date = db.Column(db.DateTime, nullable=False)
 	max_marks = db.Column(db.Integer, nullable=False)
-	description = db.Column(db.String(1000), nullable=False)
-	# TODO: file attachments
-	number_of_submissions = db.Column(db.Integer, nullable=False)
+	description = db.Column(db.String(1000), nullable=True)
+	spec_file_path = db.Column(db.String(100), unique=False, nullable=False)
+	submission = relationship('Submission', backref='assignment', cascade='all, delete-orphan')
 
-	def __init__(self, creator, course_id, title, due_date, description, max_marks, number_of_submissions):
-		self.creator = creator
+	def __init__(self, course_id, title, due_date, description, max_marks, spec_file_path):
 		self.course_id = course_id
 		self.title = title
 		self.due_date = due_date
 		self.description = description
 		self.max_marks = max_marks
-		self.number_of_submissions = number_of_submissions
+		self.spec_file_path = spec_file_path
 
 class AssignmentSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('ass_id', 'creator', 'course_id', 'title', 'due_date', 'max_marks', 'description', 'number_of_submissions')
+		fields = ('id', 'course_id', 'title', 'due_date', 'max_marks', 'description', 'spec_file_path')
 
-	
+class Submission(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
+	student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+	submission_time = db.Column(db.DateTime, nullable=False)
+	submission_file_path = db.Column(db.String(100), unique=False, nullable=False)
+	score = db.Column(db.Float, nullable=True)
+
+	def __init__(self, assignment_id, student_id, submission_time, submission_file_path):
+		self.assignment_id = assignment_id
+		self.student_id = student_id
+		self.submission_time = submission_time
+		self.submission_file_path = submission_file_path
+
+class AssignmentSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('id', 'assignment_id', 'student_id', 'submission_time', 'submission_file_path', 'score')	
 
 
 	

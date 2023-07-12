@@ -285,6 +285,10 @@ def create_assignment(course_id):
 
 	return assignment.create_assignment(user_id, course_id, title, due_date, description, marks, num_sub)
 
+## TO DO 
+## Store Assignment Files (fsh)
+## Create a Class for Assignments
+## Get Assignment
 
 
 if __name__ == '__main__':
