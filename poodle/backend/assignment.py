@@ -84,7 +84,7 @@ def upload_spec(user_id, course_id, assignment_id, spec):
 	return jsonify({'message': 'Assignment spec successfully uploaded', 'file_id': new_file.id}), 201
 
 
-def submit(user_id, course_id, assignment_id, submission):
+def submit(user_id, course_id, assignment_id, submission_file):
 	user = User.query.get(user_id)
 	
 	if user.is_teacher:
@@ -92,29 +92,35 @@ def submit(user_id, course_id, assignment_id, submission):
 	
 	submission = Submission.query.filter_by(student_id=user_id, assignment_id = assignment_id).first()
 
-	if submission:
-		# go to submission, delete the file in fsh
-		# upload new file in fsh
-		# update filepath and date created in the file object
-
-	else:
-		date_created = datetime.now()
-		new_file = File(folder_id=0, name=str(assignment_id).join(str(user_id)), date_created=date_created, file_path="")
-		db.session.add(new_file)
+	if not submission:
+		current_time = datetime.now()
+		file = File(folder_id=0, name=str(assignment_id).join(str(user_id)), date_created=current_time, file_path="")
+		db.session.add(file)
 		db.session.commit()
 
-		unique_name = str(new_file.id)
+		unique_name = str(file.id)
 		destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', str(assignment_id), unique_name)
 		submission.save(destination)
 
-		new_file.file_path = destination
-		db.session.commit()
-
-		new_submission = Submission(folder_id=0, file_id = new_file.id, name=str(assignment_id).join(str(user_id)), date_created=date_created)
+		new_submission = Submission(folder_id=0, file_id = file.id, name=str(assignment_id).join(str(user_id)), date_created=date_created)
 		db.session.add(new_submission)
 		db.session.commit()
 
-	return jsonify({'message': 'Assignment successfully submitted at ' + date_created, 'file_id': new_file.id}), 201
+		file.file_path = destination
+		db.session.commit()
+
+	else:
+		file = File.query.get(submission.file_id)
+		destination = file.file_path
+		os.remove(destination)
+
+		submission_file.save(destination)
+		current_time = datetime.now()
+		file.date_created = current_time
+		db.session.commit()
+	
+	
+	return jsonify({'message': 'Assignment successfully submitted at ' + current_time, 'file_id': file.id}), 201
 
 def update_score(user_id, submission_id, score):
 	user = User.query.get(user_id)
