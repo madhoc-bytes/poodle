@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
-import quiz
 import courses.assignment as assignment
 import courses.courses as courses
 import courses.content as content
@@ -151,12 +150,11 @@ def get_course_content(course_id):
 	return content.get_course_content(user_id, course_id)
 
 # search
-@app.route('/course/<int:course_id>/content/search', methods=['GET'])
-def search_content(course_id):
+@app.route('/course/<int:course_id>/content/search/<query>', methods=['GET'])
+def search_content(course_id, query):
 	token = get_token(request)
 	v.validate_token(token)
 
-	query = request.json['query']
 	return content.search(course_id, query)
 
 
@@ -202,38 +200,33 @@ def submit_assignment(course_id, assignment_id):
 	submission_file = request.json['file']
 	return assignment.submit(user_id, course_id, assignment_id, submission_file)
 
-@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/mark', methods=['PUT'])
-def update_score(course_id, assignment_id):
+@app.route('/course/assignments/marking/<int:submission_id>', methods=['PUT'])
+def update_score(submission_id):
 	token = request.headers.get('Authorization')
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	user_id = v.validate_token(token)
 
-	submission_id = request.json['submissionId']
 	score = request.json['score']
 
 	return assignment.update_score(user_id, submission_id, score)
 
-@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/score', methods=['GET'])
-def fetch_score(course_id, assignment_id):
+@app.route('/course/assignments/marks/<int:submission_id>', methods=['GET'])
+def fetch_score(submission_id):
 	token = request.headers.get('Authorization')
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	user_id = v.validate_token(token)
-	
-	submission_id = request.json['submissionId']
 
 	return assignment.retrieve_score(user_id, submission_id)
 
-@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/submissions', methods=['GET'])
-def fetch_submission(course_id, assignment_id):
+@app.route('/course/assignments/<int:submission_id>', methods=['GET'])
+def fetch_submission(submission_id):
 	token = request.headers.get('Authorization')
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	user_id = v.validate_token(token)
 	
-	submission_id = request.json['submissionId']
-
 	return assignment.fetch_submission(user_id, submission_id)
 
 if __name__ == '__main__':
