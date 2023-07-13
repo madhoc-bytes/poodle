@@ -1,5 +1,6 @@
 from flask import jsonify
 from models import *
+from content import get_file
 from datetime import datetime, timedelta
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
