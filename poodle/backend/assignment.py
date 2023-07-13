@@ -111,23 +111,24 @@ def submit(user_id, course_id, assignment_id, submission):
 
 	return jsonify({'message': 'Assignment successfully submitted at ' + date_created, 'file_id': new_file.id}), 201
 
-def update_mark(user_id, submission_id, mark):
+def update_score(user_id, submission_id, score):
 	user = User.query.get(user_id)
 	
 	if not user.is_teacher:
 		raise Unauthorized('User permission denied')
 	
-	if mark < 0 or mark > 100:
+	submission = Submission.query.get(submission_id)
+	assignment = Assignment.query.get(submission.assignment_id)
+
+	if score < 0 or score > assignment.max_mark:
 		raise Unauthorized('Invalid Mark')
 	
-	submission = User.query.get(submission_id)
-
-	submission.mark = mark
+	submission.score = score
 	db.session.commit()
 
-	return jsonify({'message': 'Mark updated successfully'}), 201
+	return jsonify({'message': 'Score updated successfully'}), 201
 
-def retrieve_mark(user_id, submission_id):
+def retrieve_score(user_id, submission_id):
 	user = User.query.get(user_id)
 	
 	if not user.is_teacher:
@@ -135,24 +136,27 @@ def retrieve_mark(user_id, submission_id):
 
 	submission = User.query.get(submission_id)
 
-	return jsonify({'message': 'Assignment created successfully', 'submission_mark': submission.mark}), 201
+	return jsonify({'message': 'scpre successfully retrieved', 'submission_mark': submission.mark}), 201
 
-def retrieve_submission(user_id, course_id, spec, spec_path):
+def retrieve_submission(user_id, assignment_id, student_id):
 	user = User.query.get(user_id)
 	
 	if not user.is_teacher:
 		raise Unauthorized('User permission denied')
-
-	new_assignment = Assignment(course_id=course_id, title=title,description=description, due_date=due_date, max_marks=max_marks)
-
-	db.session.add(new_assignment)
-	db.session.commit()
 	
-	# Make a new folder for the assignments
-	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh/ass', str(course_id), 'content', new_assignment.id)
-	os.makedirs(destination)
+	student = User.query.get(student_id)
 
-	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
+	if student.is_teacher:
+		raise Unauthorized('Invalid student')
+	
+	submission = Submission.query.filter_by(student_id=student_id, assignment_id = assignment_id).first()
+
+	if not submission:
+		raise Unauthorized('No submission available')
+
+	file_path  = submission.file_path
+
+	return jsonify({'message': 'Assignment successfully retrieved', 'submission_id': submission.id}), 201
 
 def get_assignments_course(user_id, course_id):
 	user = User.query.get(user_id)

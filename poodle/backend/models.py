@@ -73,7 +73,7 @@ class Submission(db.Model):
 	student_id = db.Column(db.Integer, nullable=False)
 	submission_time = db.Column(db.DateTime, nullable=False)
 	file_path = db.Column(db.String(100), unique=False, nullable=False)
-	score = db.Column(db.Float, nullable=True)
+	score = db.Column(db.Integer, nullable=True)
 
 	def __init__(self, assignment_id, student_id, submission_time, file_path):
 		self.assignment_id = assignment_id
