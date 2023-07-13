@@ -28,7 +28,7 @@ const styles = {
     cursor: "pointer",
     "&:hover": {
       transform: "scale(1.05)",
-      backgroundColor: "#ffe6ee",
+      backgroundColor: "rgb(149,117,222)",
     },
   },
   cardContent: {
@@ -60,7 +60,7 @@ const StudentDashboard = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bear er ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );

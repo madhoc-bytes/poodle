@@ -18,128 +18,166 @@ import CourseSidebar from "../../components/CourseSidebar";
 
 // Set dummy quizzes here first
 const quizzes = [
-    {
-      "name": "Quiz 1",
-      "quizId": 1,
-      "dueDate": "2023-07-01T15:30:00.000Z",
-      "timeLimit": 1000,
-      "mark": null,
-      "max_marks": 30,
-      "status": "ATTEMPT" // ATTEMPT or IN PROGRESS
-    },
-    {
-      "name": "Quiz 2",
-      "quizId": 2,
-      "dueDate": "2023-07-01T15:30:00.000Z",
-      "timeLimit": 1000,
-      "mark": 2,
-      "max_marks": 30,
-      "status": "IN PROGRESS", // ATTEMPT or IN PROGRESS
-    },
-    {
-      "name": "Quiz 3",
-      "quizId": 3,
-      "due_date": "2023-07-01T15:30:00.000Z",
-      "timeLimit": 1000,
-      "mark": 17,
-      "max_marks": 20,
-      "status": "COMPLETE", // ATTEMPT or IN PROGRESS
-    },
+  {
+    name: "Quiz 1",
+    quizId: 1,
+    dueDate: "2023-07-01T15:30:00.000Z",
+    timeLimit: 1000,
+    mark: null,
+    max_marks: 30,
+    status: "ATTEMPT", // ATTEMPT or IN PROGRESS
+  },
+  {
+    name: "Quiz 2",
+    quizId: 2,
+    dueDate: "2023-07-01T15:30:00.000Z",
+    timeLimit: 1000,
+    mark: 2,
+    max_marks: 30,
+    status: "IN PROGRESS", // ATTEMPT or IN PROGRESS
+  },
+  {
+    name: "Quiz 3",
+    quizId: 3,
+    dueDate: "2023-07-01T15:30:00.000Z",
+    timeLimit: 1000,
+    mark: 17,
+    max_marks: 20,
+    status: "COMPLETE", // ATTEMPT or IN PROGRESS
+  },
 ];
 
-const QuizCard = ({ quiz }) => {
-    let due_date = new Date(quiz.dueDate);
-    let formatted_date = `${due_date.getDate()}/${
-        due_date.getMonth() + 1
-    }/${due_date.getFullYear()} ${due_date.getHours()}:${due_date.getMinutes()} ${
-        due_date.getHours() < 12 ? "AM" : "PM"
-    }`;
-
-    const handleAttemptQuiz = (quizId) => {
-        // Send a POST request with time right now to backend
-        let timeStarted = new Date().getTime()
-        // Post request
-        
-
-        // Open a new tab with the quiz
-        window.open(`/student/quizpage/${quizId}`, '_blank')
-    } 
-    // Might need to format time limit also
-
-    return (
-        <Card sx={{ minWidth: 275, m: 2 }}>
-            <CardContent>
-                <Typography variant="h5">{quiz.name}</Typography>
-                <Typography variant="body2">Due Date: {formatted_date}</Typography>
-                {/* If status is not Complete, show ? */}
-                <Typography variant="body2">Mark: {quiz.status !== "COMPLETE" ? "?" : quiz.mark}/{quiz.max_marks}</Typography>
-                {/* Only attempt button is clickable */}
-                <Typography variant="body2">Time limit: {quiz.timeLimit} </Typography>
-                {quiz.status == "ATTEMPT"
-                    ? <Button variant="contained" onClick={() => handleAttemptQuiz(quiz.id)}>Attempt</Button>
-                    : quiz.status == "IN PROGRESS"
-                        ? <Button variant="contained" disabled>IN PROGRESS</Button>
-                        : <Button variant="contained" disabled>COMPLETE</Button>
-                }
-            </CardContent>
-        </Card>
-    );
-}
-
 const StudentCourseQuizzes = () => {
-    const token = localStorage.getItem("token");
-    // const navigate = useNavigate();
-    // const [quizzes, setQuizzes] = useState([]);
+  const token = localStorage.getItem("token");
+  const courseId = useParams().courseId;
 
-    useEffect(() => {
-        console.log("useEffect called");
-        // fetchQuizzes();
-    }, []);
+  // const navigate = useNavigate();
+  // const [quizzes, setQuizzes] = useState([]);
 
-    const fetchQuizzes = async () => {
-        const response = await fetch(
-            // TODO: Change URL when backend is ready
-            new URL("/DUMMYURL", "http://localhost:5000/"),
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-        const data = await response.json();
-        if (data.error) {
-            console.log("ERROR");
-        } else {
-            // TODO: Uncomment this when backend is ready
-            // setQuizzes(data);
-            console.log(data);
-        }
-    };
+  useEffect(() => {
+    console.log("useEffect called");
+    // fetchQuizzes();
+  }, []);
 
-    return (
-        <Box sx={{ display: "flex" }}>
-        <NavBar />
-        <CourseSidebar />
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-            <Toolbar />
+  const handleAttemptQuiz = (quizId) => {
+    // Send a POST request with time right now to backend
+    let timeStarted = new Date().getTime();
+    // Post request
 
-            <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-            }}
-            >
-            {quizzes.map((quiz, index) => (
-                <QuizCard key={index} quiz={quiz} />
+    // Open a new tab with the quiz
+    window.open(`/student/${courseId}/quizpage/${quizId}`, "_blank");
+  };
+
+  const fetchQuizzes = async () => {
+    const response = await fetch(
+      // TODO: Change URL when backend is ready
+      new URL("/DUMMYURL", "http://localhost:5000/"),
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      // TODO: Uncomment this when backend is ready
+      // setQuizzes(data);
+      console.log(data);
+    }
+  };
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <NavBar />
+      <CourseSidebar />
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Toolbar />
+        <Box>
+          <h1>Course Quizzes</h1>
+        </Box>
+
+        <Box
+          sx={{
+            p: 2,
+            flexGrow: "1",
+          }}
+        >
+          <List>
+            {quizzes.map((quiz) => (
+              <ListItem
+                key={quiz.id}
+                sx={{
+                  backgroundColor: "#c6c6c6",
+                  marginTop: "10px",
+                  borderTop: "2px solid grey",
+                }}
+              >
+                <ListItemText>
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    {quiz.name}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      width: "95%",
+                    }}
+                  >
+                    <Typography variant="body">
+                      Due:{" "}
+                      {new Date(quiz.dueDate).toLocaleString("en-UK", {
+                        dateStyle: "short",
+                        timeStyle: "short",
+                        hour12: true,
+                      })}
+                    </Typography>
+                    <Typography variant="body">
+                      {" "}
+                      Mark: {quiz.status !== "COMPLETE" ? "?" : quiz.mark}/
+                      {quiz.max_marks}
+                    </Typography>
+                    <Typography variant="body">
+                      Time limit: {quiz.timeLimit} mins
+                    </Typography>
+                  </Box>
+                </ListItemText>
+                {quiz.status == "ATTEMPT" ? (
+                  <Button
+                    variant="contained"
+                    onClick={() => handleAttemptQuiz(quiz.id)}
+                    color="secondary"
+                    sx={{ width: "130px" }}
+                  >
+                    Attempt
+                  </Button>
+                ) : quiz.status == "IN PROGRESS" ? (
+                  <Button
+                    variant="contained"
+                    sx={{
+                      width: "130px",
+                      whiteSpace: "nowrap",
+                      backgroundColor: "#9575de",
+                    }}
+                  >
+                    IN PROGRESS
+                  </Button>
+                ) : (
+                  <Button variant="contained" disabled sx={{ width: "130px" }}>
+                    COMPLETED
+                  </Button>
+                )}
+              </ListItem>
             ))}
-            </Box>
-
+          </List>
         </Box>
-        </Box>
-    )
-}
+      </Box>
+    </Box>
+  );
+};
 
 export default StudentCourseQuizzes;

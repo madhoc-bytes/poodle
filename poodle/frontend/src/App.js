@@ -34,7 +34,7 @@ function App() {
         <Route path="/teacher/:courseId/Classes" element={<TeacherCourseClasses />} />
 
         <Route path="/teacher/:courseId/Quizzes" element={<TeacherCourseQuizzes />} />
-        <Route path="/teacher/editquiz/:quizId" element={<TeacherEditQuiz />} />
+        <Route path="/teacher/:courseId/editquiz/:quizId" element={<TeacherEditQuiz />} />
         <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseAssignments />} />
         <Route path="/teacher/:courseId/Forums" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Leaderboards" element={<TeacherCourseParticipants />} />
@@ -44,7 +44,7 @@ function App() {
         <Route path="/student/:courseId/Classes" element={<StudentCourseClasses />} />
         <Route path="/student/:courseId/Assignments" element={<StudentCourseAssignments />} />
         <Route path="/student/:courseId/Quizzes" element={<StudentCourseQuizzes />} />
-        <Route path="/student/quizpage/:quizId" element={<StudentQuizPage />} />
+        <Route path="/student/:courseId/quizpage/:quizId" element={<StudentQuizPage />} />
 
         <Route path="/OnlineClass/:courseId/:roomId" element={<OnlineClass />} />
       </Routes>

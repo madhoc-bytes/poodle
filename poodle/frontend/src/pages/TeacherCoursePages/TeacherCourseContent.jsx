@@ -1,34 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, Button, Grid, Typography, IconButton, Box, Toolbar, Collapse, ListItemSecondaryAction, ListItemIcon, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import NavBar from '../../components/NavBar';
-import CourseSidebar from '../../components/CourseSidebar';
-import FolderIcon from '@mui/icons-material/Folder';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import List from '@mui/material/List';
-import DescriptionIcon from '@mui/icons-material/Description';
-import { ExpandMore, ExpandLess } from '@mui/icons-material';
-import { Delete } from '@mui/icons-material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { useParams } from 'react-router';
+import React, { useState, useEffect } from "react";
+import {
+  TextField,
+  Button,
+  Grid,
+  Typography,
+  IconButton,
+  Box,
+  Toolbar,
+  Collapse,
+  ListItemSecondaryAction,
+  ListItemIcon,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import NavBar from "../../components/NavBar";
+import CourseSidebar from "../../components/CourseSidebar";
+import FolderIcon from "@mui/icons-material/Folder";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import List from "@mui/material/List";
+import DescriptionIcon from "@mui/icons-material/Description";
+import { ExpandMore, ExpandLess } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { useParams } from "react-router";
 
 const folderListStyle = {
-  backgroundColor: '#f5f5f5', // Set the background color to grey
-  borderRadius: '4px', // Add some border radius
+  backgroundColor: "#f5f5f5", // Set the background color to grey
+  borderRadius: "4px", // Add some border radius
 };
 
 const listItemStyle = {
-  marginBottom: '8px', // Add margin bottom between list items
+  marginBottom: "8px", // Add margin bottom between list items
 };
 
-
 const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [newFileTitle, setNewFileTitle] = useState('');
+  const [newFileTitle, setNewFileTitle] = useState("");
   const [newFile, setNewFile] = useState(null);
 
   const handleToggle = () => {
@@ -50,33 +64,32 @@ const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
 
   const handleCloseModal = () => {
     setOpenModal(false);
-    setNewFileTitle('');
+    setNewFileTitle("");
     setNewFile(null);
   };
 
   const handleCreateFile = async () => {
     // Perform create file logic here
     const formData = new FormData();
-    formData.append('fileName', newFileTitle);
-    formData.append('file', newFile);
+    formData.append("fileName", newFileTitle);
+    formData.append("file", newFile);
 
     // TODO: Make a fetch request to create a file when backend is ready
     const response = await fetch(
-      new URL(`/courses/2/create-file`, 'http://localhost:5000/'),
+      new URL(`/courses/2/create-file`, "http://localhost:5000/"),
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formData
+        body: formData,
       }
-    )
+    );
     const data = await response.json();
     if (data.error) {
-      console.log('ERROR')
-    }
-    else {
-      console.log(data.message)
+      console.log("ERROR");
+    } else {
+      console.log(data.message);
     }
 
     handleCloseModal();
@@ -89,7 +102,11 @@ const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
 
   return (
     <React.Fragment>
-      <ListItem sx={{margin: '10px', backgroundColor: '#a3a3a3'}} onClick={handleToggle} style={listItemStyle}>
+      <ListItem
+        sx={{ margin: "10px", backgroundColor: "#a3a3a3" }}
+        onClick={handleToggle}
+        style={listItemStyle}
+      >
         <ListItemIcon>
           <FolderIcon />
         </ListItemIcon>
@@ -124,7 +141,7 @@ const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
           <ListItem sx={{ pl: 4 }}>
             <ListItemSecondaryAction>
               <IconButton edge="end" onClick={handleOpenModal}>
-                <AddCircleIcon/>
+                <AddCircleIcon />
               </IconButton>
             </ListItemSecondaryAction>
           </ListItem>
@@ -148,21 +165,30 @@ const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
             onChange={handleFileChange}
           />
         </DialogContent>
-        <DialogActions sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-          <Button variant="contained" color="secondary" onClick={handleCreateFile}>Create</Button>
+        <DialogActions
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleCreateFile}
+          >
+            Create
+          </Button>
         </DialogActions>
       </Dialog>
-
     </React.Fragment>
   );
 };
 
-
-
 const TeacherCourseContent = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
-  const [folderName, setFolderName] = useState('');
+  const [folderName, setFolderName] = useState("");
   const [folders, setFolders] = useState([]);
 
   const courseId = useParams().courseId;
@@ -170,57 +196,56 @@ const TeacherCourseContent = () => {
   // Dummy content will be replaced by folders when backend is ready
   const dummyContent = [
     {
-      "description": "This is a folder",
-      "id": 1,
-      "files": [
+      description: "This is a folder",
+      id: 1,
+      files: [
         {
-          "description": "This is a file",
-          "id": 1,
+          description: "This is a file",
+          id: 1,
         },
         {
-          "description": "This is another file",
-          "id": 2,
-        }
-      ]
-    }, 
-    {
-      "description": "This is another folder",
-      "id": 2,
-      "files": [
-        {
-          "description": "This is a file",
-          "id": 3,
+          description: "This is another file",
+          id: 2,
         },
-      ]
+      ],
     },
     {
-      "description": "This is yet another folder",
-      "id": 3,
-      "files": []
-    }
-  ]
+      description: "This is another folder",
+      id: 2,
+      files: [
+        {
+          description: "This is a file",
+          id: 3,
+        },
+      ],
+    },
+    {
+      description: "This is yet another folder",
+      id: 3,
+      files: [],
+    },
+  ];
 
   const getContent = async () => {
     const response = await fetch(
-      new URL(`/courses/${courseId}/content`, 'http://localhost:5000/'),
+      new URL(`/courses/${courseId}/content`, "http://localhost:5000/"),
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       }
-    )
+    );
     const data = await response.blob();
     if (data.error) {
-      console.log('eerrrr')
-    } else 
-      console.log(data)
-  }
+      console.log("eerrrr");
+    } else console.log(data);
+  };
 
   useEffect(() => {
     getContent();
-  }, [])
+  }, []);
 
   const handleFolderNameChange = (event) => {
     setFolderName(event.target.value);
@@ -228,70 +253,82 @@ const TeacherCourseContent = () => {
 
   const handleCreateFolder = async () => {
     // Make sure folder name isn't empty
-    if (folderName.trim() !== '') {
+    if (folderName.trim() !== "") {
       // TODO: Make a fetch request to create a folder when backend is ready
       const response = await fetch(
-        new URL(`/courses/${courseId}/create-folder`, 'http://localhost:5000/'),
+        new URL(`/courses/${courseId}/create-folder`, "http://localhost:5000/"),
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ 'folderName': folderName })
+          body: JSON.stringify({ folderName: folderName }),
         }
-      )
+      );
       const data = await response.json();
       if (data.error) {
-        console.log('eerrrr')
-      } else 
-        console.log(data.folder_id)
+        console.log("eerrrr");
+      } else console.log(data.folder_id);
       console.log("Creating folder with name: " + folderName);
-      setFolderName('');
-    }
-    else {
-      alert('meow')
+      setFolderName("");
+    } else {
+      alert("meow");
     }
   };
 
   const handleDeleteFolder = (folderId) => {
     console.log("Deleting folder with id: " + folderId);
-  }
+  };
 
   const handleDeleteFile = (fileId) => {
     console.log("Deleting file with id: " + fileId);
-  }
+  };
 
   return (
     <>
-    <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: "flex" }}>
         <NavBar />
         <CourseSidebar />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
+          <Toolbar />
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <h1>Course Content</h1>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <h1>Course Content</h1>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <h2>Create Folder:</h2>
-              <TextField id="outlined-basic" label="Enter Folder Name" variant="outlined" value={folderName} onChange={handleFolderNameChange} />
-              <Button variant="contained" color="secondary" onClick={handleCreateFolder}>Create</Button>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <h2>Create Folder:</h2>
+            <TextField
+              id="outlined-basic"
+              label="Enter Folder Name"
+              variant="outlined"
+              value={folderName}
+              onChange={handleFolderNameChange}
+            />
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleCreateFolder}
+            >
+              Create
+            </Button>
           </Box>
 
           <List style={folderListStyle}>
             {dummyContent.map((folder) => (
-              <FolderListItem key={folder.id} folder={folder} onDelete={handleDeleteFolder} onDeleteFile={handleDeleteFile} />
+              <FolderListItem
+                key={folder.id}
+                folder={folder}
+                onDelete={handleDeleteFolder}
+                onDeleteFile={handleDeleteFile}
+              />
             ))}
           </List>
-
         </Box>
-    </Box>
+      </Box>
     </>
-
-  )
-
+  );
 };
 
 export default TeacherCourseContent;
