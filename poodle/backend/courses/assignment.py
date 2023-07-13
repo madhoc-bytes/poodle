@@ -40,7 +40,7 @@ def create(user_id, course_id, title, description, due_date, max_marks):
 	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
 
 
-def upload_spec(user_id, course_id, assignment_id, spec):
+def upload_spec(user_id, course_id, assignment_id, spec_file):
 	user = User.query.get(user_id)
 	
 	if not user.is_teacher:
@@ -49,26 +49,33 @@ def upload_spec(user_id, course_id, assignment_id, spec):
 	assignment = User.query.get(assignment_id)
 
 	if not assignment.spec_path:
-		True
+		current_time = datetime.now()
+		file = File(folder_id=0, name="specification", date_created=current_time, file_path='')
+		db.session.add(file)
+		db.session.commit()
+
+		# save locally to fsh content	
+		unique_name = str(file.id)
+		destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', str(assignment_id), unique_name)
+		spec_file.save(destination)
+
+		file.file_path = destination
+
+		assignment.spec_path = destination
+		db.session.commit()
 	else:
-		False
-	# add entry to database
-	date_created = datetime.now()
-	new_file = File(folder_id=0, name="specification", date_created=date_created, file_path='')
-	db.session.add(new_file)
-	db.session.commit()
+		spec_id = assignment.spec_id
+		spec = File.query.get(spec_id)
+		destination = spec.file_path
+		os.remove(destination)
 
-	# save locally to fsh content	
-	unique_name = str(new_file.id)
-	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', str(assignment_id), unique_name)
-	spec.save(destination)
+		spec_file.save(destination)
+		current_time = datetime.now()
+		file.date_created = current_time
+		db.session.commit()
+	
 
-	new_file.file_path = destination
-
-	assignment.spec_path = destination
-	db.session.commit()
-
-	return jsonify({'message': 'Assignment spec successfully uploaded', 'file_id': new_file.id}), 201
+	return jsonify({'message': 'Assignment spec successfully uploaded', 'file_id': file.id}), 201
 
 
 def submit(user_id, course_id, assignment_id, submission_file):
