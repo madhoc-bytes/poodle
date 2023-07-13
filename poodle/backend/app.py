@@ -5,7 +5,7 @@ from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
 import quiz
-import assignment
+import courses.assignment as assignment
 import courses.courses as courses
 import courses.content as content
 import courses.classes as classes

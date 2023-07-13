@@ -1,6 +1,6 @@
 from flask import jsonify
 from models import *
-from content import get_file
+from .content import get_file
 from datetime import datetime, timedelta
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
@@ -102,7 +102,7 @@ def submit(user_id, course_id, assignment_id, submission_file):
 		destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', str(assignment_id), unique_name)
 		submission.save(destination)
 
-		new_submission = Submission(folder_id=0, file_id = file.id, name=str(assignment_id).join(str(user_id)), date_created=date_created)
+		new_submission = Submission(folder_id=0, file_id = file.id, name=str(assignment_id).join(str(user_id)), date_created=current_time)
 		db.session.add(new_submission)
 		db.session.commit()
 
@@ -118,7 +118,6 @@ def submit(user_id, course_id, assignment_id, submission_file):
 		current_time = datetime.now()
 		file.date_created = current_time
 		db.session.commit()
-	
 	
 	return jsonify({'message': 'Assignment successfully submitted at ' + current_time, 'file_id': file.id}), 201
 
