@@ -53,34 +53,37 @@ class Assignment(db.Model):
 	description = db.Column(db.String(1000), nullable=True)
 	due_date = db.Column(db.DateTime, nullable=False)
 	max_marks = db.Column(db.Integer, nullable=False)
-	spec_file_path = db.Column(db.String(100), unique=False, nullable=False)
+	spec_file_path = db.Column(db.String(100), unique=False, nullable=True)
 	submissions = relationship('Submission', backref='assignment', cascade='all, delete-orphan')
 
-	def __init__(self, course_id, title, description, due_date, max_marks, spec_file_path):
+	def __init__(self, course_id, title, description, due_date, max_marks):
 		self.course_id = course_id
 		self.title = title
 		self.description = description
 		self.due_date = due_date
 		self.max_marks = max_marks
-		self.spec_file_path = spec_file_path
 
 class AssignmentSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('id', 'assignment_id', 'student_id', 'submission_time', 'submission_file_path', 'score')	
+		fields = ('id', 'course_id', 'title', 'description', 'due_date', 'max_marks', 'spec_file_path')	
 
 class Submission(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
 	student_id = db.Column(db.Integer, nullable=False)
 	submission_time = db.Column(db.DateTime, nullable=False)
-	submission_file_path = db.Column(db.String(100), unique=False, nullable=False)
+	file_path = db.Column(db.String(100), unique=False, nullable=False)
 	score = db.Column(db.Float, nullable=True)
 
-	def __init__(self, assignment_id, student_id, submission_time, submission_file_path):
+	def __init__(self, assignment_id, student_id, submission_time, file_path):
 		self.assignment_id = assignment_id
 		self.student_id = student_id
 		self.submission_time = submission_time
-		self.submission_file_path = submission_file_path
+		self.file_path = file_path
+
+class SubmissionSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('id', 'assignment_id', 'student_id', 'submission_time', 'file_path', 'score')	
 
 class Enrolment(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
