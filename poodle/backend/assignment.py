@@ -39,10 +39,10 @@ def create_assignment(user_id, course_id, title, description, due_date, max_mark
 	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
 
 """ TO DO: Upload Spec, 
-
-TO DO: Update Spec,
+- Incorporate Update spec, replace file, destinations
 
 TO DO: Submit Assignment, 
+- Incorporate resubmission, replace file, destination
 
 TO DO: Update Mark, 
 
@@ -60,45 +60,28 @@ def upload_spec(user_id, course_id, assignment_id, spec):
 
 	assignment = User.query.get(assignment_id)
 
+	if not assignment.spec_path:
+		True
+	else:
+		False
 	# add entry to database
 	date_created = datetime.now()
-	new_file = File(folder_id=0, name="specification", date_created=date_created, file_path=destination)
+	new_file = File(folder_id=0, name="specification", date_created=date_created, file_path='')
 	db.session.add(new_file)
 	db.session.commit()
 
-	assignment.spec_path = destination
-	db.session.commit()
-	
 	# save locally to fsh content	
 	unique_name = str(new_file.id)
 	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', str(assignment_id), unique_name)
 	spec.save(destination)
+
+	new_file.file_path = destination
+
+	assignment.spec_path = destination
+	db.session.commit()
 
 	return jsonify({'message': 'Assignment spec successfully uploaded', 'file_id': new_file.id}), 201
 
-def update(user_id, course_id, assignment_id, spec):
-	user = User.query.get(user_id)
-	
-	if not user.is_teacher:
-		raise Unauthorized('User permission denied')
-
-	assignment = User.query.get(assignment_id)
-	
-	# save locally to fsh content	
-	unique_name = str(new_file.id)
-	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', str(assignment_id), unique_name)
-	spec.save(destination)
-
-	# add entry to database
-	date_created = datetime.now()
-	new_file = File(folder_id=0, name="specification", date_created=date_created, file_path=destination)
-	db.session.add(new_file)
-	db.session.commit()
-
-	assignment.spec_path = destination
-	db.session.commit()
-
-	return jsonify({'message': 'Assignment spec updated uploaded', 'file_id': new_file.id}), 201
 
 def submit(user_id, course_id, assignment_id, submission):
 	user = User.query.get(user_id)
@@ -128,39 +111,31 @@ def submit(user_id, course_id, assignment_id, submission):
 
 	return jsonify({'message': 'Assignment successfully submitted at ' + date_created, 'file_id': new_file.id}), 201
 
-def update_mark(user_id, course_id, spec, spec_path):
+def update_mark(user_id, submission_id, mark):
+	user = User.query.get(user_id)
+	
+	if not user.is_teacher:
+		raise Unauthorized('User permission denied')
+	
+	if mark < 0 or mark > 100:
+		raise Unauthorized('Invalid Mark')
+	
+	submission = User.query.get(submission_id)
+
+	submission.mark = mark
+	db.session.commit()
+
+	return jsonify({'message': 'Mark updated successfully'}), 201
+
+def retrieve_mark(user_id, submission_id):
 	user = User.query.get(user_id)
 	
 	if not user.is_teacher:
 		raise Unauthorized('User permission denied')
 
-	new_assignment = Assignment(course_id=course_id, title=title,description=description, due_date=due_date, max_marks=max_marks)
+	submission = User.query.get(submission_id)
 
-	db.session.add(new_assignment)
-	db.session.commit()
-	
-	# Make a new folder for the assignments
-	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh/ass', str(course_id), 'content', new_assignment.id)
-	os.makedirs(destination)
-
-	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
-
-def retrieve_mark(user_id, course_id, spec, spec_path):
-	user = User.query.get(user_id)
-	
-	if not user.is_teacher:
-		raise Unauthorized('User permission denied')
-
-	new_assignment = Assignment(course_id=course_id, title=title,description=description, due_date=due_date, max_marks=max_marks)
-
-	db.session.add(new_assignment)
-	db.session.commit()
-	
-	# Make a new folder for the assignments
-	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh/ass', str(course_id), 'content', new_assignment.id)
-	os.makedirs(destination)
-
-	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
+	return jsonify({'message': 'Assignment created successfully', 'submission_mark': submission.mark}), 201
 
 def retrieve_submission(user_id, course_id, spec, spec_path):
 	user = User.query.get(user_id)
