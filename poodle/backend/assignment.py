@@ -90,25 +90,29 @@ def submit(user_id, course_id, assignment_id, submission):
 	if user.is_teacher:
 		raise Unauthorized('User permission denied')
 	
-	assignment = User.query.get(assignment_id)
+	submission = Submission.query.filter_by(student_id=user_id, assignment_id = assignment_id).first()
 
-	# save locally to fsh content	
-	unique_name = str(new_file.id)
-	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', str(assignment_id), unique_name)
-	submission.save(destination)
+	if submission:
+		# go to submission, delete the file in fsh
+		# upload new file in fsh
+		# update filepath and date created in the file object
 
-	# add entry to database
-	date_created = datetime.now()
-	new_file = File(folder_id=0, name=str(assignment_id).join(str(user_id)), date_created=date_created, file_path=destination)
-	db.session.add(new_file)
-	db.session.commit()
+	else:
+		date_created = datetime.now()
+		new_file = File(folder_id=0, name=str(assignment_id).join(str(user_id)), date_created=date_created, file_path="")
+		db.session.add(new_file)
+		db.session.commit()
 
-	new_submission = Submission(folder_id=0, name=str(assignment_id).join(str(user_id)), date_created=date_created, file_path=destination)
-	db.session.add(new_file)
-	db.session.commit()
+		unique_name = str(new_file.id)
+		destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', str(assignment_id), unique_name)
+		submission.save(destination)
 
-	assignment.spec_path = destination
-	db.session.commit()
+		new_file.file_path = destination
+		db.session.commit()
+
+		new_submission = Submission(folder_id=0, file_id = new_file.id, name=str(assignment_id).join(str(user_id)), date_created=date_created)
+		db.session.add(new_submission)
+		db.session.commit()
 
 	return jsonify({'message': 'Assignment successfully submitted at ' + date_created, 'file_id': new_file.id}), 201
 
@@ -137,7 +141,7 @@ def retrieve_score(user_id, submission_id):
 
 	submission = User.query.get(submission_id)
 
-	return jsonify({'message': 'scpre successfully retrieved', 'submission_mark': submission.mark}), 201
+	return jsonify({'message': 'Score successfully retrieved', 'submission_mark': submission.mark}), 201
 
 def retrieve_submission(user_id, assignment_id, student_id):
 	user = User.query.get(user_id)
@@ -152,12 +156,7 @@ def retrieve_submission(user_id, assignment_id, student_id):
 	
 	submission = Submission.query.filter_by(student_id=student_id, assignment_id = assignment_id).first()
 
-	if not submission:
-		raise Unauthorized('No submission available')
-
-	file_path  = submission.file_path
-
-	return jsonify({'message': 'Assignment successfully retrieved', 'submission_id': submission.id}), 201
+	return get_file(submission.file_id)
 
 def get_assignments_course(user_id, course_id):
 	user = User.query.get(user_id)
