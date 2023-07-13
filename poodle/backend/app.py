@@ -189,36 +189,52 @@ def upload_spec(course_id, assignment_id):
 		raise Unauthorized('Authorization token missing')
 	user_id = v.validate_token(token)
 
-	return assignment.collect_submissions(user_id, course_id, assignment_id)
+	spec_file = request.json['file']
+	return assignment.upload_spec(user_id, course_id, assignment_id, spec_file)
 
-@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/collect', methods=['GET'])
-def collect_submissions(course_id, assignment_id):
+@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/submit', methods=['PUT'])
+def submit_assignment(course_id, assignment_id):
 	token = request.headers.get('Authorization')
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	user_id = v.validate_token(token)
 
-	return assignment.collect_submissions(user_id, course_id, assignment_id)
+	submission_file = request.json['file']
+	return assignment.submit(user_id, course_id, assignment_id, submission_file)
 
-@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/collect', methods=['GET'])
-def collect_submissions(course_id, assignment_id):
+@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/mark', methods=['PUT'])
+def update_score(course_id, assignment_id):
 	token = request.headers.get('Authorization')
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	user_id = v.validate_token(token)
 
-	return assignment.collect_submissions(user_id, course_id, assignment_id)
+	submission_id = request.json['submissionId']
+	score = request.json['score']
 
-@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/collect', methods=['GET'])
-def collect_submissions(course_id, assignment_id):
+	return assignment.update_score(user_id, submission_id, score)
+
+@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/score', methods=['GET'])
+def fetch_score(course_id, assignment_id):
 	token = request.headers.get('Authorization')
 	if not token:
 		raise Unauthorized('Authorization token missing')
 	user_id = v.validate_token(token)
+	
+	submission_id = request.json['submissionId']
 
-	return assignment.collect_submissions(user_id, course_id, assignment_id)
+	return assignment.retrieve_score(user_id, submission_id)
 
+@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/submissions', methods=['GET'])
+def fetch_submission(course_id, assignment_id):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	user_id = v.validate_token(token)
+	
+	submission_id = request.json['submissionId']
 
+	return assignment.fetch_submission(user_id, submission_id)
 
 if __name__ == '__main__':
 	app.run(debug=True)

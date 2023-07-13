@@ -134,7 +134,7 @@ def update_score(user_id, submission_id, score):
 	return jsonify({'message': 'Score updated successfully'}), 201
 
 
-def retrieve_score(user_id, submission_id):
+def fetch_score(user_id, submission_id):
 	user = User.query.get(user_id)
 	
 	if not user.is_teacher:
@@ -142,10 +142,10 @@ def retrieve_score(user_id, submission_id):
 
 	submission = User.query.get(submission_id)
 
-	return jsonify({'message': 'Score successfully retrieved', 'submission_mark': submission.mark}), 201
+	return jsonify({'message': 'Score successfully fetched', 'submission_mark': submission.mark}), 201
 
 
-def retrieve_submission(user_id, assignment_id, student_id):
+def fetch_submission(user_id, assignment_id, student_id):
 	user = User.query.get(user_id)
 	
 	if not user.is_teacher:
