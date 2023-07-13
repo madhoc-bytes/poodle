@@ -27,6 +27,8 @@ import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import { Delete } from "@mui/icons-material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useParams } from "react-router";
+import { render } from "react-dom";
+import CourseChatbot from "../../components/CourseChatbot";
 
 const folderListStyle = {
   backgroundColor: "#f5f5f5", // Set the background color to grey
@@ -181,6 +183,9 @@ const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {render(<CourseChatbot />, document.getElementById("root"))}
+
     </React.Fragment>
   );
 };

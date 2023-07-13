@@ -17,6 +17,7 @@ import StudentCourseQuizzes from './pages/StudentCoursePages/StudentCourseQuizze
 import StudentQuizPage from './pages/StudentCoursePages/StudentQuizPage'
 import TeacherCourseQuizzes from './pages/TeacherCoursePages/TeacherCourseQuizzes'
 import TeacherEditQuiz from './pages/TeacherCoursePages/TeacherEditQuiz'
+import CourseChatbot from './components/CourseChatbot'
 
 function App() {
   return (
@@ -47,6 +48,9 @@ function App() {
         <Route path="/student/:courseId/quizpage/:quizId" element={<StudentQuizPage />} />
 
         <Route path="/OnlineClass/:courseId/:roomId" element={<OnlineClass />} />
+
+
+        <Route path="/chatbot" element={<CourseChatbot />} />
       </Routes>
     </BrowserRouter>
 
