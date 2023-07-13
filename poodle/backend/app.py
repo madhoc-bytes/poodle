@@ -5,7 +5,6 @@ from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
 import quiz
-import assignment
 import courses.courses as courses
 import courses.content as content
 import courses.classes as classes
@@ -152,123 +151,101 @@ def get_token(request):
 	else:
 		return token
 
-@app.route('/courses/<int:course_id>/quiz_list', methods=['GET'])
-def user_quizzes(course_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	user_id = v.validate_token(token)
-
-	return quiz.user_quizzes_course(user_id, course_id)
-
-@app.route('/courses/<int:course_id>/quiz/<int:quiz_id>/name', methods=['GET'])
-def get_quiz_name(course_id, quiz_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	v.validate_token(token)
-
-	return quiz.get_quiz_name(course_id, quiz_id)
-
-@app.route('/courses/<int:course_id>/quiz/create', methods=['POST'])
+# QUIZ
+@app.route('/course/<int:course_id>/quiz/create', methods=['POST'])
 def create_quiz(course_id):
-	token = request.headers.get('Authorization')
-
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	
+	token = get_token(request)
 	user_id = v.validate_token(token)
+
 	quiz_name = request.json['quizName']
 	due_date = request.json['dueDate']
-
-	return quiz.create_quiz(quiz_name, user_id, course_id, due_date)
-
-@app.route('/courses/<int:course_id>/quiz/<int:quiz_id>/questions', methods=['GET'])
-def quiz_questions(course_id, quiz_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	v.validate_token(token)
-
-	return quiz.get_quiz_questions(course_id, quiz_id)
-
-@app.route('/course/<int:course_id>/quiz/<int:quiz_id>/questions/create', methods=['POST'])
-def create_question(course_id, quiz_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	v.validate_token(token)
-
-	question = request.json['question']
 	time_limit = request.json['timeLimit']
-	points = request.json['points']
+
+	return quiz.create_quiz(user_id, course_id, quiz_name, due_date, time_limit)
+
+@app.route('/quiz/<int:quiz_id>/edit', methods=['PUT'])
+def update_quiz(quiz_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	quiz_name = request.json['quizName']
+	due_date = request.json['dueDate']
+	time_limit = request.json['timeLimit']
+	
+	return quiz.update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit)
+
+@app.route('/quiz/<int:quiz_id>/edit-questions', methods=['PUT'])
+def create_question(quiz_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	question_name = request.json['questionName']
 	is_multi = request.json['isMulti']
+	answers = request.json['answers']
+	correct_answer = request.json['correctAnswer']
 
-	return quiz.create_question(course_id, quiz_id, question, time_limit, points, is_multi)	
+	return quiz.create_question(user_id, quiz_id, question_name, is_multi, answers, correct_answer)
 
-@app.route('/course/<int:course_id>/quiz/<int:quiz_id>/question/<int:question_id>/answers', methods=['GET'])
-def get_quiz_question_answers(course_id, quiz_id, question_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	v.validate_token(token)
 
-	return quiz.get_quiz_question_answers(course_id, quiz_id, question_id)
-
-@app.route('/course/<int:course_id>/quiz/<int:quiz_id>/question/<int:question_id>/answers/create', methods=['POST'])
-def create_answer(course_id, quiz_id, question_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	v.validate_token(token)
-
-	answer = request.json['answer']
-	is_correct = request.json['isCorrect']
-
-	return quiz.create_answer(course_id, quiz_id, question_id, answer, is_correct)
-
-@app.route('/course/<int:course_id>/assignment_list', methods=['GET'])
-def get_assignments(course_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
+@app.route('/quiz/<int:quiz_id>/delete', methods=['DELETE'])
+def delete_quiz(quiz_id):
+	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	return assignment.get_assignments_course(user_id, course_id)
+	return quiz.delete_quiz(user_id, quiz_id)
 
-@app.route('/course/<int:course_id>/assignments/<int:ass_id>/name', methods=['GET'])
-def get_ass_name(course_id, ass_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	v.validate_token(token)
-
-	return assignment.get_ass_name(course_id, ass_id)
-
-@app.route('/course/<int:course_id>/assignments', methods=['GET'])
-def get_ass(course_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	v.validate_token(token)
-
-	return assignment.all_ass(course_id)
-
-@app.route('/course/<int:course_id>/assignments/create', methods=['POST'])
-def create_assignment(course_id):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
+@app.route('/course/<int:course_id>/quiz-names', methods=['GET'])
+def get_quiz_names_teacher(course_id):
+	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	title = request.json['title']
-	due_date = request.json['due_date']
-	description = request.json['description']
-	marks = request.json['marks']
-	num_sub = request.json['num_sub']
+	return quiz.get_quiz_names_teacher(user_id, course_id)
 
-	return assignment.create_assignment(user_id, course_id, title, due_date, description, marks, num_sub)
 
+@app.route('/quiz/<int:quiz_id>/info', methods=['GET'])
+def get_quiz_info(quiz_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return quiz.get_quiz_info(user_id, quiz_id)
+
+@app.route('/quiz/<int:quiz_id>/deploy', methods=['PUT'])
+def deploy_quiz(quiz_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return quiz.deploy_quiz(user_id, quiz_id)
+
+# STUDENT QUIZ
+@app.route('/quiz/<int:quiz_id>/student-attempt', methods=['POST'])
+def attempt_quiz(quiz_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return quiz.create_quiz_score(user_id, quiz_id)
+
+@app.route('/course/<int:course_id>/quiz-list-student', methods=['GET'])
+def get_quizzes_student(course_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return quiz.get_quiz_score(user_id, course_id)
+
+@app.route('/quiz/<int:quiz_id>/quiz-info-student', methods=['GET'])
+def get_quiz_info_student(quiz_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return quiz.get_quiz_info_student(user_id, quiz_id)
+
+@app.route('/quiz/<int:quiz_id>/update-score', methods=['PUT'])
+def update_quiz_score(quiz_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	score = request.json['score']
+
+	return quiz.update_quiz_score(user_id, quiz_id, score)
 
 
 if __name__ == '__main__':

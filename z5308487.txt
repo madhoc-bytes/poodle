@@ -29,3 +29,6 @@ Week 5
 
 Week 6
 - Began work on quizzes and assignments for sprint 2
+
+Week 7
+- Redoing the quizzes and assignment databases to be more efficient
