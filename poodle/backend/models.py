@@ -48,12 +48,12 @@ class Course(db.Model):
 
 class Assignment(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	spec_file_id = db.Column(db.Integer, nullable=True)
 	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
 	title = db.Column(db.String(100), nullable=False)
 	description = db.Column(db.String(1000), nullable=True)
 	due_date = db.Column(db.DateTime, nullable=False)
 	max_marks = db.Column(db.Integer, nullable=False)
+	spec_file_id = db.Column(db.Integer, nullable=True)
 	submissions = relationship('Submission', backref='assignment', cascade='all, delete-orphan')
 
 	def __init__(self, course_id, title, description, due_date, max_marks):

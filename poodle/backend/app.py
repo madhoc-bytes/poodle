@@ -147,22 +147,12 @@ def get_course_content(course_id):
 
 	return content.get_course_content(user_id, course_id)
 
-# search
 @app.route('/course/<int:course_id>/content/search/<query>', methods=['GET'])
 def search_content(course_id, query):
 	token = get_token(request)
 	v.validate_token(token)
 
 	return content.search(course_id, query)
-
-
-# HELPERS
-def get_token(request):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	else:
-		return token
 
 @app.route('/course/<int:course_id>/assignments/create', methods=['POST'])
 def create_assignment(course_id):
@@ -173,26 +163,42 @@ def create_assignment(course_id):
 	description = request.json['description']
 	due_date = request.json['dueDate']
 	max_marks = request.json['maxMarks']
+	spec_file_id = request.json['fileId']
 
-	return assignment.create(user_id, course_id, title, description, due_date, max_marks)
+	return assignment.create(user_id, course_id, title, description, due_date, max_marks, spec_file_id)
 
-@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/specification', methods=['PUT'])
-def upload_spec(course_id, assignment_id):
+@app.route('/course/assignments/<int:assignment_id>/specification', methods=['PUT'])
+def upload_spec(assignment_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	spec_file = request.json['file']
-	return assignment.upload_spec(user_id, course_id, assignment_id, spec_file)
+	return assignment.upload_spec(user_id, assignment_id, spec_file)
 
-@app.route('/course/<int:course_id>/assignments/<int:assignment_id>/submit', methods=['PUT'])
-def submit_assignment(course_id, assignment_id):
+@app.route('/course/<int:course_id>/assignments', methods=['GET'])
+def get_assignments(course_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return assignment.get_assignments(user_id, course_id)
+
+@app.route('/course/assignments/<int:assignment_id>/submit', methods=['PUT'])
+def submit_assignment(assignment_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	submission_file = request.json['file']
-	return assignment.submit(user_id, course_id, assignment_id, submission_file)
+	return assignment.submit(user_id, assignment_id, submission_file)
 
-@app.route('/course/assignments/marking/<int:submission_id>', methods=['PUT'])
+@app.route('/course/assignments/<int:assignment_id>/submissions', methods=['GET'])
+def fetch_submissions(assignment_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return assignment.all_submissions(user_id, assignment_id)
+
+
+@app.route('/course/assignments/mark/<int:submission_id>', methods=['PUT'])
 def update_score(submission_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
@@ -201,19 +207,20 @@ def update_score(submission_id):
 
 	return assignment.update_score(user_id, submission_id, score)
 
-@app.route('/course/assignments/marks/<int:submission_id>', methods=['GET'])
-def fetch_score(submission_id):
+@app.route('/course/assignments/score/<int:submission_id>', methods=['GET']) 
+def fetch_score(submission_id): #TODO: probs wont need this route
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	return assignment.retrieve_score(user_id, submission_id)
 
-@app.route('/course/assignments/<int:submission_id>', methods=['GET'])
-def fetch_submission(submission_id):
-	token = get_token(request)
-	user_id = v.validate_token(token)
-	
-	return assignment.fetch_submission(user_id, submission_id)
+# HELPERS
+def get_token(request):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	else:
+		return token
 
 if __name__ == '__main__':
 	app.run(debug=True)
