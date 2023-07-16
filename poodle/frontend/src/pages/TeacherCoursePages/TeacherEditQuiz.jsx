@@ -321,6 +321,7 @@ const TeacherEditQuiz = () => {
             },
           }}
         >
+          <Toolbar />
           <List>
             <ListItemButton
               onClick={() => setCurrQuestionIndex(null)}
@@ -351,7 +352,7 @@ const TeacherEditQuiz = () => {
                   marginBottom: "16px",
                 }}
               >
-                {index + 1}
+                <b>Question {index + 1}</b>
               </ListItemButton>
             ))}
           </List>
