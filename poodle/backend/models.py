@@ -99,14 +99,15 @@ class FolderSchema(ma.SQLAlchemyAutoSchema):
         model = Folder
         include_relationships = True
 
-    files = ma.Nested(FileSchema, many=True)
+    # files = ma.Nested(FileSchema, many=True)
 
 class CourseSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Course
         include_relationships = True
 
-    folders = ma.Nested(FolderSchema, many=True)
+    # folders = ma.Nested(FolderSchema, many=True)
+
 # class CourseSchema(ma.SQLAlchemySchema):
 #     class Meta:
 #         model = Course
@@ -143,6 +144,74 @@ class OnlineClassSchema(ma.SQLAlchemySchema):
 	class Meta:
 		model = OnlineClass
 		fields = ('id', 'name','course_id')
+
+
+class Quiz(db.Model):
+	print('ok here dawg')
+	quiz_id = db.Column(db.Integer, primary_key=True)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+	due_date = db.Column(db.DateTime, nullable=False)
+	name = db.Column(db.String(100), nullable=False)
+	questions = db.Column(db.JSON, nullable=True)
+	time_limit = db.Column(db.Integer, nullable=False)
+	is_deployed = db.Column(db.Boolean, default=False, nullable=False)
+
+	def __init__(self, course_id, due_date, name, questions, time_limit, is_deployed):
+		self.course_id = course_id
+		self.due_date = due_date
+		self.name = name
+		self.questions = questions
+		self.time_limit = time_limit
+		self.is_deployed = is_deployed
+
+class QuizSchema(ma.SQLAlchemySchema):
+	class Meta:
+		model = Quiz
+		fields = ('quiz_id', 'course_id', 'due_date', 'name', 'questions', 'time_limit', 'is_deployed')
+
+
+class QuizScore(db.Model):
+	quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.quiz_id'), primary_key=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+	time_started = db.Column(db.DateTime, nullable=False)
+	score = db.Column(db.Float, nullable=False)
+
+	def __init__(self, quiz_id, user_id, time_started, score):
+		self.quiz_id = quiz_id
+		self.user_id = user_id
+		self.time_started = time_started
+		self.score = score
+
+class QuizScoreSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('quiz_id', 'user_id', 'time_started', 'score')
+
+
+class Assignment(db.Model):
+	ass_id = db.Column(db.Integer, primary_key=True)
+	creator = db.Column(db.Integer, nullable=False)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+	title = db.Column(db.String(100), nullable=False)
+	due_date = db.Column(db.DateTime, nullable=False)
+	max_marks = db.Column(db.Integer, nullable=False)
+	description = db.Column(db.String(1000), nullable=False)
+	# TODO: file attachments
+	number_of_submissions = db.Column(db.Integer, nullable=False)
+
+	def __init__(self, creator, course_id, title, due_date, description, max_marks, number_of_submissions):
+		self.creator = creator
+		self.course_id = course_id
+		self.title = title
+		self.due_date = due_date
+		self.description = description
+		self.max_marks = max_marks
+		self.number_of_submissions = number_of_submissions
+
+class AssignmentSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('ass_id', 'creator', 'course_id', 'title', 'due_date', 'max_marks', 'description', 'number_of_submissions')
+
+	
 
 
 	

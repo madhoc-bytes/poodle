@@ -1,0 +1,53 @@
+Eddy Zhang
+
+You should also include in this diary the following information (if applicable) about the
+project progress:
+- what was planned for the period since the last work diary entry.
+- what was finished.
+- what were the main technical and non-technical obstacles and how they were
+overcome (or what was tried and did not work).
+- what was not finished, why this happened, how this affects the overall project
+progress and what adjustments (if any) are needed so the success of the project is not
+endangered.
+- what is planned for the next period (e.g., next week).
+
+Week 1
+- Formed group
+- Set up means of communication - discord channel, google drive, messenger chat
+- Had a meeting to discuss which project we wanted to do - decided on LMS
+- Planned out and discussed potential additional functionalities
+- Created Jira
+
+Week 2
+- Created GitHub
+- Brainstormed additional functionalities with group:
+	- Gamification = novel
+	- Chatbot
+	- Calendar
+	- Avatar creator = novel
+- Split up user stories and acceptance criteria - I was assigned the default LMS functionalities
+- Decided as a group we were going to use Python flask for backend and React for frontend
+
+Week 3
+- Finished user stories and acceptance criteria
+- Made figma storyboard for authentication, quizzes and dashboard
+- Proofread all user stories that were uploaded to Jira and collated them all into proposal doc
+- As the scrum master, set up sprint dates and added them into proposal
+- Submitted proposal
+
+Week 4
+- Discussed with backend what fetches I needed on the frontend
+- Started design of login and dashboard page
+
+Week 5
+- Finalised what fetches I required from the backend
+- Completed all frontend code for the sprint
+- Checked through functionality for any bugs
+- Prepared and demo'd Progressive Demo A
+- Held retrospective meeting in our tute after our demo
+- Completed and handed in retro A
+
+Week 6
+
+
+
