@@ -212,7 +212,7 @@ def fetch_score(submission_id): #TODO: probs wont need this route
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	return assignment.retrieve_score(user_id, submission_id)
+	return assignment.fetch_score(user_id, submission_id)
 
 # HELPERS
 def get_token(request):
