@@ -160,8 +160,9 @@ def create_quiz(course_id):
 	quiz_name = request.json['quizName']
 	due_date = request.json['dueDate']
 	time_limit = request.json['timeLimit']
+	max_marks = request.json['maxMarks']
 
-	return quiz.create_quiz(user_id, course_id, quiz_name, due_date, time_limit)
+	return quiz.create_quiz(user_id, course_id, quiz_name, due_date, time_limit, max_marks)
 
 @app.route('/quiz/<int:quiz_id>/edit', methods=['PUT'])
 def update_quiz(quiz_id):

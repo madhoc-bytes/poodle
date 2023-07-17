@@ -155,19 +155,21 @@ class Quiz(db.Model):
 	questions = db.Column(db.JSON, nullable=True)
 	time_limit = db.Column(db.Integer, nullable=False)
 	is_deployed = db.Column(db.Boolean, default=False, nullable=False)
+	max_marks = db.Column(db.Integer, nullable=False)
 
-	def __init__(self, course_id, due_date, name, questions, time_limit, is_deployed):
+	def __init__(self, course_id, due_date, name, questions, time_limit, is_deployed, max_marks):
 		self.course_id = course_id
 		self.due_date = due_date
 		self.name = name
 		self.questions = questions
 		self.time_limit = time_limit
 		self.is_deployed = is_deployed
+		self.max_marks = max_marks
 
 class QuizSchema(ma.SQLAlchemySchema):
 	class Meta:
 		model = Quiz
-		fields = ('quiz_id', 'course_id', 'due_date', 'name', 'questions', 'time_limit', 'is_deployed')
+		fields = ('quiz_id', 'course_id', 'due_date', 'name', 'questions', 'time_limit', 'is_deployed', 'max_marks')
 
 
 class QuizScore(db.Model):

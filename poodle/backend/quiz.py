@@ -5,7 +5,7 @@ from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import json
 
-def create_quiz(user_id, course_id, quiz_name, due_date, time_limit):
+def create_quiz(user_id, course_id, quiz_name, due_date, time_limit, max_marks):
 	user = User.query.get(user_id)
 	course = Course.query.get(course_id)
 
@@ -27,6 +27,9 @@ def create_quiz(user_id, course_id, quiz_name, due_date, time_limit):
 	if not time_limit:
 		raise BadRequest('Time limit cannot be empty')
 	
+	if not max_marks:
+		raise BadRequest('Max marks cannot be empty')
+	
 	if course.creator != user_id:
 		raise Unauthorized('Teacher is not creator of the course')
 	
@@ -37,14 +40,14 @@ def create_quiz(user_id, course_id, quiz_name, due_date, time_limit):
 	due_datetime = datetime.fromtimestamp(due_date)
 
 	print('ok hyygyg')
-	new_quiz = Quiz(course_id=course_id, due_date=due_datetime, name=quiz_name, questions=questions, time_limit=time_limit, is_deployed=False)
+	new_quiz = Quiz(course_id=course_id, due_date=due_datetime, name=quiz_name, questions=questions, time_limit=time_limit, is_deployed=False, max_marks=max_marks)
 
 	db.session.add(new_quiz)
 	db.session.commit()
 
 	return jsonify({'message': 'Quiz created successfully', 'quiz_id': new_quiz.quiz_id}), 201
 
-def update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit):
+def update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit, max_marks):
 	user = User.query.get(user_id)
 	quiz = Quiz.query.get(quiz_id)
 
@@ -78,6 +81,9 @@ def update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit):
 	
 	if time_limit:
 		quiz.time_limit = time_limit
+
+	if max_marks:
+		quiz.max_marks = max_marks
 
 	db.session.commit()
 
@@ -130,8 +136,6 @@ def create_question(user_id, quiz_id, question_name, is_multi, answers, correct_
 	quiz_dict = json.loads(quiz.questions)
 	quiz_dict['questions'].append(new_question)
 	quiz.questions = json.dumps(quiz_dict)
-	# new_questions_json = json.loads(quiz.questions).append(json.dumps(new_question))
-	# Quiz.query.get(quiz_id).update('questions', quiz_dict)
 	db.session.commit()
 
 	return jsonify({'message': 'Question created successfully'}), 201
@@ -266,7 +270,13 @@ def create_quiz_score(user_id, quiz_id):
 		raise BadRequest('Quiz has not been deployed yet')
 	
 	curr_dt = datetime.now()
-	# timestamp = int(round(curr_dt.timestamp()))
+
+	if curr_dt > quiz.due_date:
+		raise Unauthorized('Quiz has already ended')
+
+	quiz_score = QuizScore.query.filter_by(user_id=user_id, quiz_id=quiz_id).first()
+	if quiz_score:
+		raise BadRequest('Quiz can only be attempted once')
 	
 	new_quiz_score = QuizScore(user_id=user_id, quiz_id=quiz_id, time_started=curr_dt, score=0)
 
@@ -304,18 +314,22 @@ def get_quiz_score(user_id, course_id):
 		if not quiz_score:
 			quiz_dict = {"name" : quiz.name, 
 			"score" : None,
+			"max_marks" : quiz.max_marks,
 			"dueDate" : quiz.due_date,
 			"status" : "Not attempted"}
 		# if quiz is being attempted
 		elif (quiz_score.time_started.timestamp() + quiz.time_limit) > int(round(datetime.now().timestamp())):
 			quiz_dict = {"name" : quiz.name, 
 			"score" : quiz_score.score,
+			"max_marks" : quiz.max_marks,
 			"dueDate" : quiz.due_date,
-			"status" : "In progress"}
+			"status" : "In progress"
+			}
 		# Quiz time has finished
 		else:
 			quiz_dict = {"name" : quiz.name, 
 			"score" : quiz_score.score,
+			"max_marks" : quiz.max_marks,
 			"dueDate" : quiz.due_date,
 			"status" : "Completed"}
 		
