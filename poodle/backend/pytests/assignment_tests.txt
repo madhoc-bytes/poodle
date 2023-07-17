@@ -150,18 +150,18 @@ curl -X POST \
   }' \
   $BASE_URL/courses/$COURSE_ID/create-folder
 
+import datetime
 
-# TEACHER CREATE Assignment
-due_date = datetime.datetime(2023, 7, 31, 12, 0, 0)
-due_date_str = due_date.strftime("%Y-%m-%dT%H:%M:%S")
+due_date_str = '2023-07-31'  # Assuming 'due_date' is a string in the format 'YYYY-MM-DD'
+due_date = datetime.datetime.strptime(due_date_str, '%Y-%m-%d')
 
 curl -X POST \
-  -H "Authorization: $AUTH_TOKEN" \
   -H "Content-Type: application/json" \
+  -H "Authorization: $AUTH_TOKEN" \
   -d '{
     "title": "Sample Assignment",
     "description": "This is a sample assignment",
-    "dueDate": due_date_str,
+    "dueDate": 2023-07-31 00:00:00,
     "maxMarks": 100
   }' \
   $BASE_URL/course/1/assignments/create
