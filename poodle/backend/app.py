@@ -163,9 +163,8 @@ def create_assignment(course_id):
 	description = request.json['description']
 	due_date = request.json['dueDate']
 	max_marks = request.json['maxMarks']
-	spec_file_id = request.json['fileId']
 
-	return assignment.create(user_id, course_id, title, description, due_date, max_marks, spec_file_id)
+	return assignment.create(user_id, course_id, title, description, due_date, max_marks)
 
 @app.route('/course/assignments/<int:assignment_id>/specification', methods=['PUT'])
 def upload_spec(assignment_id):

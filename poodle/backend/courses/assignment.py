@@ -6,7 +6,7 @@ from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import os
 
-def create(user_id, course_id, title, description, due_date, max_marks, spec_file_id):
+def create(user_id, course_id, title, description, due_date, max_marks):
 	user = User.query.get(user_id)
 	
 	if not user.is_teacher:
@@ -28,7 +28,7 @@ def create(user_id, course_id, title, description, due_date, max_marks, spec_fil
 		raise BadRequest('Maximum marks cannot be empty')	
 	
 
-	new_assignment = Assignment(course_id=course_id, title=title,description=description, due_date=due_date, max_marks=max_marks, spec_file_id=spec_file_id)
+	new_assignment = Assignment(course_id=course_id, title=title,description=description, due_date=due_date, max_marks=max_marks)
 
 	db.session.add(new_assignment)
 	db.session.commit()

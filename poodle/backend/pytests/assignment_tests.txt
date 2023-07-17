@@ -1,0 +1,195 @@
+# set url
+BASE_URL="http://localhost:5000"
+
+# TOKEN
+AUTH_TOKEN="Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODg1Mzg5NjR9.UEH_DPBIDhtWNvl43HL6XlI1Pm0thLlbiEuC1P37tDY"  # Replace with a valid authorization token
+
+#REGO TEACHER
+FIRST_NAME="John"
+LAST_NAME="Doe"
+EMAIL="john.doe@example.com"
+PASSWORD="password123"
+IS_TEACHER=true  # Set to "true" if the user is a teacher
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "'"$FIRST_NAME"'",
+    "lastName": "'"$LAST_NAME"'",
+    "email": "'"$EMAIL"'",
+    "password": "'"$PASSWORD"'",
+    "isTeacher": '$IS_TEACHER'
+  }' \
+  http://localhost:5000/register
+
+# REGO Student 1
+FIRST_NAME="Jane"
+LAST_NAME="Doe"
+EMAIL="student@example.com"
+PASSWORD="password123"
+IS_TEACHER=false
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "'"$FIRST_NAME"'",
+    "lastName": "'"$LAST_NAME"'",
+    "email": "'"$EMAIL"'",
+    "password": "'"$PASSWORD"'",
+    "isTeacher": '$IS_TEACHER'
+  }' \
+  http://localhost:5000/register
+
+# REGO Student 2
+FIRST_NAME="James"
+LAST_NAME="Doe"
+EMAIL="student1@example.com"
+PASSWORD="password123"
+IS_TEACHER=false
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "'"$FIRST_NAME"'",
+    "lastName": "'"$LAST_NAME"'",
+    "email": "'"$EMAIL"'",
+    "password": "'"$PASSWORD"'",
+    "isTeacher": '$IS_TEACHER'
+  }' \
+  http://localhost:5000/register
+
+# Login Teacher
+EMAIL="john.doe@example.com"
+PASSWORD="password123"
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "'"$EMAIL"'",
+    "password": "'"$PASSWORD"'"
+  }' \
+  $BASE_URL/login
+
+# Logout 
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  $BASE_URL/logout
+
+
+AUTH_TOKEN="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODk1NzAxMTF9.RMDvpjUTfnAbuITZgsDmeD53lEsSM6GRI3XPVAEWlYw"  # Replace with a valid authorization token
+
+# course list
+curl -X GET \
+  -H "Authorization: $AUTH_TOKEN" \
+  $BASE_URL/dashboard/course-list
+
+AUTH_TOKEN="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODk1Njg5ODB9.IZZtFh7yXdsw6ASGHCbQt2tNeCT-E83pK5-3dy3oczk"  # Replace with a valid authorization token
+
+# create course
+COURSE_NAME="COMP3900"
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "courseName": "'"$COURSE_NAME"'"
+  }' \
+  $BASE_URL/courses/create
+
+# add student to course
+COURSE_ID=1  
+STUDENT_EMAIL="student@example.com"  
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "'"$STUDENT_EMAIL"'"
+  }' \
+  $BASE_URL/courses/$COURSE_ID/invite
+
+# add student to course
+COURSE_ID=1  
+STUDENT_EMAIL="student1@example.com"  
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "'"$STUDENT_EMAIL"'"
+  }' \
+  $BASE_URL/courses/$COURSE_ID/invite
+
+# see course students
+COURSE_ID=1  # Replace with the desired course ID
+
+curl -X GET \
+  -H "Authorization: $AUTH_TOKEN" \
+  $BASE_URL/courses/$COURSE_ID/students
+
+# create folder
+COURSE_ID=1  # Replace with the desired course ID
+FOLDER_NAME="Assignments"  # Replace with the desired folder name
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "folderName": "'"$FOLDER_NAME"'"
+  }' \
+  $BASE_URL/courses/$COURSE_ID/create-folder
+
+# create folder
+COURSE_ID=1  # Replace with the desired course ID
+FOLDER_NAME="General"  # Replace with the desired folder name
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "folderName": "'"$FOLDER_NAME"'"
+  }' \
+  $BASE_URL/courses/$COURSE_ID/create-folder
+
+
+# TEACHER CREATE Assignment
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Sample Assignment",
+    "description": "This is a sample assignment",
+    "dueDate": "2023-07-31",
+    "maxMarks": 100
+  }' \
+  $BASE_URL/course/1/assignments/create
+
+
+# TEACHER UPLOAD SPEC
+# create file
+FOLDER_ID=1  # Replace with the desired folder ID
+FILE_PATH="poodle/backend/pytests/spec.py"  # Replace with the path to the file you want to upload
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -F "file=@$FILE_PATH" \
+  $BASE_URL/courses/$FOLDER_ID/create-file
+
+
+# STUDENT UPLOAD ASSIGNMENT
+
+# create file
+FOLDER_ID=1  # Replace with the desired folder ID
+FILE_PATH="poodle/backend/pytests/asstest.py"  # Replace with the path to the file you want to upload
+
+curl -X POST \
+  -H "Authorization: $AUTH_TOKEN" \
+  -F "file=@$FILE_PATH" \
+  $BASE_URL/courses/$FOLDER_ID/create-file
+
+
+
+
+
+
+
