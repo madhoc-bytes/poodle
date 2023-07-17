@@ -27,17 +27,37 @@ def create(user_id, course_id, title, description, due_date, max_marks):
 	if not max_marks:
 		raise BadRequest('Maximum marks cannot be empty')	
 	
+	due_datetime = datetime.strptime(due_date, '%Y-%m-%dT%H:%M')
 
-	new_assignment = Assignment(course_id=course_id, title=title,description=description, due_date=due_date, max_marks=max_marks)
+	new_assignment = Assignment(course_id=course_id, title=title,description=description, due_date=due_datetime, max_marks=max_marks)
 
 	db.session.add(new_assignment)
 	db.session.commit()
 	
 	# Make a new folder for the assignments
-	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', new_assignment.id)
-	os.makedirs(destination)
+	# destination = os.path.join(os.getcwd(), 'poodle/frontend/public/fsh', str(course_id), 'assignments', new_assignment.id)
+	# os.makedirs(destination)
 
 	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
+
+def edit(user_id, assignment_id, title, description):
+	user = User.query.get(user_id)
+	
+	if not user.is_teacher:
+		raise Unauthorized('User permission denied')
+	
+	if not title:
+		raise BadRequest('Title cannot be empty')
+	
+	if not description:
+		raise BadRequest('Description cannot be empty')
+
+	assignment = Assignment.query.get(assignment_id)
+	assignment.title = title
+	assignment.description = description
+	db.session.commit()
+
+	return jsonify({'message': 'Assignment edited successfully'}), 201
 
 def upload_spec(user_id, assignment_id, spec_file):
 	user = User.query.get(user_id)
@@ -45,8 +65,8 @@ def upload_spec(user_id, assignment_id, spec_file):
 	if not user.is_teacher:
 		raise Unauthorized('User permission denied')
 
-	assignment = User.query.get(assignment_id)
-	if not assignment.spec_path:
+	assignment = Assignment.query.get(assignment_id)
+	if not assignment.spec_file_id:
 		current_time = datetime.now()
 		file = File(folder_id=0, name="specification", date_created=current_time, file_path='')
 		db.session.add(file)
@@ -54,17 +74,22 @@ def upload_spec(user_id, assignment_id, spec_file):
 
 		# save locally to fsh content	
 		unique_name = str(file.id)
-		destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(assignment.course_id), 'assignments', str(assignment_id), unique_name)
-		spec_file.save(destination)
+		destination = os.path.join('poodle/frontend/public/fsh', str(assignment.course_id), 'assignments', str(assignment_id) + '.pdf')
+  
+		import base64
+		file_content_binary = base64.b64decode(spec_file['fileContent'])
+		# file_content_binary.save(destination)
 
+		with open(destination, "wb") as a:
+			a.write(file_content_binary)
+      
 		file.file_path = destination
 
-		assignment.spec_path = destination
+		assignment.spec_file_id = file.id
 		db.session.commit()
 		return jsonify({'message': 'Assignment spec successfully uploaded', 'file_id': file.id}), 201
 	else:
-		spec_id = assignment.spec_id
-		spec = File.query.get(spec_id)
+		spec = File.query.get(assignment.spec_file_id)
 		destination = spec.file_path
 		os.remove(destination)
 
@@ -76,12 +101,12 @@ def upload_spec(user_id, assignment_id, spec_file):
 
 # get assignments 
 def get_assignments(user_id, course_id):
-	user = User.query.get(user_id)
+	# user = User.query.get(user_id)
 
 	#check if user in the course
-	enrolment = Enrolment.query.filter_by(user_id=user_id, course_id=course_id).first()
-	if not enrolment:
-		raise Unauthorized('User not enrolled in course')
+	# enrolment = Enrolment.query.filter_by(user_id=user_id, course_id=course_id).first()
+	# if not enrolment:
+	# 	raise Unauthorized('User not enrolled in course')
 
 	assignments = Assignment.query.filter_by(course_id=course_id).all()
 	assignment_schema = AssignmentSchema(many=True)
@@ -115,7 +140,7 @@ def submit(user_id, assignment_id, submission_file):
 
 		# save locally to fsh content	
 		unique_name = str(file.id)
-		destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(assignment.course_id), 'assignments', str(assignment_id), unique_name)
+		destination = os.path.join(os.getcwd(), 'poodle/frontend/public/fsh', str(assignment.course_id), 'assignments', str(assignment_id), unique_name)
 		submission_file.save(destination)
 
 		file.file_path = destination

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   TextField,
@@ -30,31 +30,15 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const TeacherCourseAssignments = () => {
   const courseId = useParams().courseId;
-  const navigate = useNavigate();
 
-  //   const [assignments, setAssignments] = useState([]);
-  const assignments = [
-    {
-      id: 1,
-      title: "yeehaw",
-      description: "meowmeowmeowmoeawiopemawiomewaoe",
-      dueDate: "2023-07-18T02:20",
-      maxMarks: 100,
-    },
-    {
-      id: 2,
-      title: "rawr",
-      description: "lets fucking ggooooo",
-      dueDate: "2023-07-18T02:20",
-      maxMarks: 3000,
-    },
-  ];
+  const [assignments, setAssignments] = useState([]);
   const [openModal, setOpenModal] = useState(false);
 
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [maxMarks, setMaxMarks] = useState(100);
   const [description, setDescription] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const [fileId, setFileId] = useState();
 
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(-1);
@@ -86,9 +70,150 @@ const TeacherCourseAssignments = () => {
     setSelectedAssignmentId(-1);
   };
 
-  const handleCreateAssignment = () => {};
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
 
-  const handleEditAssignment = () => {};
+  const fetchAssignments = async () => {
+    const response = await fetch(
+      // Change the URL when backend is ready
+      new URL(`/courses/${courseId}/assignments`, "http://localhost:5000/"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      setAssignments(data);
+    }
+  };
+
+  const handleCreateAssignment = async () => {
+    handleUploadSpec();
+    const response = await fetch(
+      // Change the URL when backend is ready
+      new URL(
+        `/courses/${courseId}/assignments/create`,
+        "http://localhost:5000/"
+      ),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ title, description, dueDate, maxMarks }),
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      fetchAssignments();
+      handleCloseModal();
+    }
+  };
+
+  const handleEditAssignment = async () => {
+    handleUploadSpec();
+
+    const response = await fetch(
+      new URL(
+        `/courses/assignments/${selectedAssignmentId}/edit`,
+        "http://localhost:5000/"
+      ),
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ title, description }),
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      fetchAssignments();
+      handleCloseModal();
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleUploadSpec = async () => {
+    if (!selectedFile) {
+      alert("Please select a file.");
+      return;
+    }
+
+    // Encode the file content as Base64
+    const reader = new FileReader();
+    reader.readAsDataURL(selectedFile);
+
+    reader.onload = async () => {
+      const fileContentBase64 = reader.result.split(",")[1];
+
+      // Prepare the JSON object with the file data
+      const fileData = {
+        fileName: selectedFile.name,
+        fileType: selectedFile.type,
+        fileContent: fileContentBase64,
+        // You can include additional data here, e.g., user ID, assignment ID, etc.
+      };
+
+      const response = await fetch(
+        new URL(
+          `/courses/assignments/${selectedAssignmentId}/specification`,
+          "http://localhost:5000/"
+        ),
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ file: fileData }),
+        }
+      );
+      const data = await response.json();
+      if (data.error) {
+        console.log("ERROR");
+      } else {
+        console.log("success");
+        setFileId(data.file_id);
+      }
+    };
+  };
+
+  const handleGetFile = async () => {
+    const response = await fetch(
+      new URL(`/courses/3`, "http://localhost:5000/"),
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    // const data = await response.blob();
+    // if (data.error) {
+    //   alert("error");
+    // }
+
+    // const url = window.URL.createObjectURL(data);
+    // window.open(url);
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -134,10 +259,10 @@ const TeacherCourseAssignments = () => {
                     {assignment.description}
                   </Typography>
                   <Typography variant="body2">
-                    Due Date: {assignment.dueDate}
+                    Due Date: {assignment.due_date}
                   </Typography>
                   <Typography variant="body2">
-                    Max mark: {assignment.maxMarks}
+                    Max mark: {assignment.max_marks}
                   </Typography>
                   <input type="file" />
                   <br />
@@ -207,7 +332,6 @@ const TeacherCourseAssignments = () => {
               />
             ) : (
               <TextField
-                readonly
                 type="number"
                 label="Max mark"
                 value={maxMarks}
@@ -240,7 +364,7 @@ const TeacherCourseAssignments = () => {
                 fullWidth
                 margin="normal"
                 variant="standard"
-                InputLabelProps={{ shrink: true, readonly: true }}
+                InputLabelProps={{ shrink: true, readOnly: true }}
               />
             )}
 
@@ -262,7 +386,7 @@ const TeacherCourseAssignments = () => {
             >
               Upload assignment specification
             </InputLabel>
-            <Input type="file" onChange={setFileId} fullWidth />
+            <Input type="file" onChange={handleFileChange} fullWidth />
           </DialogContent>
           <DialogActions
             sx={{
@@ -276,9 +400,9 @@ const TeacherCourseAssignments = () => {
               variant="contained"
               color="secondary"
               onClick={
-                selectedAssignmentId
-                  ? handleEditAssignment
-                  : handleCreateAssignment
+                selectedAssignmentId === -1
+                  ? handleCreateAssignment
+                  : handleEditAssignment
               }
             >
               {selectedAssignmentId === -1 ? "Create" : "Edit"}
@@ -286,6 +410,7 @@ const TeacherCourseAssignments = () => {
           </DialogActions>
         </Dialog>
       </Box>
+      <Button onClick={handleGetFile}>awraw</Button>
     </Box>
   );
 };

@@ -59,13 +59,25 @@ const StudentCourseQuizzes = () => {
     fetchQuizzes();
   }, []);
 
-  const handleAttemptQuiz = (quizId) => {
-    // Send a POST request with time right now to backend
-    let timeStarted = new Date().getTime();
+  const handleAttemptQuiz = async (quizId) => {
     // Post request
-
-    // Open a new tab with the quiz
-    window.open(`/student/${courseId}/quizpage/${quizId}`, "_blank");
+    const response = await fetch(
+      new URL(`/quiz/${quizId}/student-attempt`, "http://localhost:5000/"),
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      // Open a new tab with the quiz
+      window.open(`/student/${courseId}/quizpage/${quizId}`, "_blank");
+    }
   };
 
   const fetchQuizzes = async () => {
@@ -161,7 +173,12 @@ const StudentCourseQuizzes = () => {
                 ) : quiz.status === "In progress" ? (
                   <Button
                     variant="contained"
-                    onClick={() => handleAttemptQuiz(quiz.id)}
+                    onClick={() =>
+                      window.open(
+                        `/student/${courseId}/quizpage/${quiz.id}`,
+                        "_blank"
+                      )
+                    }
                     sx={{
                       width: "130px",
                       whiteSpace: "nowrap",

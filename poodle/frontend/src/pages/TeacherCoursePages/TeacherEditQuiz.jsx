@@ -240,10 +240,10 @@ const TeacherEditQuiz = () => {
     }
 
     const editedQuestion = {
-      question: currQuestion,
-      is_multi: currQuestionType,
+      questionName: currQuestion,
+      isMulti: currQuestionType,
       answers: currQuestionAnswers,
-      correct_answer: currCorrectAnswer,
+      correctAnswer: currCorrectAnswer,
     };
 
     const newQuestions = [...quizQuestions];

@@ -19,29 +19,17 @@ import {
 } from "@mui/material";
 import NavBar from "../../components/NavBar";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 
 const StudentQuizPage = () => {
+  const navigate = useNavigate();
+
   const [quizName, setQuizName] = useState("");
-  const [quizTimeStarted, setquizTimeStarted] = useState("");
+  const [quizTimeStarted, setQuizTimeStarted] = useState();
   const [quizTimeLimit, setQuizTimeLimit] = useState();
   const [quizQuestions, setQuizQuestions] = useState([]);
-  // const [quiz, setQuiz] = useState({
-  //   name: "Quiz 1",
-  //   quizId: 1,
-  //   timeStarted: "2023-07-01T15:30:00.000Z",
-  //   timeLimit: 1030400,
-  //   questions: [
-  //     {
-  //       question: "What is a penguin?",
-  //       isMulti: true,
-  //       answers: ["a bird", "a plane", "a pp", "cock"],
-  //       correctAnswer: "a bird",
-  //     },
-  //   ],
-  // });
   const token = localStorage.getItem("token");
-  const { quizId } = useParams();
+  const { quizId, courseId } = useParams();
 
   const theme = createTheme({
     palette: {
@@ -69,12 +57,9 @@ const StudentQuizPage = () => {
 
   const handleSubmit = () => {
     console.log("test submitted");
+    navigate(`/student/${courseId}/Quizzes`);
     // This will probably redirect you to another page saying test submitted
   };
-
-  useEffect(() => {
-    fetchQuiz();
-  }, []);
 
   const fetchQuiz = async () => {
     const response = await fetch(
@@ -92,10 +77,17 @@ const StudentQuizPage = () => {
       console.log("ERROR");
     } else {
       // TODO: Uncomment this when backend is ready
-      // setQuizzes(data);
-      // console.log(data);
+      setQuizName(data.quizInfo.name);
+      setQuizTimeLimit(data.quizInfo.timeLimit);
+      setQuizTimeStarted(data.quizInfo.timeStarted);
+      setQuizQuestions(data.quizInfo.questions);
+      console.log(data);
     }
   };
+
+  useEffect(() => {
+    fetchQuiz();
+  }, []);
 
   // Time remaining
   useEffect(() => {
@@ -103,7 +95,7 @@ const StudentQuizPage = () => {
       const timeStarted = new Date(quizTimeStarted);
       const now = new Date();
       const timeLimitMilliseconds = quizTimeLimit * 1000;
-      const timeElapsed = now.getTime() - quizTimeStarted.getTime();
+      const timeElapsed = now.getTime() - timeStarted.getTime();
       const timeRemaining = timeLimitMilliseconds - timeElapsed;
       const secondsLeft = Math.floor(timeRemaining / 1000);
 
@@ -125,14 +117,28 @@ const StudentQuizPage = () => {
   useEffect(() => {
     let count = 0;
     for (let key in selectedAnswers) {
-      if (selectedAnswers[key] === quizQuestions[key].correctAnswer) {
+      if (selectedAnswers[key] === quizQuestions[key].correct_answer) {
         count++;
       }
-
-      setCurrScore(count);
-      // TODO: send put request here to update score
     }
-    // Loop through selected answer and see how many are correct
+    setCurrScore(count);
+    const updateScoreFetch = async () => {
+      const response = await fetch(
+        new URL(`/quiz/${quizId}/update-score`, "http://localhost:5000/"),
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ score: count }),
+        }
+      );
+      const data = await response.json();
+      if (data.error) alert("ERROR");
+    };
+
+    updateScoreFetch();
   }, [selectedAnswers]);
 
   const goNext = () => {
@@ -144,7 +150,6 @@ const StudentQuizPage = () => {
   const goPrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-      // setState({...state, currentQuestionIndex: state.currentQuestionIndex - 1});
     }
   };
 
@@ -155,202 +160,209 @@ const StudentQuizPage = () => {
     });
   };
 
-  // return (
-  //   <ThemeProvider theme={theme}>
-  //     <NavBar />
-  //     <Toolbar />
-  //     {/* Quiz Name */}
-  //     <Box
-  //       sx={{
-  //         display: "flex",
-  //         justifyContent: "space-between",
-  //         alignItems: "center",
-  //         padding: "10px 50px",
-  //         borderBottom: "2px solid black",
-  //       }}
-  //     >
-  //       <Typography variant="h7">Time Remaining: {timeLeft}</Typography>
+  return (
+    <ThemeProvider theme={theme}>
+      <NavBar />
+      <Toolbar />
+      {/* Quiz Name */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "10px 50px",
+          borderBottom: "2px solid black",
+        }}
+      >
+        <Typography variant="h7">Time Remaining: {timeLeft}</Typography>
 
-  //       <Typography variant="h2">
-  //         <b>{quizName}</b>
-  //       </Typography>
-  //       <Button variant="contained" color="secondary" onClick={handleClickOpen}>
-  //         Submit
-  //       </Button>
-  //     </Box>
-  //     <Drawer
-  //       variant="permanent"
-  //       sx={{ justifyContent: "center" }}
-  //       PaperProps={{
-  //         sx: {
-  //           width: "260px",
-  //           marginTop: "158px",
-  //           alignItems: "center",
-  //           padding: "20px",
-  //         },
-  //       }}
-  //     >
-  //       <Grid container>
-  //         <Grid item>
-  //           {quizQuestions.map((question, index) => (
-  //             <Button
-  //               key={index}
-  //               onClick={() => setCurrentQuestionIndex(index)}
-  //               variant="contained"
-  //               sx={{
-  //                 minWidth: "46px",
-  //                 minHeight: "46px",
-  //                 fontSize: "14px",
-  //                 fontWeight: "bold",
-  //                 borderRadius: "50%",
-  //                 margin: "2.4px",
-  //                 backgroundColor:
-  //                   currentQuestionIndex === index
-  //                     ? "rgb(156,39,176)"
-  //                     : "#f0f0f0",
-  //                 color: currentQuestionIndex === index ? "#fff" : "#000",
-  //                 "&:hover": {
-  //                   backgroundColor: "rgb(156,39,176)",
-  //                   color: "#fff",
-  //                 },
-  //               }}
-  //             >
-  //               {index + 1}
-  //             </Button>
-  //           ))}
-  //         </Grid>
-  //       </Grid>
+        <Typography variant="h2">
+          <b>{quizName}</b>
+        </Typography>
+        <Button variant="contained" color="secondary" onClick={handleClickOpen}>
+          Submit
+        </Button>
+      </Box>
+      <Drawer
+        variant="permanent"
+        sx={{ justifyContent: "center" }}
+        PaperProps={{
+          sx: {
+            width: "260px",
+            marginTop: "158px",
+            alignItems: "center",
+            padding: "20px",
+          },
+        }}
+      >
+        <Grid container>
+          <Grid item>
+            {quizQuestions.map((_question, index) => (
+              <Button
+                key={index}
+                onClick={() => setCurrentQuestionIndex(index)}
+                variant="contained"
+                sx={{
+                  minWidth: "46px",
+                  minHeight: "46px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  borderRadius: "50%",
+                  margin: "2.4px",
+                  backgroundColor:
+                    currentQuestionIndex === index
+                      ? "rgb(156,39,176)"
+                      : "#f0f0f0",
+                  color: currentQuestionIndex === index ? "#fff" : "#000",
+                  "&:hover": {
+                    backgroundColor: "rgb(156,39,176)",
+                    color: "#fff",
+                  },
+                }}
+              >
+                {index + 1}
+              </Button>
+            ))}
+          </Grid>
+        </Grid>
 
-  //       {/* Delete this below */}
-  //       <Typography variant="h7">Score: {currScore}</Typography>
-  //       <Box
-  //         sx={{
-  //           display: "flex",
-  //           justifyContent: "space-between",
-  //           marginTop: "20px",
-  //           padding: "10px",
-  //           width: "100%",
-  //         }}
-  //       >
-  //         <Button
-  //           onClick={goPrevious}
-  //           sx={{
-  //             backgroundColor: "#f0f0f0",
-  //             color: "black",
-  //             borderRadius: "50%",
-  //             minWidth: "50px",
-  //             minHeight: "50px",
-  //             "&:hover": {
-  //               backgroundColor: "rgb(156,39,176)",
-  //               color: "white",
-  //             },
-  //           }}
-  //         >
-  //           <ArrowBack />
-  //         </Button>
-  //         <Button
-  //           onClick={goNext}
-  //           sx={{
-  //             backgroundColor: "#f0f0f0",
-  //             color: "black",
-  //             borderRadius: "50%",
-  //             minWidth: "50px",
-  //             minHeight: "50px",
-  //             "&:hover": {
-  //               backgroundColor: "rgb(156,39,176)",
-  //               color: "white",
-  //             },
-  //           }}
-  //         >
-  //           <ArrowForward />
-  //         </Button>
-  //       </Box>
-  //     </Drawer>
-  //     <Box marginLeft={"300px"}>
-  //       <Box
-  //         sx={{
-  //           marginLeft: "auto",
-  //           marginRight: "auto",
-  //           padding: "20px",
-  //           minWidth: "600px",
-  //           maxWidth: "900px",
-  //         }}
-  //       >
-  //         {/* <Grid item> */}
-  //         <Typography variant="h6" sx={{ margin: "10px 0 30px 0" }}>
-  //           {quizQuestions[currentQuestionIndex].question}
-  //         </Typography>
-  //         {quizQuestions[currentQuestionIndex].isMulti ? (
-  //           quizQuestions[currentQuestionIndex].answers.map((answer, index) => (
-  //             <RadioGroup
-  //               value={selectedAnswers[currentQuestionIndex] || ""}
-  //               onChange={handleAnswerChange}
-  //             >
-  //               <FormControlLabel
-  //                 key={index}
-  //                 value={answer}
-  //                 control={<Radio />}
-  //                 label={answer}
-  //                 sx={{
-  //                   backgroundColor:
-  //                     selectedAnswers[currentQuestionIndex] === answer
-  //                       ? "rgb(149,117,222)"
-  //                       : "#f0f0f0",
-  //                   borderRadius: "5px",
-  //                   margin: "10px 20px",
-  //                   padding: "10px",
-  //                   boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-  //                   "& .MuiFormControlLabel-label": {
-  //                     color:
-  //                       selectedAnswers[currentQuestionIndex] === answer
-  //                         ? "#fff"
-  //                         : "#000",
-  //                   },
-  //                   "&:hover": {
-  //                     backgroundColor: "rgb(149,117,222)",
-  //                   },
-  //                 }}
-  //               />
-  //             </RadioGroup>
-  //           ))
-  //         ) : (
-  //           <TextField
-  //             label="Answer"
-  //             // variant="outlined"
-  //             value={selectedAnswers[currentQuestionIndex] || ""}
-  //             onChange={handleAnswerChange}
-  //             fullWidth
-  //             // sx={{ margin: "10px 0" }}
-  //           />
-  //         )}
-  //       </Box>
-  //     </Box>
+        {/* Delete this below */}
+        <Typography variant="h7">Score: {currScore}</Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: "20px",
+            padding: "10px",
+            width: "100%",
+          }}
+        >
+          <Button
+            onClick={goPrevious}
+            sx={{
+              backgroundColor: "#f0f0f0",
+              color: "black",
+              borderRadius: "50%",
+              minWidth: "50px",
+              minHeight: "50px",
+              "&:hover": {
+                backgroundColor: "rgb(156,39,176)",
+                color: "white",
+              },
+            }}
+          >
+            <ArrowBack />
+          </Button>
+          <Button
+            onClick={goNext}
+            sx={{
+              backgroundColor: "#f0f0f0",
+              color: "black",
+              borderRadius: "50%",
+              minWidth: "50px",
+              minHeight: "50px",
+              "&:hover": {
+                backgroundColor: "rgb(156,39,176)",
+                color: "white",
+              },
+            }}
+          >
+            <ArrowForward />
+          </Button>
+        </Box>
+      </Drawer>
+      <Box marginLeft={"300px"}>
+        <Box
+          sx={{
+            marginLeft: "auto",
+            marginRight: "auto",
+            padding: "20px",
+            minWidth: "600px",
+            maxWidth: "900px",
+          }}
+        >
+          {quizQuestions.length > 0 ? (
+            <>
+              <Typography variant="h6" sx={{ margin: "10px 0 30px 0" }}>
+                {quizQuestions[currentQuestionIndex].question}
+              </Typography>
+              {quizQuestions[currentQuestionIndex].is_multi ? (
+                quizQuestions[currentQuestionIndex].answers.map(
+                  (answer, index) => (
+                    <RadioGroup
+                      value={selectedAnswers[currentQuestionIndex] || ""}
+                      onChange={handleAnswerChange}
+                    >
+                      <FormControlLabel
+                        key={index}
+                        value={answer}
+                        control={<Radio />}
+                        label={answer}
+                        sx={{
+                          backgroundColor:
+                            selectedAnswers[currentQuestionIndex] === answer
+                              ? "rgb(149,117,222)"
+                              : "#f0f0f0",
+                          borderRadius: "5px",
+                          margin: "10px 20px",
+                          padding: "10px",
+                          boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+                          "& .MuiFormControlLabel-label": {
+                            color:
+                              selectedAnswers[currentQuestionIndex] === answer
+                                ? "#fff"
+                                : "#000",
+                          },
+                          "&:hover": {
+                            backgroundColor: "rgb(149,117,222)",
+                          },
+                        }}
+                      />
+                    </RadioGroup>
+                  )
+                )
+              ) : (
+                <TextField
+                  label="Answer"
+                  // variant="outlined"
+                  value={selectedAnswers[currentQuestionIndex] || ""}
+                  onChange={handleAnswerChange}
+                  fullWidth
+                  // sx={{ margin: "10px 0" }}
+                />
+              )}
+            </>
+          ) : (
+            <></>
+          )}
+        </Box>
+      </Box>
 
-  //     {/* Prev and Next question */}
-  //     <Dialog
-  //       open={openSubmitModal}
-  //       onClose={handleClose}
-  //       aria-labelledby="alert-dialog-title"
-  //       aria-describedby="alert-dialog-description"
-  //     >
-  //       <DialogTitle id="alert-dialog-title">
-  //         {"Are you sure you want to submit?"}
-  //       </DialogTitle>
-  //       <DialogActions
-  //         sx={{ display: "flex", flexDirection: "column", padding: "0 50px" }}
-  //       >
-  //         <Button
-  //           onClick={handleSubmit}
-  //           color="secondary"
-  //           variant="contained"
-  //           sx={{ margin: "0 0 20px 0" }}
-  //         >
-  //           Submit
-  //         </Button>
-  //       </DialogActions>
-  //     </Dialog>
-  //   </ThemeProvider>
-  // );
+      {/* Prev and Next question */}
+      <Dialog
+        open={openSubmitModal}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you sure you want to submit?"}
+        </DialogTitle>
+        <DialogActions
+          sx={{ display: "flex", flexDirection: "column", padding: "0 50px" }}
+        >
+          <Button
+            onClick={handleSubmit}
+            color="secondary"
+            variant="contained"
+            sx={{ margin: "0 0 20px 0" }}
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </ThemeProvider>
+  );
 };
 
 export default StudentQuizPage;

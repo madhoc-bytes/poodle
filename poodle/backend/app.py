@@ -155,7 +155,8 @@ def search_content(course_id, query):
 
 	return content.search(course_id, query)
 
-@app.route('/course/<int:course_id>/assignments/create', methods=['POST'])
+# Assignments
+@app.route('/courses/<int:course_id>/assignments/create', methods=['POST'])
 def create_assignment(course_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
@@ -167,7 +168,17 @@ def create_assignment(course_id):
 
 	return assignment.create(user_id, course_id, title, description, due_date, max_marks)
 
-@app.route('/course/assignments/<int:assignment_id>/specification', methods=['PUT'])
+@app.route('/courses/assignments/<int:assignment_id>/edit', methods=['PUT'])
+def edit_assignment(assignment_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	title = request.json['title']
+	description = request.json['description']
+
+	return assignment.edit(user_id, assignment_id, title, description)
+
+@app.route('/courses/assignments/<int:assignment_id>/specification', methods=['PUT'])
 def upload_spec(assignment_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
@@ -175,14 +186,14 @@ def upload_spec(assignment_id):
 	spec_file = request.json['file']
 	return assignment.upload_spec(user_id, assignment_id, spec_file)
 
-@app.route('/course/<int:course_id>/assignments', methods=['GET'])
+@app.route('/courses/<int:course_id>/assignments', methods=['GET'])
 def get_assignments(course_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	return assignment.get_assignments(user_id, course_id)
 
-@app.route('/course/assignments/<int:assignment_id>/submit', methods=['PUT'])
+@app.route('/courses/assignments/<int:assignment_id>/submit', methods=['PUT'])
 def submit_assignment(assignment_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
@@ -190,7 +201,7 @@ def submit_assignment(assignment_id):
 	submission_file = request.json['file']
 	return assignment.submit(user_id, assignment_id, submission_file)
 
-@app.route('/course/assignments/<int:assignment_id>/submissions', methods=['GET'])
+@app.route('/courses/assignments/<int:assignment_id>/submissions', methods=['GET'])
 def fetch_submissions(assignment_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
@@ -198,7 +209,7 @@ def fetch_submissions(assignment_id):
 	return assignment.all_submissions(user_id, assignment_id)
 
 
-@app.route('/course/assignments/mark/<int:submission_id>', methods=['PUT'])
+@app.route('/courses/assignments/mark/<int:submission_id>', methods=['PUT'])
 def update_score(submission_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
@@ -207,7 +218,7 @@ def update_score(submission_id):
 
 	return assignment.update_score(user_id, submission_id, score)
 
-@app.route('/course/assignments/score/<int:submission_id>', methods=['GET']) 
+@app.route('/courses/assignments/score/<int:submission_id>', methods=['GET']) 
 def fetch_score(submission_id): #TODO: probs wont need this route
 	token = get_token(request)
 	user_id = v.validate_token(token)
@@ -303,7 +314,6 @@ def get_quizzes_student(course_id):
 
 	return quiz.get_quiz_score(user_id, course_id)
 
-
 @app.route('/quiz/<int:quiz_id>/studentinfo', methods=['GET'])
 def get_quiz_info_student(quiz_id):
 	token = get_token(request)
@@ -319,7 +329,6 @@ def update_quiz_score(quiz_id):
 	score = request.json['score']
 
 	return quiz.update_quiz_score(user_id, quiz_id, score)
-
 
 if __name__ == '__main__':
 	app.run(debug=True)

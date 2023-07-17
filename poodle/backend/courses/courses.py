@@ -19,14 +19,14 @@ def create(course_name, user_id):
 	db.session.commit()
 
 	# create folder to store files for course in fsh
-	path = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(new_course.id))
-	os.makedirs(path)	
+	path = os.path.join('poodle/frontend/public/fsh', str(new_course.id))
+	os.makedirs(path)
 
-	path = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(new_course.id), 'content')
-	os.makedirs(path)	
+	path = os.path.join('poodle/frontend/public/fsh', str(new_course.id), 'content')
+	os.makedirs(path)
 
-	path = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(new_course.id), 'assignments')
-	os.makedirs(path)	
+	path = os.path.join('poodle/frontend/public/fsh', str(new_course.id), 'assignments')
+	os.makedirs(path)
 
 	return jsonify({'message': 'Course created successfully', 'course_id': new_course.id}), 201
 
