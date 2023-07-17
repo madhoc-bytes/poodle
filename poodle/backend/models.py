@@ -72,18 +72,20 @@ class Submission(db.Model):
 	file_id = db.Column(db.Integer, nullable=False)
 	assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
 	student_id = db.Column(db.Integer, nullable=False)
+	student_email = db.Column(db.String(120), unique=True, nullable=False)
 	submission_time = db.Column(db.DateTime, nullable=False)
 	score = db.Column(db.Integer, nullable=True)
 
-	def __init__(self, file_id, assignment_id, student_id, submission_time):
+	def __init__(self, file_id, assignment_id, student_id, student_email, submission_time):
 		self.file_id = file_id
 		self.assignment_id = assignment_id
 		self.student_id = student_id
+		self.student_email = student_email
 		self.submission_time = submission_time
 
 class SubmissionSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('id', 'file_id', 'assignment_id', 'student_id', 'submission_time', 'score')	
+		fields = ('id', 'file_id', 'assignment_id', 'student_id', 'student_email', 'submission_time', 'score')	
 
 class Enrolment(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)

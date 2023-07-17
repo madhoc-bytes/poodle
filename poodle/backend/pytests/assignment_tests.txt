@@ -2,7 +2,7 @@
 BASE_URL="http://localhost:5000"
 
 # TOKEN
-AUTH_TOKEN="Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODg1Mzg5NjR9.UEH_DPBIDhtWNvl43HL6XlI1Pm0thLlbiEuC1P37tDY"  # Replace with a valid authorization token
+AUTH_TOKEN="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODk1OTgyMjh9.sgp-0Ds7bjRuzvDje8Mst8atztyH-4Qu6da4U42jqAg"  # Replace with a valid authorization token
 
 #REGO TEACHER
 FIRST_NAME="John"
@@ -161,8 +161,8 @@ curl -X POST \
   -d '{
     "title": "Sample Assignment",
     "description": "This is a sample assignment",
-    "dueDate": 2023-07-31 00:00:00,
-    "maxMarks": 100
+    "dueDate": 'due_date',
+    "maxMarks": '100'
   }' \
   $BASE_URL/course/1/assignments/create
 

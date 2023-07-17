@@ -119,8 +119,9 @@ def submit(user_id, assignment_id, submission_file):
 		submission_file.save(destination)
 
 		file.file_path = destination
+		student_email = User.email
 
-		new_submission = Submission(file_id=file.id, assignment_id=assignment_id, student_id=user_id, submission_time=current_time)
+		new_submission = Submission(file_id=file.id, assignment_id=assignment_id, student_id=user_id, student_email = student_email, submission_time=current_time)
 		db.session.add(new_submission)
 		db.session.commit()
 
