@@ -18,30 +18,12 @@ import NavBar from "../../components/NavBar";
 import { useParams } from "react-router";
 import CourseSidebar from "../../components/CourseSidebar";
 
-const quizzes = [
-  {
-    name: "Quiz 1",
-    id: 1,
-    isDeployed: false,
-  },
-  {
-    name: "Quiz 2",
-    id: 2,
-    isDeployed: false,
-  },
-  {
-    name: "Quiz 3",
-    id: 3,
-    isDeployed: true,
-  },
-];
-
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const TeacherCourseQuizzes = () => {
-  // const [quizzes, setQuizzes] = useState([]);
+  const [quizzes, setQuizzes] = useState([]);
 
   const [openModal, setOpenModal] = useState(false);
   const [newQuizName, setNewQuizName] = useState("");
@@ -62,18 +44,11 @@ const TeacherCourseQuizzes = () => {
     setNewQuizDueDate("");
   };
 
-  useEffect(() => {
-    // fetchQuizzes();
-  }, []);
-
   const fetchQuizzes = async () => {
     // fetch quizzes here
     const response = await fetch(
       // Change the URL when backend is ready
-      new URL(
-        `/courses/${useParams().courseId}/quizzes`,
-        "http://localhost:5000/"
-      ),
+      new URL(`/courses/${courseId}/quiz/names`, "http://localhost:5000/"),
       {
         method: "GET",
         headers: {
@@ -87,9 +62,12 @@ const TeacherCourseQuizzes = () => {
       console.log("ERROR");
     } else {
       setQuizzes(data);
-      console.log(data);
     }
   };
+
+  useEffect(() => {
+    fetchQuizzes();
+  }, []);
 
   const handleDeployQuiz = (quizId) => {
     // handle deploying quiz here
@@ -122,7 +100,34 @@ const TeacherCourseQuizzes = () => {
 
     if (Object.keys(newErrors).length === 0) {
       // handle creating the quiz here...
-      console.log("Data is valid, proceed to create quiz");
+
+      const a = {
+        quizName: newQuizName,
+        dueDate: newQuizDueDate,
+        timeLimit: newQuizTimeLimit,
+      };
+      console.log(JSON.stringify(a));
+
+      const response = await fetch(
+        // Change the URL when backend is ready
+        new URL(`/courses/${courseId}/quiz/create`, "http://localhost:5000/"),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(a),
+        }
+      );
+      const data = await response.json();
+      if (data.error) {
+        console.log("ERROR");
+      } else {
+        console.log(data);
+      }
+      handleCloseModal();
+      fetchQuizzes();
     }
   };
 
@@ -148,9 +153,9 @@ const TeacherCourseQuizzes = () => {
 
         {/* List of quizzes here */}
         <List>
-          {quizzes.map((quiz) => (
+          {quizzes.map((quiz, index) => (
             <ListItem
-              key={quiz.id}
+              key={index}
               sx={{
                 backgroundColor: "#c6c6c6",
                 marginTop: "10px",
@@ -165,10 +170,10 @@ const TeacherCourseQuizzes = () => {
               <Button
                 variant="contained"
                 color="secondary"
-                disabled={quiz.isDeployed}
+                disabled={quiz.deployed}
                 onClick={() => handleDeployQuiz(quiz.id)}
               >
-                {quiz.isDeployed ? "Deployed" : "Edit"}
+                {quiz.deployed ? "Deployed" : "Edit"}
               </Button>
             </ListItem>
           ))}

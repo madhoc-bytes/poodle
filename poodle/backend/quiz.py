@@ -30,21 +30,15 @@ def create_quiz(user_id, course_id, quiz_name, due_date, time_limit):
 	if course.creator != user_id:
 		raise Unauthorized('Teacher is not creator of the course')
 	
-	q = {
-		"questions" : []
-	}
-	questions = json.dumps(q)
-	due_datetime = datetime.fromtimestamp(due_date)
-
-	print('ok hyygyg')
-	new_quiz = Quiz(course_id=course_id, due_date=due_datetime, name=quiz_name, questions=questions, time_limit=time_limit, is_deployed=False)
+	due_datetime = datetime.strptime(due_date, '%Y-%m-%dT%H:%M')
+	new_quiz = Quiz(course_id=course_id, due_date=due_datetime, name=quiz_name, questions=[], time_limit=time_limit, is_deployed=False)
 
 	db.session.add(new_quiz)
 	db.session.commit()
 
 	return jsonify({'message': 'Quiz created successfully', 'quiz_id': new_quiz.quiz_id}), 201
 
-def update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit):
+def update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit, questions):
 	user = User.query.get(user_id)
 	quiz = Quiz.query.get(quiz_id)
 
@@ -66,18 +60,27 @@ def update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit):
 	if course.creator != user_id:
 		raise Unauthorized('Teacher is not creator of the course')
 
-	
 	if quiz.is_deployed:
 		raise BadRequest('Quiz has already been deployed')
 	
 	if quiz_name:
-		quiz.quiz_name = quiz_name
+		quiz.name = quiz_name
 	
 	if due_date:
-		quiz.due_date = datetime.fromtimestamp(due_date)
+		if len(due_date) is 16:
+			quiz.due_date = datetime.strptime(due_date, '%Y-%m-%dT%H:%M')
+		else:
+			quiz.due_date = datetime.strptime(due_date, '%Y-%m-%dT%H:%M:%S')
 	
 	if time_limit:
 		quiz.time_limit = time_limit
+  
+	if questions:
+		quiz.questions = questions
+	else:
+		quiz.questions = []
+  
+	print(quiz_name)
 
 	db.session.commit()
 
@@ -127,9 +130,9 @@ def create_question(user_id, quiz_id, question_name, is_multi, answers, correct_
 		"correct_answer": correct_answer
 	}
 
-	quiz_dict = json.loads(quiz.questions)
-	quiz_dict['questions'].append(new_question)
-	quiz.questions = json.dumps(quiz_dict)
+	quiz_list = quiz.questions
+	quiz_list.append(new_question)
+	# quiz.questions = json.dumps(quiz_dict)
 	# new_questions_json = json.loads(quiz.questions).append(json.dumps(new_question))
 	# Quiz.query.get(quiz_id).update('questions', quiz_dict)
 	db.session.commit()
@@ -182,13 +185,12 @@ def get_quiz_names_teacher(user_id, course_id):
 		raise Unauthorized('Teacher is not creator of the course')
 
 	quizzes = Quiz.query.filter_by(course_id=course_id).all()
-	quiz_names = []
-	deployed = []
+	quiz_info = []
+  
 	for quiz in quizzes:
-		quiz_names.append(quiz.name)
-		deployed.append(quiz.is_deployed)
+		quiz_info.append({'id': quiz.quiz_id, 'name': quiz.name, 'deployed': quiz.is_deployed})
 
-	return jsonify({'message' : 'Quiz names retrieved successfully', 'quizzes' : quiz_names, 'isDeployed' : deployed}), 200
+	return jsonify(quiz_info), 200
 
 def get_quiz_info(user_id, quiz_id):
 	user = User.query.get(user_id)
@@ -300,28 +302,44 @@ def get_quiz_score(user_id, course_id):
 		quiz_score = QuizScore.query.filter_by(user_id=user_id, quiz_id=quiz.quiz_id).first()
 		quiz_dict = {}
 
-		# Quiz hasn't been attempted
-		if not quiz_score:
-			quiz_dict = {"name" : quiz.name, 
-			"score" : None,
-			"dueDate" : quiz.due_date,
-			"status" : "Not attempted"}
-		# if quiz is being attempted
-		elif (quiz_score.time_started.timestamp() + quiz.time_limit) > int(round(datetime.now().timestamp())):
-			quiz_dict = {"name" : quiz.name, 
-			"score" : quiz_score.score,
-			"dueDate" : quiz.due_date,
-			"status" : "In progress"}
-		# Quiz time has finished
-		else:
-			quiz_dict = {"name" : quiz.name, 
-			"score" : quiz_score.score,
-			"dueDate" : quiz.due_date,
-			"status" : "Completed"}
-		
-		quiz_student_list.append(quiz_dict)
+		if quiz.is_deployed:
+			if quiz.due_date < datetime.now():
+				quiz_dict = {"name" : quiz.name, 
+				"score" : None,
+				"dueDate" : quiz.due_date,
+				"status" : "Past due date",
+				"maxMarks": len(quiz.questions),
+				"timeLimit": quiz.time_limit}
+			# Quiz hasn't been attempted
+			elif not quiz_score:
+				quiz_dict = {"name" : quiz.name, 
+				"score" : None,
+				"dueDate" : quiz.due_date,
+				"status" : "Not attempted",
+				"maxMarks": len(quiz.questions),
+				"timeLimit": quiz.time_limit,
+				"id": quiz.quiz_id}
+			# if quiz is being attempted
+			elif (quiz_score.time_started.timestamp() + quiz.time_limit) > int(round(datetime.now().timestamp())):
+				quiz_dict = {"name" : quiz.name, 
+				"score" : quiz_score.score,
+				"dueDate" : quiz.due_date,
+				"status" : "In progress",
+				"maxMarks": len(quiz.questions),
+				"timeLimit": quiz.time_limit,
+				"id": quiz.quiz_id}
+			# Quiz time has finished
+			else:
+				quiz_dict = {"name" : quiz.name, 
+				"score" : quiz_score.score,
+				"dueDate" : quiz.due_date,
+				"status" : "Completed",
+				"maxMarks": len(quiz.questions),
+				"timeLimit": quiz.time_limit}
+			
+			quiz_student_list.append(quiz_dict)
 	
-	return jsonify({'message' : 'Quiz scores retrieved successfully', 'quizScores' : quiz_student_list}), 200
+	return quiz_student_list, 200
 
 
 def update_quiz_score(user_id, quiz_id, score):

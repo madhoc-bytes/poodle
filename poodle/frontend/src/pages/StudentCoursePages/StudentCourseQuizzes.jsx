@@ -17,46 +17,46 @@ import { useParams } from "react-router";
 import CourseSidebar from "../../components/CourseSidebar";
 
 // Set dummy quizzes here first
-const quizzes = [
-  {
-    name: "Quiz 1",
-    quizId: 1,
-    dueDate: "2023-07-01T15:30:00.000Z",
-    timeLimit: 1000,
-    mark: null,
-    max_marks: 30,
-    status: "ATTEMPT", // ATTEMPT or IN PROGRESS
-  },
-  {
-    name: "Quiz 2",
-    quizId: 2,
-    dueDate: "2023-07-01T15:30:00.000Z",
-    timeLimit: 1000,
-    mark: 2,
-    max_marks: 30,
-    status: "IN PROGRESS", // ATTEMPT or IN PROGRESS
-  },
-  {
-    name: "Quiz 3",
-    quizId: 3,
-    dueDate: "2023-07-01T15:30:00.000Z",
-    timeLimit: 1000,
-    mark: 17,
-    max_marks: 20,
-    status: "COMPLETE", // ATTEMPT or IN PROGRESS
-  },
-];
+// const quizzes = [
+//   {
+//     name: "Quiz 1",
+//     quizId: 1,
+//     dueDate: "2023-07-01T15:30:00.000Z",
+//     timeLimit: 1000,
+//     mark: null,
+//     max_marks: 30,
+//     status: "ATTEMPT", // ATTEMPT or IN PROGRESS
+//   },
+//   {
+//     name: "Quiz 2",
+//     quizId: 2,
+//     dueDate: "2023-07-01T15:30:00.000Z",
+//     timeLimit: 1000,
+//     mark: 2,
+//     max_marks: 30,
+//     status: "IN PROGRESS", // ATTEMPT or IN PROGRESS
+//   },
+//   {
+//     name: "Quiz 3",
+//     quizId: 3,
+//     dueDate: "2023-07-01T15:30:00.000Z",
+//     timeLimit: 1000,
+//     mark: 17,
+//     max_marks: 20,
+//     status: "COMPLETE", // ATTEMPT or IN PROGRESS
+//   },
+// ];
 
 const StudentCourseQuizzes = () => {
   const token = localStorage.getItem("token");
   const courseId = useParams().courseId;
 
   // const navigate = useNavigate();
-  // const [quizzes, setQuizzes] = useState([]);
+  const [quizzes, setQuizzes] = useState([]);
 
   useEffect(() => {
-    console.log("useEffect called");
-    // fetchQuizzes();
+    // console.log("useEffect called");
+    fetchQuizzes();
   }, []);
 
   const handleAttemptQuiz = (quizId) => {
@@ -71,7 +71,10 @@ const StudentCourseQuizzes = () => {
   const fetchQuizzes = async () => {
     const response = await fetch(
       // TODO: Change URL when backend is ready
-      new URL("/DUMMYURL", "http://localhost:5000/"),
+      new URL(
+        `/courses/${courseId}/quiz/student-details`,
+        "http://localhost:5000/"
+      ),
       {
         method: "GET",
         headers: {
@@ -85,7 +88,7 @@ const StudentCourseQuizzes = () => {
       console.log("ERROR");
     } else {
       // TODO: Uncomment this when backend is ready
-      // setQuizzes(data);
+      setQuizzes(data);
       console.log(data);
     }
   };
@@ -107,9 +110,9 @@ const StudentCourseQuizzes = () => {
           }}
         >
           <List>
-            {quizzes.map((quiz) => (
+            {quizzes.map((quiz, index) => (
               <ListItem
-                key={quiz.id}
+                key={index}
                 sx={{
                   backgroundColor: "#c6c6c6",
                   marginTop: "10px",
@@ -139,14 +142,14 @@ const StudentCourseQuizzes = () => {
                     <Typography variant="body">
                       {" "}
                       Mark: {quiz.status !== "COMPLETE" ? "?" : quiz.mark}/
-                      {quiz.max_marks}
+                      {quiz.maxMarks}
                     </Typography>
                     <Typography variant="body">
                       Time limit: {quiz.timeLimit} mins
                     </Typography>
                   </Box>
                 </ListItemText>
-                {quiz.status == "ATTEMPT" ? (
+                {quiz.status === "Not attempted" ? (
                   <Button
                     variant="contained"
                     onClick={() => handleAttemptQuiz(quiz.id)}
@@ -155,9 +158,10 @@ const StudentCourseQuizzes = () => {
                   >
                     Attempt
                   </Button>
-                ) : quiz.status == "IN PROGRESS" ? (
+                ) : quiz.status === "In progress" ? (
                   <Button
                     variant="contained"
+                    onClick={() => handleAttemptQuiz(quiz.id)}
                     sx={{
                       width: "130px",
                       whiteSpace: "nowrap",
@@ -165,6 +169,18 @@ const StudentCourseQuizzes = () => {
                     }}
                   >
                     IN PROGRESS
+                  </Button>
+                ) : quiz.status === "Past due date" ? (
+                  <Button
+                    variant="contained"
+                    disabled
+                    sx={{
+                      width: "130px",
+                      whiteSpace: "nowrap",
+                      backgroundColor: "#9575de",
+                    }}
+                  >
+                    Past due date
                   </Button>
                 ) : (
                   <Button variant="contained" disabled sx={{ width: "130px" }}>

@@ -153,7 +153,7 @@ def get_token(request):
 		return token
 
 # QUIZ
-@app.route('/course/<int:course_id>/quiz/create', methods=['POST'])
+@app.route('/courses/<int:course_id>/quiz/create', methods=['POST'])
 def create_quiz(course_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
@@ -170,12 +170,13 @@ def update_quiz(quiz_id):
 	user_id = v.validate_token(token)
 
 	quiz_name = request.json['quizName']
-	due_date = request.json['dueDate']
-	time_limit = request.json['timeLimit']
+	due_date = request.json['quizDueDate']
+	time_limit = request.json['quizTimeLimit']
+	questions = request.json['newQuestions']
 	
-	return quiz.update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit)
+	return quiz.update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit, questions)
 
-@app.route('/quiz/<int:quiz_id>/edit-questions', methods=['PUT'])
+@app.route('/quiz/<int:quiz_id>/create-question', methods=['PUT'])
 def create_question(quiz_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
@@ -195,7 +196,7 @@ def delete_quiz(quiz_id):
 
 	return quiz.delete_quiz(user_id, quiz_id)
 
-@app.route('/course/<int:course_id>/quiz-names', methods=['GET'])
+@app.route('/courses/<int:course_id>/quiz/names', methods=['GET'])
 def get_quiz_names_teacher(course_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
@@ -225,14 +226,15 @@ def attempt_quiz(quiz_id):
 
 	return quiz.create_quiz_score(user_id, quiz_id)
 
-@app.route('/course/<int:course_id>/quiz-list-student', methods=['GET'])
+@app.route('/courses/<int:course_id>/quiz/student-details', methods=['GET'])
 def get_quizzes_student(course_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	return quiz.get_quiz_score(user_id, course_id)
 
-@app.route('/quiz/<int:quiz_id>/quiz-info-student', methods=['GET'])
+
+@app.route('/quiz/<int:quiz_id>/studentinfo', methods=['GET'])
 def get_quiz_info_student(quiz_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)

@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from sqlalchemy.orm import relationship
 from sqlalchemy import LargeBinary
+from sqlalchemy.ext.mutable import MutableDict, MutableList
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -152,7 +153,7 @@ class Quiz(db.Model):
 	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
 	due_date = db.Column(db.DateTime, nullable=False)
 	name = db.Column(db.String(100), nullable=False)
-	questions = db.Column(db.JSON, nullable=True)
+	questions = db.Column(MutableList.as_mutable(db.JSON), default=list)
 	time_limit = db.Column(db.Integer, nullable=False)
 	is_deployed = db.Column(db.Boolean, default=False, nullable=False)
 

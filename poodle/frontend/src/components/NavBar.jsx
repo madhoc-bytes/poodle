@@ -45,7 +45,7 @@ const NavBar = () => {
 
   useEffect(() => {
     fetchCourseName();
-  });
+  }, []);
 
   const handleDashboardClick = () => {
     if (location.pathname.includes("/student")) navigate("/student/dashboard");

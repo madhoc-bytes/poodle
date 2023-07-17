@@ -18,30 +18,11 @@ import {
   Toolbar,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Delete as DeleteIcon } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import NavBar from "../../components/NavBar";
-
-const quiz = {
-  name: "Quiz 1",
-  id: 1,
-  dueDate: "2023-07-14T20:00",
-  timeLimit: 1000,
-  questions: [
-    {
-      question: "What is a penguin?",
-      isMulti: true,
-      answers: ["a bird", "a plane", "a pp", "cock"],
-      correctAnswer: "a bird",
-    },
-    {
-      question: "whats 1+1",
-      isMulti: false,
-      answers: [],
-      correctAnswer: "2",
-    },
-  ],
-};
+import { useParams } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const TeacherEditQuiz = () => {
   const [quizName, setQuizName] = useState("");
@@ -49,15 +30,8 @@ const TeacherEditQuiz = () => {
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [quizDueDate, setQuizDueDate] = useState("");
 
-  // Initial fetch and update when question is created or updated
-  useEffect(() => {
-    fetchQuiz();
-  }, []);
-
-  // Deploying a quiz - POST
-  const handleDeployQuiz = () => {
-    console.log("quiz deployed");
-  };
+  const { courseId, quizId } = useParams();
+  const navigate = useNavigate();
 
   // Modal functions and values
   const [openModal, setOpenModal] = useState(false);
@@ -81,7 +55,29 @@ const TeacherEditQuiz = () => {
     setNewQuizDueDate(quizDueDate);
   };
 
-  const handleUpdateQuizDetails = () => {
+  // Deploying a quiz - POST
+  const handleDeployQuiz = async () => {
+    console.log("quiz deployed");
+    const response = await fetch(
+      new URL(`/quiz/${quizId}/deploy`, "http://localhost:5000/"),
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      alert("ERROR");
+    } else {
+      alert("Quiz deployed!");
+      navigate(`/teacher/${courseId}/Quizzes`);
+    }
+  };
+
+  const handleUpdateQuizDetails = async () => {
     // Check for errors
     let newErrors = {};
     if (newQuizName.trim() === "") {
@@ -99,11 +95,38 @@ const TeacherEditQuiz = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
+      const a = {
+        quizName: newQuizName,
+        quizDueDate: newQuizDueDate,
+        quizTimeLimit: newQuizTimeLimit,
+        newQuestions: quizQuestions,
+      };
+      console.log(a);
+      const response = await fetch(
+        new URL(`/quiz/${quizId}/edit`, "http://localhost:5000/"),
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            quizName: newQuizName,
+            quizDueDate: newQuizDueDate,
+            quizTimeLimit: newQuizTimeLimit,
+            newQuestions: quizQuestions,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.error) {
+        console.log("ERROR");
+      } else {
+        fetchQuiz();
+        setOpenModal(false);
+        console.log(newQuizName);
+      }
       // TODO: PUT fetch goes here
-      setOpenModal(false);
-      setQuizName(newQuizName);
-      setQuizTimeLimit(newQuizTimeLimit);
-      setQuizDueDate(newQuizDueDate);
     }
   };
 
@@ -114,6 +137,11 @@ const TeacherEditQuiz = () => {
   const [currQuestionAnswers, setCurrQuestionAnswers] = useState([]);
   const [currCorrectAnswer, setCurrCorrectAnswer] = useState("");
 
+  // Initial fetch and update when question is created or updated
+  useEffect(() => {
+    fetchQuiz();
+  }, []);
+
   // Everytime current Question Index changes, we need to update currQuestion
   useEffect(() => {
     if (currQuestionIndex === null) {
@@ -123,13 +151,13 @@ const TeacherEditQuiz = () => {
       setCurrCorrectAnswer("");
     } else {
       setCurrQuestion(quizQuestions[currQuestionIndex].question);
-      setCurrQuestionType(quizQuestions[currQuestionIndex].isMulti);
+      setCurrQuestionType(quizQuestions[currQuestionIndex].is_multi);
       setCurrQuestionAnswers(quizQuestions[currQuestionIndex].answers);
-      setCurrCorrectAnswer(quizQuestions[currQuestionIndex].correctAnswer);
+      setCurrCorrectAnswer(quizQuestions[currQuestionIndex].correct_answer);
     }
   }, [currQuestionIndex]);
 
-  const handleCreateQuestion = () => {
+  const handleCreateQuestion = async () => {
     // Perform error checks here
     // Question string can't be empty
     if (currQuestion.trim() === "") {
@@ -154,26 +182,39 @@ const TeacherEditQuiz = () => {
       return;
     }
 
-    setQuizQuestions([
-      ...quizQuestions,
-      {
-        question: currQuestion,
-        isMulti: currQuestionType,
-        answers: currQuestionAnswers,
-        correctAnswer: currCorrectAnswer,
-      },
-    ]);
-
-    // Clear inputs
-    setCurrQuestion("");
-    setCurrQuestionType(true);
-    setCurrQuestionAnswers([]);
-    setCurrCorrectAnswer("");
-
     // PUT route here
+    const newQuestionJson = {
+      questionName: currQuestion,
+      isMulti: currQuestionType,
+      answers: currQuestionAnswers,
+      correctAnswer: currCorrectAnswer,
+    };
+
+    const response = await fetch(
+      new URL(`/quiz/${quizId}/create-question`, "http://localhost:5000/"),
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(newQuestionJson),
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      console.log(newQuestionJson);
+      fetchQuiz();
+      setCurrQuestion("");
+      setCurrQuestionType(true);
+      setCurrQuestionAnswers([]);
+      setCurrCorrectAnswer("");
+    }
   };
 
-  const handleEditQuestion = () => {
+  const handleEditQuestion = async () => {
     // Perform error checks here
     // Question string can't be empty
     if (currQuestion.trim() === "") {
@@ -200,41 +241,101 @@ const TeacherEditQuiz = () => {
 
     const editedQuestion = {
       question: currQuestion,
-      isMulti: currQuestionType,
+      is_multi: currQuestionType,
       answers: currQuestionAnswers,
-      correctAnswer: currCorrectAnswer,
+      correct_answer: currCorrectAnswer,
     };
 
-    const editedQuestions = [...quizQuestions];
-    editedQuestions[currQuestionIndex] = editedQuestion;
-    setQuizQuestions(editedQuestions);
+    const newQuestions = [...quizQuestions];
+    newQuestions[currQuestionIndex] = editedQuestion;
 
-    // Clear inputs
-    alert(`Successfully edited Question ${currQuestionIndex + 1}`);
-    // PUT route here
+    const response = await fetch(
+      new URL(`/quiz/${quizId}/edit`, "http://localhost:5000/"),
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          quizName,
+          quizDueDate,
+          quizTimeLimit,
+          newQuestions,
+        }),
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      alert(`edited question ${currQuestionIndex + 1}`);
+      fetchQuiz();
+    }
+    console.log(newQuestions);
   };
 
-  const handleDeleteQuestion = () => {
+  const handleDeleteQuestion = async () => {
     // Remove question index and update
     const newQuestions = [...quizQuestions];
     newQuestions.splice(currQuestionIndex, 1);
-    setQuizQuestions(newQuestions);
 
-    if (currQuestionIndex === 0) {
-      setCurrQuestionIndex(null);
+    const response = await fetch(
+      new URL(`/quiz/${quizId}/edit`, "http://localhost:5000/"),
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          quizName,
+          quizDueDate,
+          quizTimeLimit,
+          newQuestions,
+        }),
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
     } else {
-      setCurrQuestionIndex(currQuestionIndex - 1);
+      fetchQuiz();
+      if (currQuestionIndex === 0) {
+        setCurrQuestionIndex(null);
+      } else {
+        setCurrQuestionIndex(currQuestionIndex - 1);
+      }
+      alert(`Deleted question ${currQuestionIndex + 1}`);
     }
-    alert(`Deleted question ${currQuestionIndex + 1}`);
-    // TODO: fetch request here
   };
 
   // TODO: Fetch quiz here
-  const fetchQuiz = () => {
-    setQuizName(quiz.name);
-    setQuizTimeLimit(quiz.timeLimit);
-    setQuizDueDate(quiz.dueDate);
-    setQuizQuestions(quiz.questions);
+  const fetchQuiz = async () => {
+    // setQuizQuestions(quiz.questions);
+
+    const response = await fetch(
+      // Change the URL when backend is ready
+      new URL(`/quiz/${quizId}/info`, "http://localhost:5000/"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      console.log(data);
+      setQuizName(data.quiz.name);
+      setQuizTimeLimit(data.quiz.time_limit);
+      setQuizDueDate(data.quiz.due_date);
+      setQuizQuestions(data.quiz.questions);
+      console.log(quizDueDate);
+    }
   };
 
   const addAnswer = () => {
@@ -286,12 +387,12 @@ const TeacherEditQuiz = () => {
             </Typography>
             <Typography variant="h6">Time Limit: {quizTimeLimit}</Typography>
             <Typography variant="h6">
-              Due Date:{" "}
-              {new Date(quizDueDate).toLocaleString("en-UK", {
+              Due Date:{quizDueDate}
+              {/* {new Date(quizDueDate).toLocaleString("en-UK", {
                 dateStyle: "short",
                 timeStyle: "short",
                 hour12: true,
-              })}
+              })} */}
             </Typography>
           </div>
           <div>
@@ -338,7 +439,7 @@ const TeacherEditQuiz = () => {
                 Create Question
               </Button>
             </ListItemButton>
-            {quizQuestions.map((question, index) => (
+            {quizQuestions.map((_question, index) => (
               <ListItemButton
                 key={index}
                 onClick={() => setCurrQuestionIndex(index)}
@@ -389,7 +490,7 @@ const TeacherEditQuiz = () => {
                       marginLeft: "5px",
                     }}
                   >
-                    <DeleteIcon />
+                    <Delete />
                   </IconButton>
                 </>
               ) : (
@@ -464,7 +565,7 @@ const TeacherEditQuiz = () => {
                       variant="outlined"
                     />
                     <IconButton onClick={() => deleteAnswer(index)}>
-                      <DeleteIcon />
+                      <Delete />
                     </IconButton>
                   </Box>
                 ))}
