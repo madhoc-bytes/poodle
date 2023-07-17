@@ -129,20 +129,10 @@ def upload_file(folder_id):
 	user_id = v.validate_token(token)
 
 	file = request.files['file']
-<<<<<<< HEAD
-	# file_name = secure_filename(file.fileName)
-	file_name = request.form.get('fileName')
-	data = file.read()
-=======
 	file_name = file.filename
->>>>>>> origin/yangAssigments
 
 	return content.create_file(file_name, user_id, folder_id, file)
 
-<<<<<<< HEAD
-# App Route
-@app.route('/courses/<int:course_id>/content', methods=['GET'])
-=======
 # fetch a file
 @app.route('/courses/<int:file_id>', methods=['GET'])
 def get_file(file_id):
@@ -152,7 +142,6 @@ def get_file(file_id):
 	return content.get_file(file_id)
 
 @app.route('/course/<int:course_id>/content', methods=['GET'])
->>>>>>> origin/yangAssigments
 def get_course_content(course_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)

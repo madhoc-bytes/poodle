@@ -164,19 +164,6 @@ class OnlineClassSchema(ma.SQLAlchemySchema):
 		fields = ('id', 'name','course_id')
 
 class Quiz(db.Model):
-	quiz_id = db.Column(db.Integer, primary_key=True)
-	creator = db.Column(db.Integer, nullable=False)
-	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-	name = db.Column(db.String(100), nullable=False)
-	due_date = db.Column(db.DateTime, nullable=False)
-	
-	def __init__(self, creator, course_id, name, due_date):
-		self.creator = creator
-		self.course_id = course_id
-		self.name = name
-		self.due_date = due_date
-
-class Quiz(db.Model):
 	print('ok here dawg')
 	quiz_id = db.Column(db.Integer, primary_key=True)
 	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
@@ -216,32 +203,3 @@ class QuizScoreSchema(ma.SQLAlchemySchema):
 	class Meta:
 		fields = ('quiz_id', 'user_id', 'time_started', 'score')
 
-
-class Assignment(db.Model):
-	ass_id = db.Column(db.Integer, primary_key=True)
-	creator = db.Column(db.Integer, nullable=False)
-	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-	title = db.Column(db.String(100), nullable=False)
-	due_date = db.Column(db.DateTime, nullable=False)
-	max_marks = db.Column(db.Integer, nullable=False)
-	description = db.Column(db.String(1000), nullable=False)
-	# TODO: file attachments
-	number_of_submissions = db.Column(db.Integer, nullable=False)
-
-	def __init__(self, creator, course_id, title, due_date, description, max_marks, number_of_submissions):
-		self.creator = creator
-		self.course_id = course_id
-		self.title = title
-		self.due_date = due_date
-		self.description = description
-		self.max_marks = max_marks
-		self.number_of_submissions = number_of_submissions
-
-class AssignmentSchema(ma.SQLAlchemySchema):
-	class Meta:
-		fields = ('ass_id', 'creator', 'course_id', 'title', 'due_date', 'max_marks', 'description', 'number_of_submissions')
-
-	
-
-
-	
