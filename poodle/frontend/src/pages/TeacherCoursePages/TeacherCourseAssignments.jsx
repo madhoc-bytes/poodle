@@ -1,178 +1,293 @@
-import React, { useState } from 'react';
-import { Button, Box, TextField, Container, List, ListItem, ListItemText, Toolbar, Drawer, Grid, Typography } from '@mui/material';
-import NavBar from '../../components/NavBar';
-import CourseSidebar from '../../components/CourseSidebar';
-import { useParams } from 'react-router';
-// import AdapterDayjs from '@mui/x/AdapterDayjs';
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import React, { useState } from "react";
+import {
+  Button,
+  TextField,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  Toolbar,
+  DialogContent,
+  Input,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Slide,
+} from "@mui/material";
+import NavBar from "../../components/NavBar";
+import CourseSidebar from "../../components/CourseSidebar";
+import { useParams } from "react-router";
+import { useNavigate } from "react-router-dom";
 
-
-function CreateAssignmentForm({ onSave }) {
-    const [assignment, setAssignment] = useState({ title: '', dueDate: '', maxMarks: '', description: '' });
-
-    const handleChange = (e) => {
-      setAssignment({ ...assignment, [e.target.name]: e.target.value });
-    };
-  
-    const save = () => {
-      onSave(assignment);
-      setAssignment({ title: '', dueDate: '', maxMarks: '', description: '' });
-    };
-  
-    return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, margin: '15px'}}>
-            <Typography variant="h2">Create Assignment</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography variant="h5">Title:</Typography>
-                <TextField variant='outlined' label="Title" name="title" onChange={handleChange} />
-            </Box>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography variant="h5">Title:</Typography>
-                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker />
-                </LocalizationProvider> */}
-                {/* <TextField name="dueDate" type="date" onChange={handleChange} /> */}
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography variant="h5">Title:</Typography>
-                <TextField label="Max Marks" name="maxMarks" type="number" onChange={handleChange} />
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography variant="h5">Title:</Typography>
-                <TextField label="Description" name="description" onChange={handleChange} />
-            </Box>
-            
-            
-            <Button variant="contained" color="secondary">Create</Button>
-        {/* <form>
-            <Button onClick={save}>Create</Button>
-        </form> */}
-    </Box>
-    );
-  }
-  
-function EditAssignmentForm({ assignment, onSave }) {
-    const [currentAssignment, setCurrentAssignment] = useState(assignment);
-  
-    const handleChange = (e) => {
-      setCurrentAssignment({ ...currentAssignment, [e.target.name]: e.target.value });
-    };
-  
-    return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, margin: '15px'}}>
-        {/* <TextField id="outlined-basic" label="Enter Assignment Name" variant="outlined" />
-        <TextField id="outlined-basic" label="Enter Assignment Description" variant="outlined" />
-        <TextField id="outlined-basic" label="Enter Assignment Due Date" variant="outlined" />
-        <TextField id="outlined-basic" label="Enter Assignment Max Marks" variant="outlined" />
-        <Button variant="contained" color="secondary">Create</Button> */}
-        <form>
-            <TextField label="Title" name="title" onChange={handleChange} />
-            <TextField name ="dueDate" type="date" onChange={handleChange} />
-            <TextField label="Max Marks" name="maxMarks" type="number" onChange={handleChange} />
-            <TextField label="Description" name="description" onChange={handleChange} />
-            <Button>Update</Button>
-        </form>
-    </Box>
-    );
-}
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const TeacherCourseAssignments = () => {
-    // const courseId = useParams().courseId;
+  const courseId = useParams().courseId;
+  const navigate = useNavigate();
 
-    const [assignments, setAssignments] = useState([]);
-    const [selectedAssignment, setSelectedAssignment] = useState(null);
+  //   const [assignments, setAssignments] = useState([]);
+  const assignments = [
+    {
+      id: 1,
+      title: "yeehaw",
+      description: "meowmeowmeowmoeawiopemawiomewaoe",
+      dueDate: "2023-07-18T02:20",
+      maxMarks: 100,
+    },
+    {
+      id: 2,
+      title: "rawr",
+      description: "lets fucking ggooooo",
+      dueDate: "2023-07-18T02:20",
+      maxMarks: 3000,
+    },
+  ];
+  const [openModal, setOpenModal] = useState(false);
 
-    const dummyList = ['Item 1', 'item 2', 'item 3']
+  const [title, setTitle] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [maxMarks, setMaxMarks] = useState(100);
+  const [description, setDescription] = useState("");
+  const [fileId, setFileId] = useState();
 
-    const addAssignment = (assignment) => {
-        setAssignments([...assignments, assignment]);
-    };
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState(-1);
 
-    const updateAssignment = (updatedAssignment) => {
-        const newAssignments = assignments.map((assignment, index) =>
-          index === selectedAssignment ? updatedAssignment : assignment
-        );
-        setAssignments(newAssignments);
-    };
+  const handleOpenModal = (assignmentId) => {
+    setSelectedAssignmentId(assignmentId);
+    if (assignmentId != -1) {
+      const editingAssignment = assignments.find(
+        (assignment) => assignment.id === assignmentId
+      );
+      if (editingAssignment) {
+        setTitle(editingAssignment.title);
+        setDueDate(editingAssignment.dueDate);
+        setMaxMarks(editingAssignment.maxMarks);
+        setDescription(editingAssignment.description);
+      }
+    }
 
-    const createAssignment = () => {
-        setSelectedAssignment(null);
-    };
+    setOpenModal(true);
+  };
 
-    return (
-        <Box sx={{ display: 'flex' }}>
-            <NavBar />
-            <CourseSidebar />
-            <Box component="main" sx={{ flexGrow: 1, p: 3}}>
-            <Toolbar />
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setTitle("");
+    setMaxMarks(100);
+    setDueDate("");
+    setDescription("");
+    setFileId();
+    setSelectedAssignmentId(-1);
+  };
 
-            <Box sx={{ display: 'flex', height: '85vh'}}>
-                <Box 
-                    sx={{ 
-                        width: 300, 
-                        bgcolor: 'pink',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignContent: 'center'
-                    }}
-                >
-                    {/* Content of the left section goes here */}
-                    <Button 
-                        variant="contained" color="secondary" sx={{ margin: '15px'}} 
-                        onClick={() => {setSelectedAssignment(null)}}
-                    >
-                        Create Assignment
-                    </Button>
+  const handleCreateAssignment = () => {};
 
-                    <List>
-                        {dummyList.map((text, index) => (
-                        <ListItem 
-                            key={index} 
-                            style={{ 
-                                margin: '10px', 
-                                width: 280, 
-                                backgroundColor: selectedAssignment === index ? '#a9a9a9' : '#d3d3d3' 
-                            }}
-                            onClick={() => setSelectedAssignment(index)}
-                        >
-                            <ListItemText primary={text} />
-                        </ListItem>
-                        ))}
-                    </List>
+  const handleEditAssignment = () => {};
 
-                </Box>
-
-                <Box sx={{ flexGrow: 1, bgcolor: 'lightblue' }}>
-                    {/* Content of the right section goes here */}
-
-                    {selectedAssignment === null ? (
-                        <CreateAssignmentForm onSave={addAssignment} />
-                    ) : (
-                        <EditAssignmentForm assignment={assignments[selectedAssignment]} onSave={updateAssignment} />
-                    )}
-
-                </Box>
-            </Box>
-
-    
-            {/* <Container>
-            <Sidebar
-                assignments={assignments}
-                selectAssignment={selectAssignment}
-                createAssignment={createAssignment}
-            />
-            {selectedAssignment === null ? (
-                <CreateAssignmentForm onSave={addAssignment} />
-            ) : (
-                <EditAssignmentForm assignment={assignments[selectedAssignment]} onSave={updateAssignment} />
-            )}
-            </Container> */}
-                   
-            </Box>
+  return (
+    <Box sx={{ display: "flex" }}>
+      <NavBar />
+      <CourseSidebar />
+      <Box
+        sx={{
+          p: 5,
+          flexGrow: "1",
+        }}
+      >
+        <Toolbar />
+        <Box>
+          <h1>Course Assignments</h1>
         </Box>
-    
-      )
-}
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            handleOpenModal(-1);
+          }}
+        >
+          Create Assignment
+        </Button>
+
+        <List sx={{ display: "flex", flexWrap: "wrap" }}>
+          {assignments.map((assignment) => (
+            <ListItem
+              key={assignment.id}
+              sx={{
+                margin: "10px",
+                padding: "10px",
+                maxWidth: "400px",
+                display: "flex",
+                alignItems: "center",
+                wordWrap: "break-word",
+              }}
+            >
+              <Card sx={{ width: "400px" }}>
+                <CardContent>
+                  <Typography variant="h5">{assignment.title}</Typography>
+                  <Typography variant="body1">
+                    {assignment.description}
+                  </Typography>
+                  <Typography variant="body2">
+                    Due Date: {assignment.dueDate}
+                  </Typography>
+                  <Typography variant="body2">
+                    Max mark: {assignment.maxMarks}
+                  </Typography>
+                  <input type="file" />
+                  <br />
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => handleOpenModal(assignment.id)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() =>
+                      window.open(
+                        `/teacher/${courseId}/assignment-grade/${assignment.id}`
+                      )
+                    }
+                  >
+                    Grade
+                  </Button>
+                </CardContent>
+              </Card>
+            </ListItem>
+          ))}
+        </List>
+
+        <Dialog
+          PaperProps={{
+            style: { borderRadius: 15 },
+          }}
+          open={openModal}
+          onClose={handleCloseModal}
+          TransitionComponent={Transition}
+          sx={{ borderRadius: "50px" }}
+        >
+          <DialogTitle
+            sx={{
+              textAlign: "center",
+              fontWeight: "bold",
+              marginBottom: "-30px",
+            }}
+          >
+            {selectedAssignmentId
+              ? "Edit Assignment"
+              : "Create a New Assignment"}
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              label="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              fullWidth
+              margin="dense"
+              variant="standard"
+            />
+            {selectedAssignmentId === -1 ? (
+              <TextField
+                type="number"
+                label="Max mark"
+                value={maxMarks}
+                onChange={(e) => setMaxMarks(e.target.value)}
+                fullWidth
+                margin="normal"
+                variant="standard"
+              />
+            ) : (
+              <TextField
+                readonly
+                type="number"
+                label="Max mark"
+                value={maxMarks}
+                onChange={(e) => setMaxMarks(e.target.value)}
+                fullWidth
+                margin="normal"
+                variant="standard"
+                inputProps={{
+                  readOnly: true,
+                }}
+              />
+            )}
+            {selectedAssignmentId === -1 ? (
+              <TextField
+                label="Due date"
+                type="datetime-local"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                fullWidth
+                margin="normal"
+                variant="standard"
+                InputLabelProps={{ shrink: true }}
+              />
+            ) : (
+              <TextField
+                label="Due date"
+                type="datetime-local"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                fullWidth
+                margin="normal"
+                variant="standard"
+                InputLabelProps={{ shrink: true, readonly: true }}
+              />
+            )}
+
+            <TextField
+              label="Description"
+              margin="normal"
+              multiline
+              fullWidth
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <InputLabel
+              sx={{
+                fontSize: 12,
+                mb: 0,
+                color: "black",
+              }}
+            >
+              Upload assignment specification
+            </InputLabel>
+            <Input type="file" onChange={setFileId} fullWidth />
+          </DialogContent>
+          <DialogActions
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              sx={{ marginBottom: "20px" }}
+              variant="contained"
+              color="secondary"
+              onClick={
+                selectedAssignmentId
+                  ? handleEditAssignment
+                  : handleCreateAssignment
+              }
+            >
+              {selectedAssignmentId === -1 ? "Create" : "Edit"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </Box>
+  );
+};
 
 export default TeacherCourseAssignments;

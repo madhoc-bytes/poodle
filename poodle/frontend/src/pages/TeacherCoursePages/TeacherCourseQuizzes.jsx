@@ -69,10 +69,8 @@ const TeacherCourseQuizzes = () => {
     fetchQuizzes();
   }, []);
 
-  const handleDeployQuiz = (quizId) => {
+  const handleEditQuiz = (quizId) => {
     // handle deploying quiz here
-
-    console.log(`Deploying quiz ${quizId}`);
     window.open(`/teacher/${courseId}/editquiz/${quizId}`, "_blank");
   };
 
@@ -136,7 +134,6 @@ const TeacherCourseQuizzes = () => {
       <NavBar />
       <CourseSidebar />
       <Box
-        // component="main"
         sx={{
           p: 5,
           flexGrow: "1",
@@ -171,7 +168,7 @@ const TeacherCourseQuizzes = () => {
                 variant="contained"
                 color="secondary"
                 disabled={quiz.deployed}
-                onClick={() => handleDeployQuiz(quiz.id)}
+                onClick={() => handleEditQuiz(quiz.id)}
               >
                 {quiz.deployed ? "Deployed" : "Edit"}
               </Button>
