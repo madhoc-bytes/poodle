@@ -34,20 +34,59 @@ class User(db.Model):
 		self.password = password
 		self.is_teacher = is_teacher
 
-class UserSchema(ma.SQLAlchemySchema):
-	class Meta:
-		fields = ('id', 'first_name', 'last_name', 'email', 'is_teacher')
-	
+
 class Course(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(100), unique=False, nullable=False)
 	creator = db.Column(db.Integer, nullable=False)
 	online_classes = relationship('OnlineClass', backref='course', cascade='all, delete-orphan')
 	folders = relationship('Folder', backref='course', cascade='all, delete-orphan')
+	assignments = relationship('Assignment', backref='course', cascade='all, delete-orphan')
 
 	def __init__(self, name, creator):
 		self.name = name
 		self.creator = creator
+
+class Assignment(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+	title = db.Column(db.String(100), nullable=False)
+	description = db.Column(db.String(1000), nullable=True)
+	due_date = db.Column(db.DateTime, nullable=False)
+	max_marks = db.Column(db.Integer, nullable=False)
+	spec_file_id = db.Column(db.Integer, nullable=True)
+	submissions = relationship('Submission', backref='assignment', cascade='all, delete-orphan')
+
+	def __init__(self, course_id, title, description, due_date, max_marks):
+		self.course_id = course_id
+		self.title = title
+		self.description = description
+		self.due_date = due_date
+		self.max_marks = max_marks
+
+class AssignmentSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('id', 'course_id', 'title', 'description', 'due_date', 'max_marks', 'spec_file_path')	
+
+class Submission(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	file_id = db.Column(db.Integer, nullable=False)
+	assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
+	student_id = db.Column(db.Integer, nullable=False)
+	student_email = db.Column(db.String(120), unique=True, nullable=False)
+	submission_time = db.Column(db.DateTime, nullable=False)
+	score = db.Column(db.Integer, nullable=True)
+
+	def __init__(self, file_id, assignment_id, student_id, student_email, submission_time):
+		self.file_id = file_id
+		self.assignment_id = assignment_id
+		self.student_id = student_id
+		self.student_email = student_email
+		self.submission_time = submission_time
+
+class SubmissionSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('id', 'file_id', 'assignment_id', 'student_id', 'student_email', 'submission_time', 'score')	
 
 class Enrolment(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -58,30 +97,30 @@ class Enrolment(db.Model):
 		self.course_id = course_id
 
 class Folder(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-    name = db.Column(db.String(100), unique=False, nullable=False)
-    date_created = db.Column(db.Date, nullable=False)
-    files = relationship('File', backref='folder', cascade='all, delete-orphan')
+	id = db.Column(db.Integer, primary_key=True)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+	name = db.Column(db.String(100), unique=False, nullable=False)
+	date_created = db.Column(db.Date, nullable=False)
+	files = relationship('File', backref='folder', cascade='all, delete-orphan')
 
-    def __init__(self, course_id, name, date_created):
-        self.course_id = course_id
-        self.name = name
-        self.date_created = date_created
+	def __init__(self, course_id, name, date_created):
+		self.course_id = course_id
+		self.name = name
+		self.date_created = date_created
 
 
 class File(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'), nullable=False)
-    name = db.Column(db.String(100), unique=False, nullable=False)
-    date_created = db.Column(db.Date, nullable=False)
-    data = db.Column(LargeBinary, nullable=False)
+	id = db.Column(db.Integer, primary_key=True)
+	folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'), nullable=False)
+	name = db.Column(db.String(100), unique=False, nullable=False)
+	date_created = db.Column(db.Date, nullable=False)
+	file_path = db.Column(db.String(100), unique=False, nullable=False)
 
-    def __init__(self, folder_id, name, date_created, data):
-        self.folder_id = folder_id
-        self.name = name
-        self.date_created = date_created
-        self.data = data
+	def __init__(self, folder_id, name, date_created, file_path):
+		self.folder_id = folder_id
+		self.name = name
+		self.date_created = date_created
+		self.file_path = file_path
 
 class OnlineClass(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -91,61 +130,51 @@ class OnlineClass(db.Model):
 	def __init__(self, name, course_id):
 		self.course_id = course_id
 		self.name = name
+
+class UserSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('id', 'first_name', 'last_name', 'email', 'is_teacher')
+
 class FileSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = File
+	class Meta:
+		model = File
 
 class FolderSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Folder
-        include_relationships = True
+	class Meta:
+		model = Folder
+		include_relationships = True
 
-    # files = ma.Nested(FileSchema, many=True)
+	files = ma.Nested(FileSchema, many=True)
 
 class CourseSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Course
-        include_relationships = True
+	class Meta:
+		model = Course
+		include_relationships = True
 
-    # folders = ma.Nested(FolderSchema, many=True)
-
-# class CourseSchema(ma.SQLAlchemySchema):
-#     class Meta:
-#         model = Course
-#         include_relationships = True
-#         fields = ('id', 'name', 'creator', 'online_classes', "folders")
-
-#     folders = ma.Nested('FolderSchema', many=True)
-
-# class FolderSchema(ma.SQLAlchemySchema):
-#     class Meta:
-#         model = Folder
-
-#     id = ma.auto_field()
-#     name = ma.auto_field()
-#     date_created = ma.auto_field()
-#     files = ma.Nested('FileSchema', many=True)
-
-# class FileSchema(ma.SQLAlchemySchema):
-#     class Meta:
-#         model = File
-
-#     id = ma.auto_field()
-#     name = ma.auto_field()
-#     date_created = ma.auto_field()
-#     data = ma.auto_field()
+	folders = ma.Nested(FolderSchema, many=True)
 
 class EnrolmentSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = Enrolment
-        fields = ('user_id', 'course_id')
-	
+	class Meta:
+		model = Enrolment
+		fields = ('user_id', 'course_id')	
 
 class OnlineClassSchema(ma.SQLAlchemySchema):
 	class Meta:
 		model = OnlineClass
 		fields = ('id', 'name','course_id')
 
+class Quiz(db.Model):
+	quiz_id = db.Column(db.Integer, primary_key=True)
+	creator = db.Column(db.Integer, nullable=False)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+	name = db.Column(db.String(100), nullable=False)
+	due_date = db.Column(db.DateTime, nullable=False)
+	
+	def __init__(self, creator, course_id, name, due_date):
+		self.creator = creator
+		self.course_id = course_id
+		self.name = name
+		self.due_date = due_date
 
 class Quiz(db.Model):
 	print('ok here dawg')

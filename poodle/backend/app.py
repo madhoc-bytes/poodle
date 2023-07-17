@@ -1,10 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
 import quiz
+import courses.assignment as assignment
 import courses.courses as courses
 import courses.content as content
 import courses.classes as classes
@@ -130,19 +129,101 @@ def upload_file(folder_id):
 	user_id = v.validate_token(token)
 
 	file = request.files['file']
+<<<<<<< HEAD
 	# file_name = secure_filename(file.fileName)
 	file_name = request.form.get('fileName')
 	data = file.read()
+=======
+	file_name = file.filename
+>>>>>>> origin/yangAssigments
 
-	return content.create_file(file_name, user_id, folder_id, data)
+	return content.create_file(file_name, user_id, folder_id, file)
 
+<<<<<<< HEAD
 # App Route
 @app.route('/courses/<int:course_id>/content', methods=['GET'])
+=======
+# fetch a file
+@app.route('/courses/<int:file_id>', methods=['GET'])
+def get_file(file_id):
+	token = get_token(request)
+	v.validate_token(token)
+
+	return content.get_file(file_id)
+
+@app.route('/course/<int:course_id>/content', methods=['GET'])
+>>>>>>> origin/yangAssigments
 def get_course_content(course_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	return content.get_course_content(user_id, course_id)
+
+@app.route('/course/<int:course_id>/content/search/<query>', methods=['GET'])
+def search_content(course_id, query):
+	token = get_token(request)
+	v.validate_token(token)
+
+	return content.search(course_id, query)
+
+@app.route('/course/<int:course_id>/assignments/create', methods=['POST'])
+def create_assignment(course_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	title = request.json['title']
+	description = request.json['description']
+	due_date = request.json['dueDate']
+	max_marks = request.json['maxMarks']
+
+	return assignment.create(user_id, course_id, title, description, due_date, max_marks)
+
+@app.route('/course/assignments/<int:assignment_id>/specification', methods=['PUT'])
+def upload_spec(assignment_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	spec_file = request.json['file']
+	return assignment.upload_spec(user_id, assignment_id, spec_file)
+
+@app.route('/course/<int:course_id>/assignments', methods=['GET'])
+def get_assignments(course_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return assignment.get_assignments(user_id, course_id)
+
+@app.route('/course/assignments/<int:assignment_id>/submit', methods=['PUT'])
+def submit_assignment(assignment_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	submission_file = request.json['file']
+	return assignment.submit(user_id, assignment_id, submission_file)
+
+@app.route('/course/assignments/<int:assignment_id>/submissions', methods=['GET'])
+def fetch_submissions(assignment_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return assignment.all_submissions(user_id, assignment_id)
+
+
+@app.route('/course/assignments/mark/<int:submission_id>', methods=['PUT'])
+def update_score(submission_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	score = request.json['score']
+
+	return assignment.update_score(user_id, submission_id, score)
+
+@app.route('/course/assignments/score/<int:submission_id>', methods=['GET']) 
+def fetch_score(submission_id): #TODO: probs wont need this route
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return assignment.fetch_score(user_id, submission_id)
 
 # HELPERS
 def get_token(request):
