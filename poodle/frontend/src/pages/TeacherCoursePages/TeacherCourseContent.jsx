@@ -39,7 +39,6 @@ const listItemStyle = {
   marginBottom: "8px", // Add margin bottom between list items
 };
 
-
 const TeacherCourseContent = () => {
   const token = localStorage.getItem("token");
 
@@ -49,10 +48,10 @@ const TeacherCourseContent = () => {
   const courseId = useParams().courseId;
 
   useEffect(() => {
-    const chatbotContainer = document.getElementById('chatbot');
-    if(chatbotContainer){
+    const chatbotContainer = document.getElementById("chatbot");
+    if (chatbotContainer) {
       render(<CourseChatbot courseId={courseId} />, chatbotContainer);
-      console.log("chatbot container found")
+      console.log("chatbot container found");
     } else {
       console.log("chatbot container not found");
     }
@@ -150,12 +149,16 @@ const TeacherCourseContent = () => {
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
-                <ListItemText primary={file.name} sx={{
-                  cursor: 'pointer',
-                  '&:hover': {
-                    textDecoration: 'underline'
-                  }
-                }} onClick={() => handleOpenFile(file.id)}/>
+                <ListItemText
+                  primary={file.name}
+                  sx={{
+                    cursor: "pointer",
+                    "&:hover": {
+                      textDecoration: "underline",
+                    },
+                  }}
+                  onClick={() => handleOpenFile(file.id)}
+                />
                 <ListItemSecondaryAction>
                   <IconButton
                     edge="end"
@@ -179,14 +182,14 @@ const TeacherCourseContent = () => {
         <Dialog open={openModal} onClose={handleCloseModal}>
           <DialogTitle>Add a file</DialogTitle>
           <DialogContent>
-            <TextField
+            {/* <TextField
               label="Title"
               value={newFileTitle}
               onChange={(e) => setNewFileTitle(e.target.value)}
               fullWidth
               margin="normal"
               variant="outlined"
-            />
+            /> */}
             <input
               type="file"
               accept=".pdf,.ppt,.pptx"
@@ -262,7 +265,7 @@ const TeacherCourseContent = () => {
         getContent();
       }
     } else {
-      alert("meow");
+      alert("Please provide a folder name");
     }
   };
 
@@ -288,19 +291,19 @@ const TeacherCourseContent = () => {
           Authorization: `Bearer ${token}`,
         },
       }
-      );
-      const data = await response.blob();
-      if (data.error) {
-        console.log("error");
-      } else {
-        console.log(data);
-        let url = window.URL.createObjectURL(data);
-        window.open(url);
-      }
-    };
-    
-    return (
-      <>
+    );
+    const data = await response.blob();
+    if (data.error) {
+      console.log("error");
+    } else {
+      console.log(data);
+      let url = window.URL.createObjectURL(data);
+      window.open(url);
+    }
+  };
+
+  return (
+    <>
       <Box sx={{ display: "flex" }}>
         <NavBar />
         <CourseSidebar />
@@ -341,9 +344,7 @@ const TeacherCourseContent = () => {
           </List>
         </Box>
       </Box>
-      <Box id="chatbot">
-      </Box>
-
+      <Box id="chatbot"></Box>
     </>
   );
 };

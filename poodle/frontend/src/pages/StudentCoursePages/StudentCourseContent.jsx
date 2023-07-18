@@ -37,17 +37,16 @@ const listItemStyle = {
   marginBottom: "8px", // Add margin bottom between list items
 };
 
-
 const StudentCourseContent = () => {
   const token = localStorage.getItem("token");
-  const [content, setContent] = useState([])
+  const [content, setContent] = useState([]);
   const courseId = useParams().courseId;
 
   useEffect(() => {
-    const chatbotContainer = document.getElementById('chatbot');
-    if(chatbotContainer){
+    const chatbotContainer = document.getElementById("chatbot");
+    if (chatbotContainer) {
       render(<CourseChatbot courseId={courseId} />, chatbotContainer);
-      console.log("chatbot container found")
+      console.log("chatbot container found");
     } else {
       console.log("chatbot container not found");
     }
@@ -55,13 +54,12 @@ const StudentCourseContent = () => {
 
   const FolderListItem = ({ folder }) => {
     const token = localStorage.getItem("token");
-  
+
     const [open, setOpen] = useState(false);
     const handleToggle = () => {
       setOpen(!open);
     };
-  
-  
+
     return (
       <React.Fragment>
         <ListItem
@@ -86,12 +84,16 @@ const StudentCourseContent = () => {
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
-                <ListItemText primary={file.name} sx={{
-                  cursor: 'pointer',
-                  '&:hover': {
-                    textDecoration: 'underline'
-                  }
-                }} onClick={() => handleOpenFile(file.id)}/>
+                <ListItemText
+                  primary={file.name}
+                  sx={{
+                    cursor: "pointer",
+                    "&:hover": {
+                      textDecoration: "underline",
+                    },
+                  }}
+                  onClick={() => handleOpenFile(file.id)}
+                />
               </ListItem>
             ))}
           </List>
@@ -119,8 +121,7 @@ const StudentCourseContent = () => {
       setContent(data);
     }
   };
- 
-  
+
   useEffect(() => {
     getContent();
   }, []);
@@ -135,19 +136,19 @@ const StudentCourseContent = () => {
           Authorization: `Bearer ${token}`,
         },
       }
-      );
-      const data = await response.blob();
-      if (data.error) {
-        console.log("error");
-      } else {
-        console.log(data);
-        let url = window.URL.createObjectURL(data);
-        window.open(url);
-      }
-    };
-    
-    return (
-      <>
+    );
+    const data = await response.blob();
+    if (data.error) {
+      console.log("error");
+    } else {
+      console.log(data);
+      let url = window.URL.createObjectURL(data);
+      window.open(url);
+    }
+  };
+
+  return (
+    <>
       <Box sx={{ display: "flex" }}>
         <NavBar />
         <CourseSidebar />
@@ -160,17 +161,12 @@ const StudentCourseContent = () => {
 
           <List style={folderListStyle}>
             {content.map((folder) => (
-              <FolderListItem
-                key={folder.id}
-                folder={folder}
-              />
+              <FolderListItem key={folder.id} folder={folder} />
             ))}
           </List>
         </Box>
       </Box>
-      <Box id="chatbot">
-      </Box>
-
+      <Box id="chatbot"></Box>
     </>
   );
 };

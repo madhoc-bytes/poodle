@@ -130,6 +130,13 @@ const StudentCourseAssignments = () => {
     }
   };
 
+  const isAssignmentOverdue = (dueDate) => {
+    const currentDateTime = new Date();
+    const assignmentDueDate = new Date(dueDate);
+
+    return assignmentDueDate < currentDateTime;
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <NavBar />
@@ -185,13 +192,24 @@ const StudentCourseAssignments = () => {
                     </Link>
                   )}
                   <br />
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleOpenModal(assignment.id)}
-                  >
-                    Submit
-                  </Button>
+                  {isAssignmentOverdue(assignment.due_date) ? (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => handleOpenModal(assignment.id)}
+                      disabled
+                    >
+                      Past due date
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => handleOpenModal(assignment.id)}
+                    >
+                      Submit
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </ListItem>
