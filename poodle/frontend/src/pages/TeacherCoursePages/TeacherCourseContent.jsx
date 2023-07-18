@@ -37,198 +37,201 @@ const listItemStyle = {
   marginBottom: "8px", // Add margin bottom between list items
 };
 
-const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
-  const token = localStorage.getItem("token");
-
-  const [open, setOpen] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const [newFileTitle, setNewFileTitle] = useState("");
-  const [newFile, setNewFile] = useState(null);
-
-  const handleToggle = () => {
-    setOpen(!open);
-  };
-
-  const handleDeleteFolder = (event) => {
-    event.stopPropagation();
-    onDelete(folder.id);
-  };
-
-  const handleDeleteFile = (fileId) => {
-    onDeleteFile(fileId);
-  };
-
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setNewFileTitle("");
-    setNewFile(null);
-  };
-
-  const handleCreateFile = async () => {
-    // Perform create file logic here
-    const formData = new FormData();
-    formData.append("fileName", newFileTitle);
-    formData.append("file", newFile);
-
-    // TODO: Make a fetch request to create a file when backend is ready
-    const response = await fetch(
-      new URL(`/courses/2/create-file`, "http://localhost:5000/"),
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      }
-    );
-    const data = await response.json();
-    if (data.error) {
-      console.log("ERROR");
-    } else {
-      console.log(data.message);
-    }
-
-    handleCloseModal();
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    setNewFile(file);
-  };
-
-  return (
-    <React.Fragment>
-      <ListItem
-        sx={{ margin: "10px", backgroundColor: "#a3a3a3" }}
-        onClick={handleToggle}
-        style={listItemStyle}
-      >
-        <ListItemIcon>
-          <FolderIcon />
-        </ListItemIcon>
-        <ListItemText primary={folder.description} />
-        <IconButton edge="end" onClick={handleDeleteFolder}>
-          <DeleteIcon />
-        </IconButton>
-        <ListItemSecondaryAction>
-          <IconButton edge="end" onClick={handleToggle}>
-            {open ? <ExpandLess /> : <ExpandMore />}
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          {folder.files.map((file) => (
-            <ListItem key={file.id} sx={{ pl: 4 }}>
-              <ListItemIcon>
-                <DescriptionIcon />
-              </ListItemIcon>
-              <ListItemText primary={file.description} />
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={() => handleDeleteFile(file.id)}
-                >
-                  <Delete />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-          <ListItem sx={{ pl: 4 }}>
-            <ListItemSecondaryAction>
-              <IconButton edge="end" onClick={handleOpenModal}>
-                <AddCircleIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        </List>
-      </Collapse>
-
-      <Dialog open={openModal} onClose={handleCloseModal}>
-        <DialogTitle>Add a file</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Title"
-            value={newFileTitle}
-            onChange={(e) => setNewFileTitle(e.target.value)}
-            fullWidth
-            margin="normal"
-            variant="outlined"
-          />
-          <input
-            type="file"
-            accept=".pdf,.ppt,.pptx"
-            onChange={handleFileChange}
-          />
-        </DialogContent>
-        <DialogActions
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleCreateFile}
-          >
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
-  );
-};
-
 const TeacherCourseContent = () => {
   const token = localStorage.getItem("token");
 
   const [folderName, setFolderName] = useState("");
-  const [folders, setFolders] = useState([]);
+  const [content, setContent] = useState([])
 
   const courseId = useParams().courseId;
 
-  // Dummy content will be replaced by folders when backend is ready
-  const dummyContent = [
-    {
-      description: "This is a folder",
-      id: 1,
-      files: [
+  const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
+    const token = localStorage.getItem("token");
+  
+    const [open, setOpen] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const [newFileTitle, setNewFileTitle] = useState("");
+    const [newFile, setNewFile] = useState(null);
+  
+    const handleToggle = () => {
+      setOpen(!open);
+    };
+  
+    const handleDeleteFolder = (event) => {
+      event.stopPropagation();
+      onDelete(folder.id);
+    };
+  
+    const handleDeleteFile = (fileId) => {
+      onDeleteFile(fileId);
+    };
+  
+    const handleOpenModal = () => {
+      setOpenModal(true);
+      
+    };
+  
+    const handleCloseModal = () => {
+      setOpenModal(false);
+      setNewFileTitle("");
+      setNewFile(null);
+    };
+  
+    const handleCreateFile = async () => {
+      // Perform create file logic here
+      const formData = new FormData();
+      formData.append("fileName", newFileTitle);
+      formData.append("file", newFile);
+  
+      // TODO: Make a fetch request to create a file when backend is ready
+      console.log(folder.id)
+      const response = await fetch(
+        new URL(`/courses/${folder.id}/create-file`, "http://localhost:5000/"),
         {
-          description: "This is a file",
-          id: 1,
-        },
-        {
-          description: "This is another file",
-          id: 2,
-        },
-      ],
-    },
-    {
-      description: "This is another folder",
-      id: 2,
-      files: [
-        {
-          description: "This is a file",
-          id: 3,
-        },
-      ],
-    },
-    {
-      description: "This is yet another folder",
-      id: 3,
-      files: [],
-    },
-  ];
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+      const data = await response.json();
+      if (data.error) {
+        console.log("ERROR");
+      } else {
+        console.log(data.message);
+        getContent();
+      }
+  
+      handleCloseModal();
+    };
+  
+    const handleFileChange = (event) => {
+      const file = event.target.files[0];
+      setNewFile(file);
+    };
+  
+    return (
+      <React.Fragment>
+        <ListItem
+          sx={{ margin: "10px", backgroundColor: "#a3a3a3" }}
+          onClick={handleToggle}
+          style={listItemStyle}
+        >
+          <ListItemIcon>
+            <FolderIcon />
+          </ListItemIcon>
+          <ListItemText primary={folder.name} />
+          <IconButton edge="end" onClick={handleDeleteFolder}>
+            <DeleteIcon />
+          </IconButton>
+          <ListItemSecondaryAction>
+            <IconButton edge="end" onClick={handleToggle}>
+              {open ? <ExpandLess /> : <ExpandMore />}
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            {folder.files.map((file) => (
+              <ListItem key={file.id} sx={{ pl: 4 }}>
+                <ListItemIcon>
+                  <DescriptionIcon />
+                </ListItemIcon>
+                <ListItemText primary={file.name} />
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge="end"
+                    onClick={() => handleDeleteFile(file.id)}
+                  >
+                    <Delete />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+            <ListItem sx={{ pl: 4 }}>
+              <ListItemSecondaryAction>
+                <IconButton edge="end" onClick={handleOpenModal}>
+                  <AddCircleIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          </List>
+        </Collapse>
+  
+        <Dialog open={openModal} onClose={handleCloseModal}>
+          <DialogTitle>Add a file</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Title"
+              value={newFileTitle}
+              onChange={(e) => setNewFileTitle(e.target.value)}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+            />
+            <input
+              type="file"
+              accept=".pdf,.ppt,.pptx"
+              onChange={handleFileChange}
+            />
+          </DialogContent>
+          <DialogActions
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleCreateFile}
+            >
+              Create
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
+    );
+  };
+
+  // // Dummy content will be replaced by folders when backend is ready
+  // const dummyContent = [
+  //   {
+  //     name: "This is a folder",
+  //     id: 1,
+  //     files: [
+  //       {
+  //         name: "This is a file",
+  //         id: 1,
+  //       },
+  //       {
+  //         name: "This is another file",
+  //         id: 2,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     name: "This is another folder",
+  //     id: 2,
+  //     files: [
+  //       {
+  //         name: "This is a file",
+  //         id: 3,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     name: "This is yet another folder",
+  //     id: 3,
+  //     files: [],
+  //   },
+  // ];
 
   const getContent = async () => {
     const response = await fetch(
-      new URL(`/courses/${courseId}/content`, "http://localhost:5000/"),
+      new URL(`/course/${courseId}/content`, "http://localhost:5000/"),
       {
         method: "GET",
         headers: {
@@ -237,20 +240,20 @@ const TeacherCourseContent = () => {
         },
       }
     );
-    const data = await response.blob();
+    const data = await response.json();
     if (data.error) {
       console.log("eerrrr");
-    } else console.log(data);
+    } else {
+      console.log(data);
+      setContent(data);
+    }
   };
 
-  useEffect(() => {
-    getContent();
-  }, []);
-
+  
   const handleFolderNameChange = (event) => {
     setFolderName(event.target.value);
   };
-
+  
   const handleCreateFolder = async () => {
     // Make sure folder name isn't empty
     if (folderName.trim() !== "") {
@@ -265,17 +268,24 @@ const TeacherCourseContent = () => {
           },
           body: JSON.stringify({ folderName: folderName }),
         }
-      );
-      const data = await response.json();
+        );
+        const data = await response.json();
       if (data.error) {
         console.log("eerrrr");
-      } else console.log(data.folder_id);
-      console.log("Creating folder with name: " + folderName);
-      setFolderName("");
+      } else {
+        console.log(data.folder_id);
+        console.log("Creating folder with name: " + folderName);
+        setFolderName("");
+        getContent();
+      }
     } else {
       alert("meow");
     }
   };
+  
+  useEffect(() => {
+    getContent();
+  }, []);
 
   const handleDeleteFolder = (folderId) => {
     console.log("Deleting folder with id: " + folderId);
@@ -283,6 +293,28 @@ const TeacherCourseContent = () => {
 
   const handleDeleteFile = (fileId) => {
     console.log("Deleting file with id: " + fileId);
+  };
+
+  // Test Route
+  const handleOpenFile = async () => {
+    const response = await fetch(
+      new URL(`/courses/download-file/3`, "http://localhost:5000/"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await response.blob();
+    if (data.error) {
+      console.log("error");
+    } else {
+      console.log(data);
+      let url = window.URL.createObjectURL(data);
+      window.open(url);
+    }
   };
 
   return (
@@ -316,7 +348,7 @@ const TeacherCourseContent = () => {
           </Box>
 
           <List style={folderListStyle}>
-            {dummyContent.map((folder) => (
+            {content.map((folder) => (
               <FolderListItem
                 key={folder.id}
                 folder={folder}
@@ -326,6 +358,7 @@ const TeacherCourseContent = () => {
             ))}
           </List>
         </Box>
+        <Button onClick={handleOpenFile}>Get file test</Button>
       </Box>
     </>
   );

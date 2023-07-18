@@ -86,4 +86,4 @@ def get_file(file_id):
 	file = File.query.get(file_id)
 	if not file:
 		raise NotFound('File does not exist')	
-	return send_file(file.file_path, as_attachment=True, attachment_filename=file.name), 200
+	return send_file(file.file_path, as_attachment=True), 200
