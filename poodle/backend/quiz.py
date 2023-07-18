@@ -319,6 +319,15 @@ def get_quiz_score(user_id, course_id):
 				"maxMarks": len(quiz.questions),
 				"timeLimit": quiz.time_limit,
 				"id": quiz.quiz_id}
+			# Quiz has been completed
+			elif quiz_score.completed:
+				quiz_dict = {"name" : quiz.name, 
+				"score" : quiz_score.score,
+				"dueDate" : quiz.due_date,
+				"status" : "Completed",
+				"maxMarks": len(quiz.questions),
+				"timeLimit": quiz.time_limit,
+				"id": quiz.quiz_id}
 			# if quiz is being attempted
 			elif (quiz_score.time_started.timestamp() + quiz.time_limit) > int(round(datetime.now().timestamp())):
 				quiz_dict = {"name" : quiz.name, 
@@ -389,3 +398,26 @@ def get_quiz_info_student(user_id, quiz_id):
 	}
 
 	return jsonify({'message' : 'Quiz info retrieved successfully', 'quizInfo' : quiz_info}), 200
+
+def submitScore(user_id, quiz_id, score):
+	user = User.query.get(user_id)
+
+	quiz = Quiz.query.get(quiz_id)
+	if not quiz:
+		raise NotFound('Quiz not found')
+
+	if not user:
+		raise NotFound('User not found')
+
+	if user.is_teacher:
+		raise Unauthorized('User permission denied')
+	
+	quiz_score = QuizScore.query.filter_by(user_id=user_id, quiz_id=quiz_id).first()
+	if not quiz_score:
+		raise NotFound('Quiz score not found')
+	
+	quiz_score.completed = True
+	quiz_score.score = score
+	db.session.commit()
+
+	return jsonify({'message' : 'Quiz submitted successfully'}), 200
