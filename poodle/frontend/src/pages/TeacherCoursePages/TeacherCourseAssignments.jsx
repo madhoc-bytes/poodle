@@ -15,6 +15,7 @@ import {
   InputLabel,
   List,
   ListItem,
+  Link,
   ListItemText,
   Paper,
   Slide,
@@ -39,7 +40,6 @@ const TeacherCourseAssignments = () => {
   const [maxMarks, setMaxMarks] = useState(100);
   const [description, setDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [fileId, setFileId] = useState();
 
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(-1);
 
@@ -66,8 +66,8 @@ const TeacherCourseAssignments = () => {
     setMaxMarks(100);
     setDueDate("");
     setDescription("");
-    setFileId();
     setSelectedAssignmentId(-1);
+    setSelectedFile();
   };
 
   useEffect(() => {
@@ -91,11 +91,11 @@ const TeacherCourseAssignments = () => {
       console.log("ERROR");
     } else {
       setAssignments(data);
+      console.log(data);
     }
   };
 
   const handleCreateAssignment = async () => {
-    handleUploadSpec();
     const response = await fetch(
       // Change the URL when backend is ready
       new URL(
@@ -115,13 +115,15 @@ const TeacherCourseAssignments = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
+      setSelectedAssignmentId(data.assignment_id);
+      handleUploadSpec(data.assignment_id);
       fetchAssignments();
       handleCloseModal();
     }
   };
 
   const handleEditAssignment = async () => {
-    handleUploadSpec();
+    handleUploadSpec(selectedAssignmentId);
 
     const response = await fetch(
       new URL(
@@ -151,68 +153,57 @@ const TeacherCourseAssignments = () => {
     setSelectedFile(file);
   };
 
-  const handleUploadSpec = async () => {
+  const handleUploadSpec = async (assignmentId) => {
     if (!selectedFile) {
       alert("Please select a file.");
       return;
     }
 
-    // Encode the file content as Base64
-    const reader = new FileReader();
-    reader.readAsDataURL(selectedFile);
+    const formData = new FormData();
+    // formData.append("fileName", "a");
+    formData.append("file", selectedFile);
 
-    reader.onload = async () => {
-      const fileContentBase64 = reader.result.split(",")[1];
-
-      // Prepare the JSON object with the file data
-      const fileData = {
-        fileName: selectedFile.name,
-        fileType: selectedFile.type,
-        fileContent: fileContentBase64,
-        // You can include additional data here, e.g., user ID, assignment ID, etc.
-      };
-
-      const response = await fetch(
-        new URL(
-          `/courses/assignments/${selectedAssignmentId}/specification`,
-          "http://localhost:5000/"
-        ),
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ file: fileData }),
-        }
-      );
-      const data = await response.json();
-      if (data.error) {
-        console.log("ERROR");
-      } else {
-        console.log("success");
-        setFileId(data.file_id);
+    const response = await fetch(
+      new URL(
+        `/courses/assignments/${assignmentId}/specification`,
+        "http://localhost:5000/"
+      ),
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: formData,
       }
-    };
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      console.log("success");
+      // }
+    }
   };
 
-  const handleGetFile = async () => {
+  const handleGetFile = async (fileId) => {
     const response = await fetch(
-      new URL(`/courses/3`, "http://localhost:5000/"),
+      new URL(`/courses/download-file/${fileId}`, "http://localhost:5000/"),
       {
         method: "GET",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
-    // const data = await response.blob();
-    // if (data.error) {
-    //   alert("error");
-    // }
-
-    // const url = window.URL.createObjectURL(data);
-    // window.open(url);
+    const data = await response.blob();
+    if (data.error) {
+      console.log("error");
+    } else {
+      console.log(data);
+      let url = window.URL.createObjectURL(data);
+      window.open(url);
+    }
   };
 
   return (
@@ -264,7 +255,9 @@ const TeacherCourseAssignments = () => {
                   <Typography variant="body2">
                     Max mark: {assignment.max_marks}
                   </Typography>
-                  <input type="file" />
+                  <Link onClick={() => handleGetFile(assignment.spec_file_id)}>
+                    Specification
+                  </Link>
                   <br />
                   <Button
                     variant="contained"
@@ -331,18 +324,7 @@ const TeacherCourseAssignments = () => {
                 variant="standard"
               />
             ) : (
-              <TextField
-                type="number"
-                label="Max mark"
-                value={maxMarks}
-                onChange={(e) => setMaxMarks(e.target.value)}
-                fullWidth
-                margin="normal"
-                variant="standard"
-                inputProps={{
-                  readOnly: true,
-                }}
-              />
+              <></>
             )}
             {selectedAssignmentId === -1 ? (
               <TextField
@@ -356,16 +338,7 @@ const TeacherCourseAssignments = () => {
                 InputLabelProps={{ shrink: true }}
               />
             ) : (
-              <TextField
-                label="Due date"
-                type="datetime-local"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                fullWidth
-                margin="normal"
-                variant="standard"
-                InputLabelProps={{ shrink: true, readOnly: true }}
-              />
+              <></>
             )}
 
             <TextField
@@ -386,7 +359,12 @@ const TeacherCourseAssignments = () => {
             >
               Upload assignment specification
             </InputLabel>
-            <Input type="file" onChange={handleFileChange} fullWidth />
+            <Input
+              type="file"
+              accept=".pdf,.ppt,.pptx"
+              onChange={handleFileChange}
+              fullWidth
+            />
           </DialogContent>
           <DialogActions
             sx={{
@@ -410,7 +388,6 @@ const TeacherCourseAssignments = () => {
           </DialogActions>
         </Dialog>
       </Box>
-      <Button onClick={handleGetFile}>awraw</Button>
     </Box>
   );
 };

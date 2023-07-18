@@ -35,7 +35,8 @@ def create(user_id, course_id, title, description, due_date, max_marks):
 	db.session.commit()
 	
 	# Make a new folder for the assignments
-	# destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', new_assignment.id)
+	# destination = os.path.join(os.getcwd(), 'fsh', unique_name)
+
 	# os.makedirs(destination)
 
 	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
@@ -74,23 +75,17 @@ def upload_spec(user_id, assignment_id, spec_file):
 
 		# save locally to fsh content	
 		unique_name = str(file.id)
-		destination = os.path.join('poodle/backend/courses/fsh', str(assignment.course_id), 'assignments', str(assignment_id) + '.pdf')
+		destination = os.path.join(os.getcwd(), 'fsh', unique_name)
+		spec_file.save(destination)
   
-		import base64
-		file_content_binary = base64.b64decode(spec_file['fileContent'])
-		# file_content_binary.save(destination)
-
-		with open(destination, "wb") as a:
-			a.write(file_content_binary)
-      
 		file.file_path = destination
 
 		assignment.spec_file_id = file.id
 		db.session.commit()
 		return jsonify({'message': 'Assignment spec successfully uploaded', 'file_id': file.id}), 201
 	else:
-		spec = File.query.get(assignment.spec_file_id)
-		destination = spec.file_path
+		file = File.query.get(assignment.spec_file_id)
+		destination = file.file_path
 		os.remove(destination)
 
 		spec_file.save(destination)

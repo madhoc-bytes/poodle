@@ -145,9 +145,11 @@ const RegisterPage = () => {
               cursor: "pointer",
               "&:first-of-type": {
                 bgcolor: isTeacher === false ? "rgb(156,39,176)" : "inherit",
+                color: isTeacher === false ? "white" : "black",
               },
               "&:last-of-type": {
                 bgcolor: isTeacher === true ? "rgb(156,39,176)" : "inherit",
+                color: isTeacher === false ? "black" : "white",
               },
             },
           }}

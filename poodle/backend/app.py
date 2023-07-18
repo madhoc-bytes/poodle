@@ -183,7 +183,7 @@ def upload_spec(assignment_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	spec_file = request.json['file']
+	spec_file = request.files['file']
 	return assignment.upload_spec(user_id, assignment_id, spec_file)
 
 @app.route('/courses/<int:course_id>/assignments', methods=['GET'])

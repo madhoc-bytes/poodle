@@ -41,50 +41,49 @@ const TeacherCourseContent = () => {
   const token = localStorage.getItem("token");
 
   const [folderName, setFolderName] = useState("");
-  const [content, setContent] = useState([])
+  const [content, setContent] = useState([]);
 
   const courseId = useParams().courseId;
 
   const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
     const token = localStorage.getItem("token");
-  
+
     const [open, setOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [newFileTitle, setNewFileTitle] = useState("");
     const [newFile, setNewFile] = useState(null);
-  
+
     const handleToggle = () => {
       setOpen(!open);
     };
-  
+
     const handleDeleteFolder = (event) => {
       event.stopPropagation();
       onDelete(folder.id);
     };
-  
+
     const handleDeleteFile = (fileId) => {
       onDeleteFile(fileId);
     };
-  
+
     const handleOpenModal = () => {
       setOpenModal(true);
-      
     };
-  
+
     const handleCloseModal = () => {
       setOpenModal(false);
       setNewFileTitle("");
       setNewFile(null);
     };
-  
+
     const handleCreateFile = async () => {
       // Perform create file logic here
       const formData = new FormData();
       formData.append("fileName", newFileTitle);
       formData.append("file", newFile);
-  
+
       // TODO: Make a fetch request to create a file when backend is ready
-      console.log(folder.id)
+      console.log(folder.id);
       const response = await fetch(
         new URL(`/courses/${folder.id}/create-file`, "http://localhost:5000/"),
         {
@@ -102,15 +101,15 @@ const TeacherCourseContent = () => {
         console.log(data.message);
         getContent();
       }
-  
+
       handleCloseModal();
     };
-  
+
     const handleFileChange = (event) => {
       const file = event.target.files[0];
       setNewFile(file);
     };
-  
+
     return (
       <React.Fragment>
         <ListItem
@@ -158,7 +157,7 @@ const TeacherCourseContent = () => {
             </ListItem>
           </List>
         </Collapse>
-  
+
         <Dialog open={openModal} onClose={handleCloseModal}>
           <DialogTitle>Add a file</DialogTitle>
           <DialogContent>
@@ -249,11 +248,10 @@ const TeacherCourseContent = () => {
     }
   };
 
-  
   const handleFolderNameChange = (event) => {
     setFolderName(event.target.value);
   };
-  
+
   const handleCreateFolder = async () => {
     // Make sure folder name isn't empty
     if (folderName.trim() !== "") {
@@ -268,8 +266,8 @@ const TeacherCourseContent = () => {
           },
           body: JSON.stringify({ folderName: folderName }),
         }
-        );
-        const data = await response.json();
+      );
+      const data = await response.json();
       if (data.error) {
         console.log("eerrrr");
       } else {
@@ -282,7 +280,7 @@ const TeacherCourseContent = () => {
       alert("meow");
     }
   };
-  
+
   useEffect(() => {
     getContent();
   }, []);

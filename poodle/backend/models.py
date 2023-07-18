@@ -66,7 +66,7 @@ class Assignment(db.Model):
 
 class AssignmentSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('id', 'course_id', 'title', 'description', 'due_date', 'max_marks', 'spec_file_path')	
+		fields = ('id', 'course_id', 'title', 'description', 'due_date', 'max_marks', 'spec_file_id')	
 
 class Submission(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
