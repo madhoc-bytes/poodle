@@ -27,6 +27,8 @@ import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import { Delete } from "@mui/icons-material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useParams } from "react-router";
+import { render } from "react-dom";
+import CourseChatbot from "../../components/CourseChatbot";
 
 const folderListStyle = {
   backgroundColor: "#f5f5f5", // Set the background color to grey
@@ -36,6 +38,7 @@ const folderListStyle = {
 const listItemStyle = {
   marginBottom: "8px", // Add margin bottom between list items
 };
+
 
 const TeacherCourseContent = () => {
   const token = localStorage.getItem("token");
@@ -76,6 +79,16 @@ const TeacherCourseContent = () => {
       setNewFileTitle("");
       setNewFile(null);
     };
+
+    useEffect(() => {
+      const chatbotContainer = document.getElementById('chatbot');
+      if(chatbotContainer){
+        render(<CourseChatbot courseId={courseId} />, chatbotContainer);
+        console.log("chatbot container found")
+      } else {
+        console.log("chatbot container not found");
+      }
+    }, []);
   
     const handleCreateFile = async () => {
       // Perform create file logic here
@@ -138,7 +151,12 @@ const TeacherCourseContent = () => {
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>
-                <ListItemText primary={file.name} />
+                <ListItemText primary={file.name} sx={{
+                  cursor: 'pointer',
+                  '&:hover': {
+                    textDecoration: 'underline'
+                  }
+                }} onClick={() => handleOpenFile(file.id)}/>
                 <ListItemSecondaryAction>
                   <IconButton
                     edge="end"
@@ -195,39 +213,6 @@ const TeacherCourseContent = () => {
       </React.Fragment>
     );
   };
-
-  // // Dummy content will be replaced by folders when backend is ready
-  // const dummyContent = [
-  //   {
-  //     name: "This is a folder",
-  //     id: 1,
-  //     files: [
-  //       {
-  //         name: "This is a file",
-  //         id: 1,
-  //       },
-  //       {
-  //         name: "This is another file",
-  //         id: 2,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     name: "This is another folder",
-  //     id: 2,
-  //     files: [
-  //       {
-  //         name: "This is a file",
-  //         id: 3,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     name: "This is yet another folder",
-  //     id: 3,
-  //     files: [],
-  //   },
-  // ];
 
   const getContent = async () => {
     const response = await fetch(
@@ -295,10 +280,9 @@ const TeacherCourseContent = () => {
     console.log("Deleting file with id: " + fileId);
   };
 
-  // Test Route
-  const handleOpenFile = async () => {
+  const handleOpenFile = async (fileId) => {
     const response = await fetch(
-      new URL(`/courses/download-file/3`, "http://localhost:5000/"),
+      new URL(`/courses/download-file/${fileId}`, "http://localhost:5000/"),
       {
         method: "GET",
         headers: {
@@ -306,19 +290,40 @@ const TeacherCourseContent = () => {
           Authorization: `Bearer ${token}`,
         },
       }
-    );
-    const data = await response.blob();
-    if (data.error) {
-      console.log("error");
-    } else {
-      console.log(data);
-      let url = window.URL.createObjectURL(data);
-      window.open(url);
-    }
-  };
+      );
+      const data = await response.blob();
+      if (data.error) {
+        console.log("error");
+      } else {
+        console.log(data);
+        let url = window.URL.createObjectURL(data);
+        window.open(url);
+      }
+    };
 
-  return (
-    <>
+    const handleSearch = async () => {
+      const response = await fetch(
+        new URL(`/course/${courseId}/content/search/with`, "http://localhost:5000"),
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.error) {
+        console.log("error");
+      } else {
+        console.log(data);
+      }
+    }
+
+    
+    return (
+      <>
       <Box sx={{ display: "flex" }}>
         <NavBar />
         <CourseSidebar />
@@ -358,8 +363,11 @@ const TeacherCourseContent = () => {
             ))}
           </List>
         </Box>
-        <Button onClick={handleOpenFile}>Get file test</Button>
+        <Button onClick={handleSearch}>search</Button>
       </Box>
+      <Box id="chatbot">
+      </Box>
+
     </>
   );
 };
