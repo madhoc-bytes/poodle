@@ -5,6 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import CommentIcon from "@mui/icons-material/Comment";
 import Box from "@mui/material/Box";
 import AccessibleForwardIcon from "@mui/icons-material/AccessibleForward";
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { BrowserRouter, Link } from "react-router-dom";
 import { ListItemText, Typography } from "@mui/material";
 
@@ -201,8 +202,8 @@ const steps = [
   return (
     <>
       <Box sx={{ position: "fixed", bottom: 16, right: 16, zindex: 9999 }}>
-        <IconButton onClick={toggleChat} sx={{ backgroundColor: "#ffafcc" }}>
-          <AccessibleForwardIcon sx={{ color: "white" }} />
+        <IconButton onClick={toggleChat} sx={{ backgroundColor: "#ffafcc", height: '70px', width: '70px' }}>
+          <SmartToyIcon sx={{ color: "white", fontSize: 50 }} />
         </IconButton>
       </Box>
       {isChatOpen && (
@@ -212,7 +213,7 @@ const steps = [
             bottom: 100,
             right: -30,
             width: 400,
-            height: 500,
+            height: 510,
             zIndex: 9998,
           }}
         >

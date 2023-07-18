@@ -48,6 +48,16 @@ const TeacherCourseContent = () => {
 
   const courseId = useParams().courseId;
 
+  useEffect(() => {
+    const chatbotContainer = document.getElementById('chatbot');
+    if(chatbotContainer){
+      render(<CourseChatbot courseId={courseId} />, chatbotContainer);
+      console.log("chatbot container found")
+    } else {
+      console.log("chatbot container not found");
+    }
+  }, []);
+
   const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
     const token = localStorage.getItem("token");
   
@@ -79,16 +89,6 @@ const TeacherCourseContent = () => {
       setNewFileTitle("");
       setNewFile(null);
     };
-
-    useEffect(() => {
-      const chatbotContainer = document.getElementById('chatbot');
-      if(chatbotContainer){
-        render(<CourseChatbot courseId={courseId} />, chatbotContainer);
-        console.log("chatbot container found")
-      } else {
-        console.log("chatbot container not found");
-      }
-    }, []);
   
     const handleCreateFile = async () => {
       // Perform create file logic here
@@ -300,27 +300,6 @@ const TeacherCourseContent = () => {
         window.open(url);
       }
     };
-
-    const handleSearch = async () => {
-      const response = await fetch(
-        new URL(`/course/${courseId}/content/search/with`, "http://localhost:5000"),
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const data = await response.json();
-      if (data.error) {
-        console.log("error");
-      } else {
-        console.log(data);
-      }
-    }
-
     
     return (
       <>
@@ -363,7 +342,6 @@ const TeacherCourseContent = () => {
             ))}
           </List>
         </Box>
-        <Button onClick={handleSearch}>search</Button>
       </Box>
       <Box id="chatbot">
       </Box>
