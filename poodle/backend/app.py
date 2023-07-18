@@ -148,7 +148,7 @@ def get_course_content(course_id):
 
 	return content.get_course_content(user_id, course_id)
 
-@app.route('/course/<int:course_id>/content/search/<query>', methods=['GET'])
+@app.route('/course/<int:course_id>/content/search/<string:query>', methods=['GET'])
 def search_content(course_id, query):
 	token = get_token(request)
 	v.validate_token(token)

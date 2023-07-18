@@ -18,6 +18,7 @@ import StudentQuizPage from './pages/StudentCoursePages/StudentQuizPage'
 import TeacherCourseQuizzes from './pages/TeacherCoursePages/TeacherCourseQuizzes'
 import TeacherEditQuiz from './pages/TeacherCoursePages/TeacherEditQuiz'
 import TeacherGradeAssignment from './pages/TeacherCoursePages/TeacherGradeAssignment'
+import StudentCourseContent from './pages/StudentCoursePages/StudentCourseContent'
 
 function App() {
   return (
@@ -47,6 +48,8 @@ function App() {
         <Route path="/student/:courseId/Assignments" element={<StudentCourseAssignments />} />
         <Route path="/student/:courseId/Quizzes" element={<StudentCourseQuizzes />} />
         <Route path="/student/:courseId/quizpage/:quizId" element={<StudentQuizPage />} />
+        <Route path="/student/:courseId/Content" element={<StudentCourseContent />} />
+
 
         <Route path="/OnlineClass/:courseId/:roomId" element={<OnlineClass />} />
       </Routes>
