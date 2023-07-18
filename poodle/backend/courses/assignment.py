@@ -33,11 +33,6 @@ def create(user_id, course_id, title, description, due_date, max_marks):
 
 	db.session.add(new_assignment)
 	db.session.commit()
-	
-	# Make a new folder for the assignments
-	# destination = os.path.join(os.getcwd(), 'fsh', unique_name)
-
-	# os.makedirs(destination)
 
 	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
 
@@ -69,7 +64,7 @@ def upload_spec(user_id, assignment_id, spec_file):
 	assignment = Assignment.query.get(assignment_id)
 	if not assignment.spec_file_id:
 		current_time = datetime.now()
-		file = File(folder_id=0, name="specification", date_created=current_time, file_path='')
+		file = File(folder_id=0, name=spec_file.name, date_created=current_time, file_path='')
 		db.session.add(file)
 		db.session.commit()
 
@@ -77,9 +72,9 @@ def upload_spec(user_id, assignment_id, spec_file):
 		unique_name = str(file.id)
 		destination = os.path.join(os.getcwd(), 'fsh', unique_name)
 		spec_file.save(destination)
-  
-		file.file_path = destination
 
+		# update file_path in database
+		file.file_path = destination
 		assignment.spec_file_id = file.id
 		db.session.commit()
 		return jsonify({'message': 'Assignment spec successfully uploaded', 'file_id': file.id}), 201
@@ -96,12 +91,12 @@ def upload_spec(user_id, assignment_id, spec_file):
 
 # get assignments 
 def get_assignments(user_id, course_id):
-	# user = User.query.get(user_id)
+	user = User.query.get(user_id)
 
-	#check if user in the course
-	# enrolment = Enrolment.query.filter_by(user_id=user_id, course_id=course_id).first()
-	# if not enrolment:
-	# 	raise Unauthorized('User not enrolled in course')
+	# check if student in the course
+	enrolment = Enrolment.query.filter_by(user_id=user_id, course_id=course_id).first()
+	if not user.is_teacher and not enrolment:
+		raise Unauthorized('User not enrolled in course')
 
 	assignments = Assignment.query.filter_by(course_id=course_id).all()
 	assignment_schema = AssignmentSchema(many=True)
@@ -117,7 +112,7 @@ def submit(user_id, assignment_id, submission_file):
 	
 	# teachers can't make submissions
 	if user.is_teacher:
-		raise Unauthorized('User permission denied')
+		raise Unauthorized('Teachers cannot submit assignments')
 	
 	# cannot submit past the due date
 	assignment = Assignment.query.get(assignment_id)
@@ -135,7 +130,7 @@ def submit(user_id, assignment_id, submission_file):
 
 		# save locally to fsh content	
 		unique_name = str(file.id)
-		destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(assignment.course_id), 'assignments', str(assignment_id), unique_name)
+		destination = os.path.join(os.getcwd(), 'fsh', str(assignment.course_id), 'assignments', str(assignment_id), unique_name)
 		submission_file.save(destination)
 
 		file.file_path = destination
