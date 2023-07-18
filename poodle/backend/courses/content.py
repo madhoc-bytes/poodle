@@ -42,7 +42,7 @@ def create_file(file_name, user_id, folder_id, file):
 	
 	# save locally to fsh content	
 	unique_name = str(new_file.id) + ' ' + file_name
-	destination = os.path.join(os.getcwd(), 'poodle/frontend/public/fsh', str(folder.course_id), 'content' ,unique_name)
+	destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(folder.course_id), 'content' ,unique_name)
 	file.save(destination)
 
 	# update file_path in database
@@ -86,4 +86,4 @@ def get_file(file_id):
 	file = File.query.get(file_id)
 	if not file:
 		raise NotFound('File does not exist')	
-	return send_file(file.file_path, as_attachment=True, attachment_filename=file.name), 200
+	return send_file(file.file_path, as_attachment=True), 200

@@ -35,7 +35,7 @@ def create(user_id, course_id, title, description, due_date, max_marks):
 	db.session.commit()
 	
 	# Make a new folder for the assignments
-	# destination = os.path.join(os.getcwd(), 'poodle/frontend/public/fsh', str(course_id), 'assignments', new_assignment.id)
+	# destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(course_id), 'assignments', new_assignment.id)
 	# os.makedirs(destination)
 
 	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
@@ -74,7 +74,7 @@ def upload_spec(user_id, assignment_id, spec_file):
 
 		# save locally to fsh content	
 		unique_name = str(file.id)
-		destination = os.path.join('poodle/frontend/public/fsh', str(assignment.course_id), 'assignments', str(assignment_id) + '.pdf')
+		destination = os.path.join('poodle/backend/courses/fsh', str(assignment.course_id), 'assignments', str(assignment_id) + '.pdf')
   
 		import base64
 		file_content_binary = base64.b64decode(spec_file['fileContent'])
@@ -140,7 +140,7 @@ def submit(user_id, assignment_id, submission_file):
 
 		# save locally to fsh content	
 		unique_name = str(file.id)
-		destination = os.path.join(os.getcwd(), 'poodle/frontend/public/fsh', str(assignment.course_id), 'assignments', str(assignment_id), unique_name)
+		destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(assignment.course_id), 'assignments', str(assignment_id), unique_name)
 		submission_file.save(destination)
 
 		file.file_path = destination

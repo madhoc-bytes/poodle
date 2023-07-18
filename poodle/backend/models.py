@@ -164,7 +164,6 @@ class OnlineClassSchema(ma.SQLAlchemySchema):
 		fields = ('id', 'name','course_id')
 
 class Quiz(db.Model):
-	print('ok here dawg')
 	quiz_id = db.Column(db.Integer, primary_key=True)
 	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
 	due_date = db.Column(db.DateTime, nullable=False)
