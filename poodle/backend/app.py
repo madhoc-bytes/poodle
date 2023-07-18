@@ -329,5 +329,14 @@ def update_quiz_score(quiz_id):
 
 	return quiz.update_quiz_score(user_id, quiz_id, score)
 
+@app.route('/quiz/<int:quiz_id>/submit', methods=['PUT'])
+def submit_quiz(quiz_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	score = request.json['score']
+
+	return quiz.submit_quiz(user_id, quiz_id, score)
+
 if __name__ == '__main__':
 	app.run(debug=True)

@@ -191,12 +191,14 @@ class QuizScore(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 	time_started = db.Column(db.DateTime, nullable=False)
 	score = db.Column(db.Float, nullable=False)
+	completed = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __init__(self, quiz_id, user_id, time_started, score):
 		self.quiz_id = quiz_id
 		self.user_id = user_id
 		self.time_started = time_started
 		self.score = score
+		self.completed = False
 
 class QuizScoreSchema(ma.SQLAlchemySchema):
 	class Meta:
