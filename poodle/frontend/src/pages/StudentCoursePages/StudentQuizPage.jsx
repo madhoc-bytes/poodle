@@ -93,9 +93,11 @@ const StudentQuizPage = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const timeStarted = new Date(quizTimeStarted);
+
       const now = new Date();
-      const timeLimitMilliseconds = quizTimeLimit * 1000;
-      const timeElapsed = now.getTime() - timeStarted.getTime();
+      const timeLimitMilliseconds = quizTimeLimit * 60 * 1000;
+      const timeElapsed =
+        now.getTime() - timeStarted.getTime() + 10 * 60 * 1000 * 60;
       const timeRemaining = timeLimitMilliseconds - timeElapsed;
       const secondsLeft = Math.floor(timeRemaining / 1000);
 
@@ -226,8 +228,6 @@ const StudentQuizPage = () => {
           </Grid>
         </Grid>
 
-        {/* Delete this below */}
-        <Typography variant="h7">Score: {currScore}</Typography>
         <Box
           sx={{
             display: "flex",

@@ -77,6 +77,7 @@ const StudentCourseQuizzes = () => {
     } else {
       // Open a new tab with the quiz
       window.open(`/student/${courseId}/quizpage/${quizId}`, "_blank");
+      fetchQuizzes();
     }
   };
 
@@ -153,7 +154,7 @@ const StudentCourseQuizzes = () => {
                     </Typography>
                     <Typography variant="body">
                       {" "}
-                      Mark: {quiz.status !== "COMPLETE" ? "?" : quiz.mark}/
+                      Mark: {quiz.status !== "Completed" ? "?" : quiz.score}/
                       {quiz.maxMarks}
                     </Typography>
                     <Typography variant="body">

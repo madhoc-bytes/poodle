@@ -40,6 +40,7 @@ const TeacherCourseAssignments = () => {
   const [maxMarks, setMaxMarks] = useState(100);
   const [description, setDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(-1);
 
@@ -96,55 +97,89 @@ const TeacherCourseAssignments = () => {
   };
 
   const handleCreateAssignment = async () => {
-    const response = await fetch(
-      // Change the URL when backend is ready
-      new URL(
-        `/courses/${courseId}/assignments/create`,
-        "http://localhost:5000/"
-      ),
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ title, description, dueDate, maxMarks }),
+    let newErrors = {};
+
+    if (title.trim() === "") {
+      newErrors.title = "Assignment title cannot be empty.";
+    }
+
+    if (maxMarks <= 0) {
+      newErrors.maxMarks = "Max marks must be greater than 0.";
+    }
+
+    if (dueDate.trim() === "" || isNaN(new Date(dueDate).getTime())) {
+      newErrors.dueDate = "Invalid due date.";
+    }
+
+    if (description.trim() === "") {
+      newErrors.description = "Assignment description cannot be empty.";
+    }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
+      const response = await fetch(
+        // Change the URL when backend is ready
+        new URL(
+          `/courses/${courseId}/assignments/create`,
+          "http://localhost:5000/"
+        ),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ title, description, dueDate, maxMarks }),
+        }
+      );
+      const data = await response.json();
+      if (data.error) {
+        console.log("ERROR");
+      } else {
+        setSelectedAssignmentId(data.assignment_id);
+        handleUploadSpec(data.assignment_id);
+        fetchAssignments();
+        handleCloseModal();
       }
-    );
-    const data = await response.json();
-    if (data.error) {
-      console.log("ERROR");
-    } else {
-      setSelectedAssignmentId(data.assignment_id);
-      handleUploadSpec(data.assignment_id);
-      fetchAssignments();
-      handleCloseModal();
     }
   };
 
   const handleEditAssignment = async () => {
-    handleUploadSpec(selectedAssignmentId);
+    let newErrors = {};
 
-    const response = await fetch(
-      new URL(
-        `/courses/assignments/${selectedAssignmentId}/edit`,
-        "http://localhost:5000/"
-      ),
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ title, description }),
+    if (title.trim() === "") {
+      newErrors.title = "Assignment title cannot be empty.";
+    }
+
+    if (description.trim() === "") {
+      newErrors.description = "Assignment description cannot be empty.";
+    }
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      handleUploadSpec(selectedAssignmentId);
+
+      const response = await fetch(
+        new URL(
+          `/courses/assignments/${selectedAssignmentId}/edit`,
+          "http://localhost:5000/"
+        ),
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ title, description }),
+        }
+      );
+      const data = await response.json();
+      if (data.error) {
+        console.log("ERROR");
+      } else {
+        fetchAssignments();
+        handleCloseModal();
       }
-    );
-    const data = await response.json();
-    if (data.error) {
-      console.log("ERROR");
-    } else {
-      fetchAssignments();
-      handleCloseModal();
     }
   };
 
@@ -155,33 +190,31 @@ const TeacherCourseAssignments = () => {
 
   const handleUploadSpec = async (assignmentId) => {
     if (!selectedFile) {
-      alert("Please select a file.");
       return;
-    }
-
-    const formData = new FormData();
-    // formData.append("fileName", "a");
-    formData.append("file", selectedFile);
-
-    const response = await fetch(
-      new URL(
-        `/courses/assignments/${assignmentId}/specification`,
-        "http://localhost:5000/"
-      ),
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: formData,
-      }
-    );
-    const data = await response.json();
-    if (data.error) {
-      console.log("ERROR");
     } else {
-      console.log("success");
-      // }
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const response = await fetch(
+        new URL(
+          `/courses/assignments/${assignmentId}/specification`,
+          "http://localhost:5000/"
+        ),
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formData,
+        }
+      );
+      const data = await response.json();
+      if (data.error) {
+        console.log("ERROR");
+      } else {
+        console.log("success");
+        // }
+      }
     }
   };
 
@@ -243,7 +276,14 @@ const TeacherCourseAssignments = () => {
                 wordWrap: "break-word",
               }}
             >
-              <Card sx={{ width: "400px" }}>
+              <Card
+                sx={{
+                  width: "400px",
+                  borderRadius: "20px",
+                  boxShadow:
+                    "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
+                }}
+              >
                 <CardContent>
                   <Typography variant="h5">{assignment.title}</Typography>
                   <Typography variant="body1">
@@ -255,9 +295,14 @@ const TeacherCourseAssignments = () => {
                   <Typography variant="body2">
                     Max mark: {assignment.max_marks}
                   </Typography>
-                  <Link onClick={() => handleGetFile(assignment.spec_file_id)}>
-                    Specification
-                  </Link>
+                  {assignment.spec_file_id && (
+                    <Link
+                      onClick={() => handleGetFile(assignment.spec_file_id)}
+                    >
+                      Specification
+                    </Link>
+                  )}
+
                   <br />
                   <Button
                     variant="contained"
@@ -306,6 +351,8 @@ const TeacherCourseAssignments = () => {
           <DialogContent>
             <TextField
               autoFocus
+              error={!!errors.title}
+              helperText={errors.title}
               label="Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -315,6 +362,8 @@ const TeacherCourseAssignments = () => {
             />
             {selectedAssignmentId === -1 ? (
               <TextField
+                error={!!errors.maxMarks}
+                helperText={errors.maxMarks}
                 type="number"
                 label="Max mark"
                 value={maxMarks}
@@ -328,6 +377,8 @@ const TeacherCourseAssignments = () => {
             )}
             {selectedAssignmentId === -1 ? (
               <TextField
+                error={!!errors.dueDate}
+                helperText={errors.dueDate}
                 label="Due date"
                 type="datetime-local"
                 value={dueDate}
@@ -342,6 +393,8 @@ const TeacherCourseAssignments = () => {
             )}
 
             <TextField
+              error={!!errors.description}
+              helperText={errors.description}
               label="Description"
               margin="normal"
               multiline

@@ -198,7 +198,7 @@ def submit_assignment(assignment_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	submission_file = request.json['file']
+	submission_file = request.files['file']
 	return assignment.submit(user_id, assignment_id, submission_file)
 
 @app.route('/courses/assignments/<int:assignment_id>/submissions', methods=['GET'])
@@ -207,7 +207,6 @@ def fetch_submissions(assignment_id):
 	user_id = v.validate_token(token)
 
 	return assignment.all_submissions(user_id, assignment_id)
-
 
 @app.route('/courses/assignments/mark/<int:submission_id>', methods=['PUT'])
 def update_score(submission_id):

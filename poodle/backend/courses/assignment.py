@@ -124,8 +124,7 @@ def submit(user_id, assignment_id, submission_file):
 	if assignment.due_date < datetime.now():
 		raise BadRequest('Assignment due date has passed')
 	
-	submission = Submission.query.filter_by(student_id=user_id, assignment_id = assignment_id)
-
+	submission = Submission.query.filter_by(student_id=user_id, assignment_id = assignment_id).first()
 	# if there isn't a submission already, create a new one
 	if not submission:
 		current_time = datetime.now()
@@ -135,11 +134,11 @@ def submit(user_id, assignment_id, submission_file):
 
 		# save locally to fsh content	
 		unique_name = str(file.id)
-		destination = os.path.join(os.getcwd(), 'poodle/backend/courses/fsh', str(assignment.course_id), 'assignments', str(assignment_id), unique_name)
+		destination = os.path.join(os.getcwd(), 'fsh', unique_name)
 		submission_file.save(destination)
 
 		file.file_path = destination
-		student_email = User.email
+		student_email = user.email
 
 		new_submission = Submission(file_id=file.id, assignment_id=assignment_id, student_id=user_id, student_email = student_email, submission_time=current_time)
 		db.session.add(new_submission)
@@ -156,7 +155,7 @@ def submit(user_id, assignment_id, submission_file):
 		file.date_created = current_time
 		db.session.commit()
 	
-	return jsonify({'message': 'Assignment successfully submitted at ' + current_time, 'file_id': file.id}), 201
+	return jsonify({'message': 'Assignment successfully submitted at ' + str(current_time), 'file_id': file.id}), 201
 
 # get all submissions for an assignment
 def all_submissions(user_id, assignment_id):
@@ -166,28 +165,28 @@ def all_submissions(user_id, assignment_id):
 		raise Unauthorized('User permission denied')
 	
 	# if assignment due date has passed, create dummy submissions for students who haven't submitted
-	current_time = datetime.now()
-	if current_time > assignment.due_date:
-		# get course id from assignment id
-		assignment = Assignment.query.get(assignment_id)
-		course_id = assignment.course_id
+	# current_time = datetime.now()
+	# if current_time > assignment.due_date:
+	# 	# get course id from assignment id
+	# 	assignment = Assignment.query.get(assignment_id)
+	# 	course_id = assignment.course_id
 		
-		# get all students enrolled in the course
-		enrolments = Enrolment.query.filter_by(course_id=course_id).all()
+	# 	# get all students enrolled in the course
+	# 	enrolments = Enrolment.query.filter_by(course_id=course_id).all()
 
-		# create a dummy submissions for students who haven't submitted
-		for enrolment in enrolments:
-			student_id = enrolment.user_id
-			submission = Submission.query.filter_by(student_id=student_id, assignment_id=assignment_id).first()
-			if not submission:
-				current_time = datetime.now()
-				file = File(folder_id=0, name="submission", date_created=current_time, file_path='')
-				db.session.add(file)
-				db.session.commit()
+	# 	# create a dummy submissions for students who haven't submitted
+	# 	for enrolment in enrolments:
+	# 		student_id = enrolment.user_id
+	# 		submission = Submission.query.filter_by(student_id=student_id, assignment_id=assignment_id).first()
+	# 		if not submission:
+	# 			current_time = datetime.now()
+	# 			file = File(folder_id=0, name="submission", date_created=current_time, file_path='')
+	# 			db.session.add(file)
+	# 			db.session.commit()
 
-				new_submission = Submission(file_id=file.id, assignment_id=assignment_id, student_id=student_id, submission_time=current_time)
-				db.session.add(new_submission)
-				db.session.commit()
+	# 			new_submission = Submission(file_id=file.id, assignment_id=assignment_id, student_id=student_id, submission_time=current_time)
+	# 			db.session.add(new_submission)
+	# 			db.session.commit()
 
 	submissions = Submission.query.filter_by(assignment_id=assignment_id).all()
 	submission_schema = SubmissionSchema(many=True)
@@ -196,6 +195,7 @@ def all_submissions(user_id, assignment_id):
 
 def update_score(user_id, submission_id, score):
 	user = User.query.get(user_id)
+	scoreInt = int(score)
 	
 	if not user.is_teacher:
 		raise Unauthorized('User permission denied')
@@ -203,10 +203,10 @@ def update_score(user_id, submission_id, score):
 	submission = Submission.query.get(submission_id)
 	assignment = Assignment.query.get(submission.assignment_id)
 
-	if score < 0 or score > assignment.max_mark:
+	if scoreInt < 0 or scoreInt > assignment.max_marks:
 		raise Unauthorized('Invalid Mark')
 	
-	submission.score = score
+	submission.score = scoreInt
 	db.session.commit()
 
 	return jsonify({'message': 'Score updated successfully'}), 201
