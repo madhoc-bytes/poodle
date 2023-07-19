@@ -9,8 +9,8 @@ const OnlineClass = () => {
   console.log(courseId);
 
   const myMeeting = async (element) => {
-    const appID = 1970348594;
-    const serverSecret = "91c96aaa9f049cef482d9fb5c01630c1";
+    const appID = 972905527;
+    const serverSecret = "3334c71f6ac4ab8cdc93f1953ca612f1";
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
       appID,
       serverSecret,

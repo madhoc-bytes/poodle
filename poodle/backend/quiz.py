@@ -303,24 +303,26 @@ def get_quiz_score(user_id, course_id):
 		quiz_dict = {}
 
 		if quiz.is_deployed:
-			if quiz.due_date < datetime.now():
-				quiz_dict = {"name" : quiz.name, 
-				"score" : None,
-				"dueDate" : quiz.due_date,
-				"status" : "Past due date",
-				"maxMarks": len(quiz.questions),
-				"timeLimit": quiz.time_limit}
-			# Quiz hasn't been attempted
-			elif not quiz_score:
-				quiz_dict = {"name" : quiz.name, 
-				"score" : None,
-				"dueDate" : quiz.due_date,
-				"status" : "Not attempted",
-				"maxMarks": len(quiz.questions),
-				"timeLimit": quiz.time_limit,
-				"id": quiz.quiz_id}
+			if not quiz_score:
+				if quiz.due_date < datetime.now():
+					quiz_dict = {"name" : quiz.name, 
+					"score" : None,
+					"dueDate" : quiz.due_date,
+					"status" : "Past due date",
+					"maxMarks": len(quiz.questions),
+					"timeLimit": quiz.time_limit}
+				else:
+					# Quiz hasn't been attempted
+					quiz_dict = {"name" : quiz.name, 
+					"score" : None,
+					"dueDate" : quiz.due_date,
+					"status" : "Not attempted",
+					"maxMarks": len(quiz.questions),
+					"timeLimit": quiz.time_limit,
+					"id": quiz.quiz_id}
 			# if quiz is being attempted
-			elif (quiz_score.time_started.timestamp() + quiz.time_limit) > int(round(datetime.now().timestamp())):
+			elif (not quiz_score.completed and quiz_score.time_started.timestamp() 
+         + quiz.time_limit*60) > int(datetime.now().timestamp()):
 				quiz_dict = {"name" : quiz.name, 
 				"score" : quiz_score.score,
 				"dueDate" : quiz.due_date,
@@ -354,6 +356,9 @@ def update_quiz_score(user_id, quiz_id, score):
 		raise NotFound('User not found')
 	
 	if user.is_teacher:
+		raise Unauthorized('User permission denied')
+
+	if quiz_score.completed:
 		raise Unauthorized('User permission denied')
 	
 	if not quiz_score:
@@ -389,3 +394,12 @@ def get_quiz_info_student(user_id, quiz_id):
 	}
 
 	return jsonify({'message' : 'Quiz info retrieved successfully', 'quizInfo' : quiz_info}), 200
+
+def submit_quiz(user_id, quiz_id):
+	quiz_score = QuizScore.query.filter_by(user_id=user_id, quiz_id=quiz_id).first()
+ 
+	quiz_score.completed = True
+
+	db.session.commit()
+ 
+	return jsonify({'message' : "Quiz complete"}), 200

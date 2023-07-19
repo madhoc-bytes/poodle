@@ -102,6 +102,7 @@ const TeacherGradeAssignment = () => {
     const data = await response.json();
     if (data.error) {
       console.log("ERROR");
+      alert("Mark out of range");
     } else {
       console.log("Assignment marked successfully");
       fetchAssignmentSubmissions();
@@ -113,10 +114,10 @@ const TeacherGradeAssignment = () => {
   };
 
   const ungradedSubmissions = assignmentSubmissions.filter(
-    (submission) => !submission.score
+    (submission) => !submission.score && submission.score !== 0
   );
   const gradedSubmissions = assignmentSubmissions.filter(
-    (submission) => submission.score
+    (submission) => submission.score || submission.score === 0
   );
 
   return (
@@ -149,7 +150,7 @@ const TeacherGradeAssignment = () => {
                       <TableCell>
                         {" "}
                         <Link onClick={() => handleGetFile(submission.file_id)}>
-                          Specification
+                          Submission
                         </Link>
                       </TableCell>
 

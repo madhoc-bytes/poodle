@@ -334,9 +334,7 @@ def submit_quiz(quiz_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	score = request.json['score']
-
-	return quiz.submit_quiz(user_id, quiz_id, score)
+	return quiz.submit_quiz(user_id, quiz_id)
 
 if __name__ == '__main__':
 	app.run(debug=True)

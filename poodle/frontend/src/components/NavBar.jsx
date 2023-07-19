@@ -80,7 +80,6 @@ const NavBar = () => {
             cursor: "pointer",
             "&:hover": {
               fontSize: "2.3rem",
-              backgroundColor: "#f0f0f0",
             },
             width: "130px",
           }}

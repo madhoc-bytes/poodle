@@ -33,11 +33,6 @@ def create(user_id, course_id, title, description, due_date, max_marks):
 
 	db.session.add(new_assignment)
 	db.session.commit()
-	
-	# Make a new folder for the assignments
-	# destination = os.path.join(os.getcwd(), 'fsh', unique_name)
-
-	# os.makedirs(destination)
 
 	return jsonify({'message': 'Assignment created successfully', 'assignment_id': new_assignment.id}), 201
 
@@ -69,7 +64,7 @@ def upload_spec(user_id, assignment_id, spec_file):
 	assignment = Assignment.query.get(assignment_id)
 	if not assignment.spec_file_id:
 		current_time = datetime.now()
-		file = File(folder_id=0, name="specification", date_created=current_time, file_path='')
+		file = File(folder_id=0, name=spec_file.filename, date_created=current_time, file_path='')
 		db.session.add(file)
 		db.session.commit()
 
@@ -81,6 +76,8 @@ def upload_spec(user_id, assignment_id, spec_file):
 		file.file_path = destination
 
 		assignment.spec_file_id = file.id
+		assignment.spec_name = file.name
+  
 		db.session.commit()
 		return jsonify({'message': 'Assignment spec successfully uploaded', 'file_id': file.id}), 201
 	else:
@@ -91,26 +88,47 @@ def upload_spec(user_id, assignment_id, spec_file):
 		spec_file.save(destination)
 		current_time = datetime.now()
 		file.date_created = current_time
+		file.name = spec_file.filename
 		db.session.commit()	
 		return jsonify({'message': 'Assignment spec successfully updated', 'file_id': file.id}), 201
 
 # get assignments 
 def get_assignments(user_id, course_id):
-	# user = User.query.get(user_id)
+	user = User.query.get(user_id)
 
 	#check if user in the course
-	# enrolment = Enrolment.query.filter_by(user_id=user_id, course_id=course_id).first()
-	# if not enrolment:
-	# 	raise Unauthorized('User not enrolled in course')
+	enrolment = Enrolment.query.filter_by(user_id=user_id, course_id=course_id).first()
+	if not enrolment and not user.is_teacher:
+		raise Unauthorized('User not enrolled in course')
 
 	assignments = Assignment.query.filter_by(course_id=course_id).all()
 	assignment_schema = AssignmentSchema(many=True)
+ 
+	# file = file.query.get(assign)
+	assignment_list = []
 	
 	# remove list of submissions 
 	for assignment in assignments:
-		del assignment.submissions
+		submission = Submission.query.filter_by(assignment_id=assignment.id,
+                                           student_id=user_id).first()
+		ass_dict = {'id': assignment.id,
+              'title': assignment.title,
+              'description': assignment.description,
+              'due_date': assignment.due_date,
+              'max_marks': assignment.max_marks,
+              'spec_file_id': assignment.spec_file_id,
+              'spec_name': assignment.spec_name,
+              'submitted': False,
+              'score': None
+              }
+  
+		if (submission):
+			ass_dict['submitted'] = True
+			ass_dict['score'] = submission.score
+		assignment_list.append(ass_dict)
+		
 
-	return jsonify(assignment_schema.dump(assignments)), 201
+	return assignment_list, 201
 
 def submit(user_id, assignment_id, submission_file):
 	user = User.query.get(user_id)
@@ -138,6 +156,7 @@ def submit(user_id, assignment_id, submission_file):
 		submission_file.save(destination)
 
 		file.file_path = destination
+		file.name = submission_file.filename
 		student_email = user.email
 
 		new_submission = Submission(file_id=file.id, assignment_id=assignment_id, student_id=user_id, student_email = student_email, submission_time=current_time)
@@ -163,30 +182,34 @@ def all_submissions(user_id, assignment_id):
 	
 	if not user.is_teacher:
 		raise Unauthorized('User permission denied')
+
+	assignment = Assignment.query.get(assignment_id)
 	
 	# if assignment due date has passed, create dummy submissions for students who haven't submitted
-	# current_time = datetime.now()
-	# if current_time > assignment.due_date:
-	# 	# get course id from assignment id
-	# 	assignment = Assignment.query.get(assignment_id)
-	# 	course_id = assignment.course_id
+	current_time = datetime.now()
+	if current_time > assignment.due_date:
+		# get course id from assignment id
+		assignment = Assignment.query.get(assignment_id)
+		course_id = assignment.course_id
 		
-	# 	# get all students enrolled in the course
-	# 	enrolments = Enrolment.query.filter_by(course_id=course_id).all()
+		# get all students enrolled in the course
+		enrolments = Enrolment.query.filter_by(course_id=course_id).all()
 
-	# 	# create a dummy submissions for students who haven't submitted
-	# 	for enrolment in enrolments:
-	# 		student_id = enrolment.user_id
-	# 		submission = Submission.query.filter_by(student_id=student_id, assignment_id=assignment_id).first()
-	# 		if not submission:
-	# 			current_time = datetime.now()
-	# 			file = File(folder_id=0, name="submission", date_created=current_time, file_path='')
-	# 			db.session.add(file)
-	# 			db.session.commit()
+		# create a dummy submissions for students who haven't submitted
+		for enrolment in enrolments:
+			student_id = enrolment.user_id
+			meow = User.query.get(student_id)
 
-	# 			new_submission = Submission(file_id=file.id, assignment_id=assignment_id, student_id=student_id, submission_time=current_time)
-	# 			db.session.add(new_submission)
-	# 			db.session.commit()
+			submission = Submission.query.filter_by(student_id=student_id, assignment_id=assignment_id).first()
+			if not submission:
+				current_time = datetime.now()
+				file = File(folder_id=0, name="submission", date_created=current_time, file_path='')
+				db.session.add(file)
+				db.session.commit()
+
+				new_submission = Submission(file_id=file.id, assignment_id=assignment_id, student_id=student_id, submission_time=current_time, student_email=meow.email)
+				db.session.add(new_submission)
+				db.session.commit()
 
 	submissions = Submission.query.filter_by(assignment_id=assignment_id).all()
 	submission_schema = SubmissionSchema(many=True)

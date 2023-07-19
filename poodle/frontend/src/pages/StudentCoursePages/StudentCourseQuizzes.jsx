@@ -16,37 +16,6 @@ import NavBar from "../../components/NavBar";
 import { useParams } from "react-router";
 import CourseSidebar from "../../components/CourseSidebar";
 
-// Set dummy quizzes here first
-// const quizzes = [
-//   {
-//     name: "Quiz 1",
-//     quizId: 1,
-//     dueDate: "2023-07-01T15:30:00.000Z",
-//     timeLimit: 1000,
-//     mark: null,
-//     max_marks: 30,
-//     status: "ATTEMPT", // ATTEMPT or IN PROGRESS
-//   },
-//   {
-//     name: "Quiz 2",
-//     quizId: 2,
-//     dueDate: "2023-07-01T15:30:00.000Z",
-//     timeLimit: 1000,
-//     mark: 2,
-//     max_marks: 30,
-//     status: "IN PROGRESS", // ATTEMPT or IN PROGRESS
-//   },
-//   {
-//     name: "Quiz 3",
-//     quizId: 3,
-//     dueDate: "2023-07-01T15:30:00.000Z",
-//     timeLimit: 1000,
-//     mark: 17,
-//     max_marks: 20,
-//     status: "COMPLETE", // ATTEMPT or IN PROGRESS
-//   },
-// ];
-
 const StudentCourseQuizzes = () => {
   const token = localStorage.getItem("token");
   const courseId = useParams().courseId;
@@ -101,8 +70,9 @@ const StudentCourseQuizzes = () => {
       console.log("ERROR");
     } else {
       // TODO: Uncomment this when backend is ready
-      setQuizzes(data);
       console.log(data);
+
+      setQuizzes(data);
     }
   };
 
@@ -145,12 +115,7 @@ const StudentCourseQuizzes = () => {
                     }}
                   >
                     <Typography variant="body">
-                      Due:{" "}
-                      {new Date(quiz.dueDate).toLocaleString("en-UK", {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                        hour12: true,
-                      })}
+                      Due: {quiz.dueDate.slice(0, -7)}{" "}
                     </Typography>
                     <Typography variant="body">
                       {" "}

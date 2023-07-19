@@ -94,8 +94,7 @@ const TeacherCourseContent = () => {
       formData.append("fileName", newFileTitle);
       formData.append("file", newFile);
 
-      // TODO: Make a fetch request to create a file when backend is ready
-      console.log(folder.id);
+      console.log(formData);
       const response = await fetch(
         new URL(`/courses/${folder.id}/create-file`, "http://localhost:5000/"),
         {
@@ -133,9 +132,9 @@ const TeacherCourseContent = () => {
             <FolderIcon />
           </ListItemIcon>
           <ListItemText primary={folder.name} />
-          <IconButton edge="end" onClick={handleDeleteFolder}>
+          {/* <IconButton edge="end" onClick={handleDeleteFolder}>
             <DeleteIcon />
-          </IconButton>
+          </IconButton> */}
           <ListItemSecondaryAction>
             <IconButton edge="end" onClick={handleToggle}>
               {open ? <ExpandLess /> : <ExpandMore />}
@@ -159,14 +158,14 @@ const TeacherCourseContent = () => {
                   }}
                   onClick={() => handleOpenFile(file.id)}
                 />
-                <ListItemSecondaryAction>
+                {/* <ListItemSecondaryAction>
                   <IconButton
                     edge="end"
                     onClick={() => handleDeleteFile(file.id)}
                   >
                     <Delete />
                   </IconButton>
-                </ListItemSecondaryAction>
+                </ListItemSecondaryAction> */}
               </ListItem>
             ))}
             <ListItem sx={{ pl: 4 }}>
@@ -192,7 +191,7 @@ const TeacherCourseContent = () => {
             /> */}
             <input
               type="file"
-              accept=".pdf,.ppt,.pptx"
+              accept=".pdf,.ppt,.pptx,.jpg,.png"
               onChange={handleFileChange}
             />
           </DialogContent>

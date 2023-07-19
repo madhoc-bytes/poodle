@@ -33,7 +33,7 @@ def login(email, password):
 
 	payload = {
 		'user_id': user.id,
-		'exp': datetime.utcnow() + timedelta(minutes=30)
+		'exp': datetime.utcnow() + timedelta(minutes=300)
 	}
 
 	token = jwt.encode(payload, secret_key, algorithm='HS256')

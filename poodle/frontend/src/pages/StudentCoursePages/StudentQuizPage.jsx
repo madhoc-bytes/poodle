@@ -55,8 +55,19 @@ const StudentQuizPage = () => {
     setOpenSubmitModal(false);
   };
 
-  const handleSubmit = () => {
-    console.log("test submitted");
+  const handleSubmit = async () => {
+    const response = await fetch(
+      new URL(`/quiz/${quizId}/submit`, "http://localhost:5000/"),
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    const data = await response.json();
+    console.log(data);
     navigate(`/student/${courseId}/Quizzes`);
     // This will probably redirect you to another page saying test submitted
   };
@@ -103,7 +114,7 @@ const StudentQuizPage = () => {
 
       if (secondsLeft < 0) {
         clearInterval(interval);
-        setTimeLeft("Time's Up!");
+        setTimeLeft("Time's up!");
       } else {
         const hours = Math.floor(secondsLeft / 3600);
         const minutes = Math.floor((secondsLeft % 3600) / 60);
@@ -117,6 +128,10 @@ const StudentQuizPage = () => {
 
   // Calculate the current score
   useEffect(() => {
+    if (timeLeft === "Time's up!") {
+      alert("Time is up!");
+      return;
+    }
     let count = 0;
     for (let key in selectedAnswers) {
       if (selectedAnswers[key] === quizQuestions[key].correct_answer) {

@@ -57,6 +57,10 @@ const TeacherEditQuiz = () => {
 
   // Deploying a quiz - POST
   const handleDeployQuiz = async () => {
+    if (quizQuestions.length < 1) {
+      alert("Quiz cannot contain no questions");
+      return;
+    }
     console.log("quiz deployed");
     const response = await fetch(
       new URL(`/quiz/${quizId}/deploy`, "http://localhost:5000/"),
@@ -159,26 +163,25 @@ const TeacherEditQuiz = () => {
 
   const handleCreateQuestion = async () => {
     // Perform error checks here
-    // Question string can't be empty
     if (currQuestion.trim() === "") {
-      alert("Quiz name cannot be empty.");
+      alert("Question name cannot be empty.");
       return;
     }
     // Multiple choice needs at least 2 values
     if (currQuestionType && currQuestionAnswers.length < 2) {
-      alert("must need at least 2 answer options");
+      alert("Must have at least 2 answer options");
       return;
     }
 
     // correct answer can't be empty
     if (currCorrectAnswer.trim() === "") {
-      alert("correct answer cannot be empty");
+      alert("Correct answer cannot be empty");
       return;
     }
 
     // Answer cannot be empty
     if (currQuestionType && currQuestionAnswers.some((str) => str === "")) {
-      alert("can't have empty answers");
+      alert("Cannot have empty answers");
       return;
     }
 

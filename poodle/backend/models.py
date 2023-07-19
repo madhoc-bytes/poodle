@@ -55,6 +55,7 @@ class Assignment(db.Model):
 	due_date = db.Column(db.DateTime, nullable=False)
 	max_marks = db.Column(db.Integer, nullable=False)
 	spec_file_id = db.Column(db.Integer, nullable=True)
+	spec_name = db.Column(db.String(1000), nullable=True)
 	submissions = relationship('Submission', backref='assignment', cascade='all, delete-orphan')
 
 	def __init__(self, course_id, title, description, due_date, max_marks):
@@ -66,14 +67,14 @@ class Assignment(db.Model):
 
 class AssignmentSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('id', 'course_id', 'title', 'description', 'due_date', 'max_marks', 'spec_file_id')	
+		fields = ('id', 'course_id', 'title', 'description', 'due_date', 'max_marks', 'spec_file_id', 'spec_name')	
 
 class Submission(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	file_id = db.Column(db.Integer, nullable=False)
 	assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
 	student_id = db.Column(db.Integer, nullable=False)
-	student_email = db.Column(db.String(120), unique=True, nullable=False)
+	student_email = db.Column(db.String(120), unique=False, nullable=False)
 	submission_time = db.Column(db.DateTime, nullable=False)
 	score = db.Column(db.Integer, nullable=True)
 

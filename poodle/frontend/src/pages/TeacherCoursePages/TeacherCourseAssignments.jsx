@@ -136,6 +136,7 @@ const TeacherCourseAssignments = () => {
       if (data.error) {
         console.log("ERROR");
       } else {
+        console.log(dueDate);
         setSelectedAssignmentId(data.assignment_id);
         handleUploadSpec(data.assignment_id);
         fetchAssignments();
@@ -290,21 +291,26 @@ const TeacherCourseAssignments = () => {
                     {assignment.description}
                   </Typography>
                   <Typography variant="body2">
-                    Due Date: {assignment.due_date}
+                    Due Date: {assignment.due_date.slice(0, -7)}
                   </Typography>
                   <Typography variant="body2">
                     Max mark: {assignment.max_marks}
                   </Typography>
                   {assignment.spec_file_id && (
-                    <Link
-                      onClick={() => handleGetFile(assignment.spec_file_id)}
-                    >
-                      Specification
-                    </Link>
+                    <>
+                      <Typography variant="body2">
+                        Spec:{" "}
+                        <Link
+                          onClick={() => handleGetFile(assignment.spec_file_id)}
+                        >
+                          {assignment.spec_name}
+                        </Link>{" "}
+                      </Typography>
+                    </>
                   )}
 
-                  <br />
                   <Button
+                    sx={{ m: 1 }}
                     variant="contained"
                     color="secondary"
                     onClick={() => handleOpenModal(assignment.id)}
@@ -414,7 +420,7 @@ const TeacherCourseAssignments = () => {
             </InputLabel>
             <Input
               type="file"
-              accept=".pdf,.ppt,.pptx"
+              accept=".pdf,.ppt,.pptx,.jpg,.png"
               onChange={handleFileChange}
               fullWidth
             />
