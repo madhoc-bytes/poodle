@@ -2,12 +2,14 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
-import quiz
+import courses.quiz as quiz
 import courses.assignment as assignment
 import courses.courses as courses
 import courses.content as content
 import courses.classes as classes
+import courses.leaderboards as leaderboards
 import validate as v
+import timeline
 
 # init app
 app = Flask(__name__)
@@ -224,15 +226,7 @@ def fetch_score(submission_id): #TODO: probs wont need this route
 
 	return assignment.fetch_score(user_id, submission_id)
 
-# HELPERS
-def get_token(request):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	else:
-		return token
-
-# QUIZ
+# QUIZZES
 @app.route('/courses/<int:course_id>/quiz/create', methods=['POST'])
 def create_quiz(course_id):
 	token = get_token(request)
@@ -335,6 +329,30 @@ def submit_quiz(quiz_id):
 	user_id = v.validate_token(token)
 
 	return quiz.submit_quiz(user_id, quiz_id)
+
+# LEADERBOARD
+@app.route('/courses/<int:course_id>/leaderboards', methods=['GET'])
+def get_leaderboards(course_id):
+	token = get_token(request)
+	v.validate_token(token)
+
+	return leaderboards.retrieve(course_id)
+
+# TIMELINE
+@app.route('/dashboard/timeline', methods=['GET'])
+def dashboard_timeline():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return timeline.retrieve(user_id)
+
+# HELPERS
+def get_token(request):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	else:
+		return token
 
 if __name__ == '__main__':
 	app.run(debug=True)
