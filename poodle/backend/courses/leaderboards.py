@@ -19,6 +19,7 @@ def retrieve(user_id, course_id):
     # get all quizzes for the course
     quizzes = Quiz.query.filter_by(course_id=course_id).all()
     for quiz in quizzes:
+
         quiz_id = quiz.id
         quiz_name = quiz.name
         
@@ -57,6 +58,51 @@ def retrieve(user_id, course_id):
                 'top_ten': students_ranked[:10]
             }
         )
+
+    # get all assignments for the course
+    assignments = Assignment.query.filter_by(course_id=course_id).all()
+    for assignment in assignments:
+            
+            assignment_id = assignment.id
+            assignment_name = assignment.title
+            
+            # get all the students' marks for the assignment
+            students_ranked = []
+            assignment_marks = Submission.query.filter_by(assignment_id=assignment_id).order_by(Submission.score.desc()).all()
+            for assignment_mark in assignment_marks:
+                student_id = assignment_mark.student_id
+                student = User.query.get(student_id)
+                first_name = student.first_name
+                last_name = student.last_name
+                mark = assignment_mark.score
+                students_ranked.append({'first_name': first_name, 'last_name': last_name, 'id': student_id, 'mark': mark})       
+    
+            # get mean and median for assignment
+            assignment_median = get_median(students_ranked)
+            assignment_mean = get_mean(students_ranked)        
+    
+            if user.is_teacher:
+                curr_student_info = None
+            else:
+                rank = get_student_rank(students_ranked, user_id)    
+                curr_student_info = {
+                    'rank': rank, 
+                    'id': user_id, 
+                    'first_name': first_name,
+                    'last_name': last_name
+                }
+    
+            res.append(
+                {
+                    'name': assignment_name, 
+                    'median': assignment_median, 
+                    'mean': assignment_mean, 
+                    'curr_student': curr_student_info, 
+                    'top_ten': students_ranked[:10]
+                }
+            )
+
+            return jsonify(res), 201
 
 def get_median(students_ranked):
     marks = []
