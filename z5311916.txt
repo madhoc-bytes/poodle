@@ -33,3 +33,33 @@ Ended up changing the API for online lectures - instead of using Zoom SDK or Vid
 Finished designing the what the website would look like - drew up all pages and interactions on figma for storyboard.
 Finished project proposal.
 Started planning for next stages of assignment - timeline and deadline for sprint 1, setting up and planning database.
+
+Week 4 - 
+Created register and login page with the required inputs - email, names passwords, confirm password
+Designed the frontend and implemented the adding of participants.
+For courses, teacher can add courses and name them
+implemented functionality of adding courses and did UI/UX.
+Implemented classes - teachers can create classes, students can join created classes - used ZegoCloud API.
+
+Week 5
+Connected frontend with backend. Routes for signup, sign in, courses, and adding participants.
+Debugged edge cases and touched up UI for demo A.
+Presented Demo A. Wrote retrospective
+Planned routes and databse for sprint 2 - assignment, quizzes and content
+
+Week 6
+Implemented the UI and UX functionality of quizzes - teacher can customise quizzes - add names, duedate, time limit.
+Teachers can also add questions to MCQ or create short answer questions. Added deply button. Functionality not connected to frontend yet
+Did the UI design of course content - teachers can add folders and files.
+Did the functionality and UI of students attempting a quiz - the student quiz page.
+The above was done with dummy data - will need to connect with backend next week.
+
+
+Week 7
+Implmented search and chatbot. Chatbot uses wikiapi. Chatbot was a react npm package. Implemneted the simple decision tree for chatbot
+
+Week 8
+Connected content page with backend - teachers and students can properly add and view folders/files
+Debugged a lot of random stuff for quizzes and assignments.
+Presented Demo B.
+Planned database and routes for sprint 3 - calender, forums, profile page and leaderboards.
