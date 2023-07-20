@@ -197,7 +197,7 @@ const TeacherGradeAssignment = () => {
                       <TableCell>{submission.student_email}</TableCell>
                       <TableCell>
                         <Link onClick={() => handleGetFile(submission.file_id)}>
-                          Specification
+                          Submission
                         </Link>
                       </TableCell>
 
