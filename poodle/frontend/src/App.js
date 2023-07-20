@@ -10,8 +10,17 @@ import TeacherCourseClasses from './pages/TeacherCoursePages/TeacherCourseClasse
 import OnlineClass from './pages/OnlineClass'
 import StudentCourseParticipants from './pages/StudentCoursePages/StudentCourseParticipants'
 import StudentCourseClasses from './pages/StudentCoursePages/StudentCourseClasses'
+import TeacherCourseContent from './pages/TeacherCoursePages/TeacherCourseContent'
+import TeacherCourseAssignments from './pages/TeacherCoursePages/TeacherCourseAssignments'
+import StudentCourseAssignments from './pages/StudentCoursePages/StudentCourseAssignments'
+import StudentCourseQuizzes from './pages/StudentCoursePages/StudentCourseQuizzes'
+import StudentQuizPage from './pages/StudentCoursePages/StudentQuizPage'
+import TeacherCourseQuizzes from './pages/TeacherCoursePages/TeacherCourseQuizzes'
+import TeacherEditQuiz from './pages/TeacherCoursePages/TeacherEditQuiz'
+import TeacherGradeAssignment from './pages/TeacherCoursePages/TeacherGradeAssignment'
+import StudentCourseContent from './pages/StudentCoursePages/StudentCourseContent'
 
-function App () {
+function App() {
   return (
     <BrowserRouter>
       <Routes>
@@ -23,20 +32,26 @@ function App () {
 
         {/* Teacher Course pages */}
         <Route path="/teacher/:courseId/Participants" element={<TeacherCourseParticipants />} />
-        <Route path="/teacher/:courseId/Content" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Content" element={<TeacherCourseContent />} />
         <Route path="/teacher/:courseId/Classes" element={<TeacherCourseClasses />} />
 
-        <Route path="/teacher/:courseId/Quizzes" element={<TeacherCourseParticipants />} />
-        <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Quizzes" element={<TeacherCourseQuizzes />} />
+        <Route path="/teacher/:courseId/editquiz/:quizId" element={<TeacherEditQuiz />} />
+        <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseAssignments />} />
+        <Route path="/teacher/:courseId/assignment-grade/:assignmentId" element={<TeacherGradeAssignment />} />
         <Route path="/teacher/:courseId/Forums" element={<TeacherCourseParticipants />} />
         <Route path="/teacher/:courseId/Leaderboards" element={<TeacherCourseParticipants />} />
 
         {/* Student Course Pages */}
         <Route path="/student/:courseId/Participants" element={<StudentCourseParticipants />} />
         <Route path="/student/:courseId/Classes" element={<StudentCourseClasses />} />
+        <Route path="/student/:courseId/Assignments" element={<StudentCourseAssignments />} />
+        <Route path="/student/:courseId/Quizzes" element={<StudentCourseQuizzes />} />
+        <Route path="/student/:courseId/quizpage/:quizId" element={<StudentQuizPage />} />
+        <Route path="/student/:courseId/Content" element={<StudentCourseContent />} />
+
 
         <Route path="/OnlineClass/:courseId/:roomId" element={<OnlineClass />} />
-
       </Routes>
     </BrowserRouter>
 

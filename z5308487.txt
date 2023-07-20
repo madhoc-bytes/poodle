@@ -25,3 +25,14 @@ Week 4
 - Started on backend and frontend
 
 Week 5
+- Completed the backend tasks for sprint 1
+
+Week 6
+<<<<<<< HEAD
+- Began work on quizzes and assignments for sprint 2
+
+Week 7
+- Redoing the quizzes and assignment databases to be more efficient
+=======
+- Began work on quizzes and assignments for sprint 2
+>>>>>>> origin/yangAssigments

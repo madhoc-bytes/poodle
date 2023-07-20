@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -8,65 +8,70 @@ import {
   Modal,
   TextField,
   Button,
-  Alert
-} from '@mui/material'
-import NavBar from '../components/NavBar'
-import { useNavigate } from 'react-router-dom'
-import AddIcon from '@mui/icons-material/Add';
+  Alert,
+} from "@mui/material";
+import NavBar from "../components/NavBar";
+import { useNavigate } from "react-router-dom";
+import AddIcon from "@mui/icons-material/Add";
 
 const styles = {
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '20px'
+    display: "flex",
+    flexDirection: "column",
+    padding: "20px",
   },
   card: {
-    width: '150px',
-    height: '150px',
-    margin: '5px',
+    width: "150px",
+    height: "150px",
+    margin: "5px",
+    transition: "all 0.15s ease-in-out",
+    cursor: "pointer",
+    "&:hover": {
+      transform: "scale(1.05)",
+      backgroundColor: "rgb(149,117,222)",
+    },
   },
   cardContent: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  }
-}
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+};
 
 const StudentDashboard = () => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem("token");
 
-  const navigate = useNavigate()
-  const [courses, setCourses] = useState([])
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
     console.log(token);
     fetchCourses();
-  }, [])
+  }, []);
 
   const handleCardClick = (course) => {
-    navigate(`/student/${course}/Participants`)
-  }
+    navigate(`/student/${course}/Participants`);
+  };
 
   const fetchCourses = async () => {
     const response = await fetch(
-      new URL('/dashboard/course-list', 'http://localhost:5000/'),
+      new URL("/dashboard/course-list", "http://localhost:5000/"),
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       }
-    )
-    const data = await response.json()
+    );
+    const data = await response.json();
     if (data.error) {
-      console.log('ERROR')
-    }
-    else {
+      console.log("ERROR");
+    } else {
       setCourses(data);
       console.log(data);
     }
-  }
+  };
 
   return (
     <>
@@ -76,7 +81,7 @@ const StudentDashboard = () => {
           Courses
         </Typography>
         <Box
-          sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}
+          sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
         >
           {courses.map((course) => (
             <Card
@@ -84,20 +89,21 @@ const StudentDashboard = () => {
               sx={styles.card}
               onClick={() => handleCardClick(course.id)}
             >
-              <CardContent sx={{
-                wordWrap: 'break-word',
-              }}>
+              <CardContent
+                sx={{
+                  wordWrap: "break-word",
+                }}
+              >
                 <Typography variant="h7" component="div">
                   <strong>{course.name}</strong>
                 </Typography>
               </CardContent>
             </Card>
           ))}
-    
         </Box>
-       </Container>
+      </Container>
     </>
-  )
-}
+  );
+};
 
-export default StudentDashboard
+export default StudentDashboard;

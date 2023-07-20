@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Toolbar } from '@mui/material'
 import NavBar from '../../components/NavBar'
-import TeacherCourseSidebar from '../../components/TeacherCourseSidebar'
+import CourseSidebar from '../../components/CourseSidebar'
 import { useParams } from 'react-router-dom'
 
 const TeacherCourseParticipants = () => {
@@ -70,7 +70,7 @@ const TeacherCourseParticipants = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <NavBar />
-      <TeacherCourseSidebar />
+      <CourseSidebar />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
