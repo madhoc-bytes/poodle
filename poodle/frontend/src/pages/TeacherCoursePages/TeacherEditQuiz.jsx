@@ -401,9 +401,8 @@ const TeacherEditQuiz = () => {
           <div>
             <Button
               variant="contained"
-              color="primary"
               onClick={handleOpenModal}
-              sx={{ marginRight: "100px" }}
+              sx={{ marginRight: "100px", backgroundColor: "rgb(149,117,222)" }}
             >
               Edit
             </Button>
@@ -425,8 +424,7 @@ const TeacherEditQuiz = () => {
             },
           }}
         >
-          <Toolbar />
-          <List>
+            <List>
             <ListItemButton
               onClick={() => setCurrQuestionIndex(null)}
               sx={{
