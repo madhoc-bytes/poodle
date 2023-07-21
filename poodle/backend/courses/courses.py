@@ -1,10 +1,7 @@
 
 from flask import jsonify
-from models import User, Course, Enrolment, Folder, OnlineClass, OnlineClassSchema, db 
-from datetime import datetime, timedelta
-from variables import secret_key
+from models import *
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
-import os
 
 # BASICS
 def create(course_name, user_id):
