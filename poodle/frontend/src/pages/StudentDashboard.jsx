@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
 import DashboardTimeline from "../components/DashboardTimeline";
 
 const styles = {
@@ -25,7 +24,7 @@ const styles = {
   card: {
     width: "150px",
     height: "150px",
-    margin: "5px",
+    margin: "14px",
     transition: "all 0.15s ease-in-out",
     cursor: "pointer",
     "&:hover": {
@@ -78,42 +77,58 @@ const StudentDashboard = () => {
   return (
     <>
       <NavBar />
-      <Container  sx={{backgroundColor: "red"}}>
-        <Toolbar />
-        <Box sx={{display: 'flex', margin: 'auto', width: '80%', backgroundColor: 'green'}}>
-          {/* Courses */}
-          <Box sx={{ backgroundColor: "pink", flexGrow: 1 }}>
+      <Toolbar />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            margin: "20px 30px",
+            width: "50%",
+            flexDirection: "column",
+          }}
+        >
+          <Box>
+            {/* Courses */}
             <Typography variant="h3" component="h1" align="center" gutterBottom>
               Courses
             </Typography>
-            <Box
-              sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center"}}
-            >
-              {courses.map((course) => (
-                <Card
-                  key={course.id}
-                  sx={styles.card}
-                  onClick={() => handleCardClick(course.id)}
-                >
-                  <CardContent
-                    sx={{
-                      wordWrap: "break-word",
-                    }}
-                  >
-                    <Typography variant="h7" component="div">
-                      <strong>{course.name}</strong>
-                    </Typography>
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
           </Box>
-          {/* Calender */}
-          <Box sx={{backgroundColor: "blue", width: '40%'}}>
-            <DashboardTimeline />
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignContent: "center",
+            }}
+          >
+            {courses.map((course) => (
+              <Card
+                key={course.id}
+                sx={styles.card}
+                onClick={() => handleCardClick(course.id)}
+              >
+                <CardContent
+                  sx={{
+                    wordWrap: "break-word",
+                  }}
+                >
+                  <Typography variant="h7" component="div">
+                    <strong>{course.name}</strong>
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
           </Box>
         </Box>
-      </Container>
+        {/* Calendar */}
+        <Box sx={{ width: "50%", height: "100vh" }}>
+          <DashboardTimeline />
+        </Box>
+      </Box>
     </>
   );
 };
