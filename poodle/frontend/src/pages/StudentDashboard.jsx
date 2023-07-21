@@ -9,10 +9,12 @@ import {
   TextField,
   Button,
   Alert,
+  Toolbar,
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
+import DashboardTimeline from "../components/DashboardTimeline";
 
 const styles = {
   container: {
@@ -76,30 +78,40 @@ const StudentDashboard = () => {
   return (
     <>
       <NavBar />
-      <Container maxWidth="sm">
-        <Typography variant="h3" component="h1" align="center" gutterBottom>
-          Courses
-        </Typography>
-        <Box
-          sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
-        >
-          {courses.map((course) => (
-            <Card
-              key={course.id}
-              sx={styles.card}
-              onClick={() => handleCardClick(course.id)}
+      <Container  sx={{backgroundColor: "red"}}>
+        <Toolbar />
+        <Box sx={{display: 'flex', margin: 'auto', width: '80%', backgroundColor: 'green'}}>
+          {/* Courses */}
+          <Box sx={{ backgroundColor: "pink", flexGrow: 1 }}>
+            <Typography variant="h3" component="h1" align="center" gutterBottom>
+              Courses
+            </Typography>
+            <Box
+              sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center"}}
             >
-              <CardContent
-                sx={{
-                  wordWrap: "break-word",
-                }}
-              >
-                <Typography variant="h7" component="div">
-                  <strong>{course.name}</strong>
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
+              {courses.map((course) => (
+                <Card
+                  key={course.id}
+                  sx={styles.card}
+                  onClick={() => handleCardClick(course.id)}
+                >
+                  <CardContent
+                    sx={{
+                      wordWrap: "break-word",
+                    }}
+                  >
+                    <Typography variant="h7" component="div">
+                      <strong>{course.name}</strong>
+                    </Typography>
+                  </CardContent>
+                </Card>
+              ))}
+            </Box>
+          </Box>
+          {/* Calender */}
+          <Box sx={{backgroundColor: "blue", width: '40%'}}>
+            <DashboardTimeline />
+          </Box>
         </Box>
       </Container>
     </>

@@ -42,10 +42,28 @@ class Course(db.Model):
 	online_classes = relationship('OnlineClass', backref='course', cascade='all, delete-orphan')
 	folders = relationship('Folder', backref='course', cascade='all, delete-orphan')
 	assignments = relationship('Assignment', backref='course', cascade='all, delete-orphan')
+	quizzes = relationship('Quiz', backref='course', cascade='all, delete-orphan')
 
 	def __init__(self, name, creator):
 		self.name = name
 		self.creator = creator
+
+class Quiz(db.Model):
+	quiz_id = db.Column(db.Integer, primary_key=True)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+	due_date = db.Column(db.DateTime, nullable=False)
+	name = db.Column(db.String(100), nullable=False)
+	questions = db.Column(MutableList.as_mutable(db.JSON), default=list)
+	time_limit = db.Column(db.Integer, nullable=False)
+	is_deployed = db.Column(db.Boolean, default=False, nullable=False)
+
+	def __init__(self, course_id, due_date, name, questions, time_limit, is_deployed):
+		self.course_id = course_id
+		self.due_date = due_date
+		self.name = name
+		self.questions = questions
+		self.time_limit = time_limit
+		self.is_deployed = is_deployed
 
 class Assignment(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -164,22 +182,6 @@ class OnlineClassSchema(ma.SQLAlchemySchema):
 		model = OnlineClass
 		fields = ('id', 'name','course_id')
 
-class Quiz(db.Model):
-	quiz_id = db.Column(db.Integer, primary_key=True)
-	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-	due_date = db.Column(db.DateTime, nullable=False)
-	name = db.Column(db.String(100), nullable=False)
-	questions = db.Column(MutableList.as_mutable(db.JSON), default=list)
-	time_limit = db.Column(db.Integer, nullable=False)
-	is_deployed = db.Column(db.Boolean, default=False, nullable=False)
-
-	def __init__(self, course_id, due_date, name, questions, time_limit, is_deployed):
-		self.course_id = course_id
-		self.due_date = due_date
-		self.name = name
-		self.questions = questions
-		self.time_limit = time_limit
-		self.is_deployed = is_deployed
 
 class QuizSchema(ma.SQLAlchemySchema):
 	class Meta:
