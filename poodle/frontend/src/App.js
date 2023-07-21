@@ -19,6 +19,8 @@ import TeacherCourseQuizzes from './pages/TeacherCoursePages/TeacherCourseQuizze
 import TeacherEditQuiz from './pages/TeacherCoursePages/TeacherEditQuiz'
 import TeacherGradeAssignment from './pages/TeacherCoursePages/TeacherGradeAssignment'
 import StudentCourseContent from './pages/StudentCoursePages/StudentCourseContent'
+import StudentCourseLeaderboards from './pages/StudentCoursePages/StudentCourseLeaderboards'
+import TeacherCourseLeaderboards from './pages/TeacherCoursePages/TeacherCourseLeaderboards'
 
 function App() {
   return (
@@ -40,7 +42,7 @@ function App() {
         <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseAssignments />} />
         <Route path="/teacher/:courseId/assignment-grade/:assignmentId" element={<TeacherGradeAssignment />} />
         <Route path="/teacher/:courseId/Forums" element={<TeacherCourseParticipants />} />
-        <Route path="/teacher/:courseId/Leaderboards" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Leaderboards" element={<TeacherCourseLeaderboards />} />
 
         {/* Student Course Pages */}
         <Route path="/student/:courseId/Participants" element={<StudentCourseParticipants />} />
@@ -49,7 +51,7 @@ function App() {
         <Route path="/student/:courseId/Quizzes" element={<StudentCourseQuizzes />} />
         <Route path="/student/:courseId/quizpage/:quizId" element={<StudentQuizPage />} />
         <Route path="/student/:courseId/Content" element={<StudentCourseContent />} />
-
+        <Route path="/student/:courseId/Leaderboards" element={<StudentCourseLeaderboards />} />
 
         <Route path="/OnlineClass/:courseId/:roomId" element={<OnlineClass />} />
       </Routes>

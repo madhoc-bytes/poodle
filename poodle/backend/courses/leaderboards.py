@@ -17,10 +17,10 @@ def retrieve(user_id, course_id):
     res = []
     
     # get all quizzes for the course
-    quizzes = Quiz.query.filter_by(course_id=course_id).all()
+    quizzes = Quiz.query.filter_by(course_id=course_id, is_deployed=True).all()
     for quiz in quizzes:
 
-        quiz_id = quiz.id
+        quiz_id = quiz.quiz_id
         quiz_name = quiz.name
         
         # get all the students' marks for the quiz
@@ -46,7 +46,8 @@ def retrieve(user_id, course_id):
                 'rank': rank, 
                 'id': user_id, 
                 'first_name': first_name,
-                'last_name': last_name
+                'last_name': last_name,
+                'mark': get_student_mark(students_ranked, user_id)
             }
 
         res.append(
@@ -89,7 +90,8 @@ def retrieve(user_id, course_id):
                     'rank': rank, 
                     'id': user_id, 
                     'first_name': first_name,
-                    'last_name': last_name
+                    'last_name': last_name,
+                    'mark': get_student_mark(students_ranked, user_id)
                 }
     
             res.append(
@@ -102,7 +104,7 @@ def retrieve(user_id, course_id):
                 }
             )
 
-            return jsonify(res), 201
+    return jsonify(res), 201
 
 def get_median(students_ranked):
     marks = []
@@ -126,4 +128,10 @@ def get_student_rank(students_ranked, user_id):
         rank += 1
         if student['id'] == user_id:
             return rank
+    return -1
+
+def get_student_mark(students_ranked, user_id):
+    for student in students_ranked:
+        if student['id'] == user_id:
+            return student['mark']
     return -1

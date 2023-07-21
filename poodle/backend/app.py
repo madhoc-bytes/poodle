@@ -334,9 +334,9 @@ def submit_quiz(quiz_id):
 @app.route('/courses/<int:course_id>/leaderboards', methods=['GET'])
 def get_leaderboards(course_id):
 	token = get_token(request)
-	v.validate_token(token)
+	user_id = v.validate_token(token)
 
-	return leaderboards.retrieve(course_id)
+	return leaderboards.retrieve(user_id, course_id)
 
 # TIMELINE
 @app.route('/dashboard/timeline', methods=['GET'])
