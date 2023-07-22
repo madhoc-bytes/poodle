@@ -34,69 +34,94 @@ const DashboardTimeline = () => {
   };
 
   return (
-    <Box sx={{ margin: "20px 30px" }}>
+    <Box
+      sx={{
+        margin: "20px 30px",
+      }}
+    >
       <Typography variant="h3" component="h1" align="center" gutterBottom>
         Timeline
       </Typography>
-      {/* Desconstruct the timeline */}
-      {timeline.map((item) => (
-        <>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              backgroundColor: "white",
-              borderRadius: "20px",
-              padding: "20px",
-            }}
-            gap={1}
-          >
-            <Typography fontWeight={"bold"}>
-              {new Date(item.due_date).toLocaleDateString("en-US", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "flexe" }} gap={5}>
-              <Typography>
-                {new Date(item.due_date).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
+      <Box
+        sx={{
+          display: "flex",
+          backgroundColor: "white",
+          flexDirection: "column",
+          borderRadius: "30px",
+          boxShadow:
+            "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
+        }}
+      >
+        {/* Desconstruct the timeline */}
+        {timeline.map((item) => (
+          <>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                padding: "20px",
+                minHeight: "70px",
+                borderBottom: "1px solid #e0e0e0 ",
+              }}
+              gap={1}
+            >
+              <Typography fontWeight={"bold"}>
+                {new Date(item.due_date).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
                 })}
               </Typography>
-              {item.type === "Assignments" ? <AssignmentIcon /> : <QuizIcon />}
-              <Link
+              <Box
                 sx={{
-                  cursor: "pointer",
-                  textDecoration: "none",
-                  "&:hover": {
-                    textDecoration: "underline",
-                  },
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "centre",
+                  paddingTop: "10px",
                 }}
-                onClick={() =>
-                  navigate(`/student/${item.course_id}/${item.type}`)
-                }
               >
-                <Typography variant="h5" align="centre">
-                  {item.course_name} - {item.title}
-                </Typography>
-              </Link>
+                <Box>
+                  <Typography>
+                    {new Date(item.due_date).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}{" "}
+                  </Typography>
+                </Box>
+
+                {item.type === "Assignments" ? (
+                  <AssignmentIcon sx={{ marginLeft: "15px" }} />
+                ) : (
+                  <QuizIcon sx={{ marginLeft: "15px" }} />
+                )}
+                <Box sx={{ marginLeft: "20px" }}>
+                  <Link
+                    sx={{
+                      cursor: "pointer",
+                      textDecoration: "none",
+                      "&:hover": {
+                        textDecoration: "underline",
+                      },
+                    }}
+                    onClick={() =>
+                      navigate(`/student/${item.course_id}/${item.type}`)
+                    }
+                  >
+                    <Typography
+                      variant="h5"
+                      sx={{ wordWrap: "break-word", wordBreak: "break-word" }}
+                    >
+                      {item.course_name} - {item.title}
+                    </Typography>
+                  </Link>
+                </Box>
+              </Box>
             </Box>
-          </Box>
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              bottom: 0,
-              left: "50%",
-              borderLeft: "2px solid black",
-            }}
-          />{" "}
-        </>
-      ))}
+          </>
+        ))}
+      </Box>
     </Box>
   );
 };
