@@ -21,6 +21,7 @@ import TeacherGradeAssignment from './pages/TeacherCoursePages/TeacherGradeAssig
 import StudentCourseContent from './pages/StudentCoursePages/StudentCourseContent'
 import StudentCourseLeaderboards from './pages/StudentCoursePages/StudentCourseLeaderboards'
 import TeacherCourseLeaderboards from './pages/TeacherCoursePages/TeacherCourseLeaderboards'
+import ProfileCustomization from './pages/testprofile'
 
 function App() {
   return (
@@ -54,6 +55,8 @@ function App() {
         <Route path="/student/:courseId/Leaderboards" element={<StudentCourseLeaderboards />} />
 
         <Route path="/OnlineClass/:courseId/:roomId" element={<OnlineClass />} />
+
+        <Route path='/testprofile' element={<ProfileCustomization />} />
       </Routes>
     </BrowserRouter>
 
