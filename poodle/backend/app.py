@@ -386,7 +386,7 @@ def get_forum_posts(course_id, category, phrase):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	return forums.get_post(user_id, course_id, category, phrase)
+	return forums.get_posts(user_id, course_id, category, phrase)
 
 
 #TODO: ensure user is part of the course, ensure post is part of the course
