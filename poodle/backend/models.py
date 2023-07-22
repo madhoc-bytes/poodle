@@ -207,3 +207,47 @@ class QuizScoreSchema(ma.SQLAlchemySchema):
 	class Meta:
 		fields = ('quiz_id', 'user_id', 'time_started', 'score')
 
+# FRONTEND PROVIDES: COURSE_ID, DESCRIPTION, CATEGORY, ATTACHMENT, TITLE
+class ForumPost(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+	title = db.Column(db.String(100), nullable=False)
+	category = db.Column(db.String(1000), nullable=False)
+	author_id = db.Column(db.Integer, nullable=False)
+	file_id = db.Column(db.Integer, nullable=True)
+	description = db.Column(db.Integer, nullable=False)
+	date_posted = db.Column(db.DateTime, nullable=False)
+	replies = relationship('ForumReply', backref='forumpost', cascade='all, delete-orphan')
+
+	def __init__(self, course_id, title, category, author_id, description, date_posted):
+		self.course_id = course_id
+		self.title = title
+		self.category = category
+		self.author_id = author_id
+		self.description = description
+		self.date_posted = date_posted
+
+
+class ForumPostSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('id', 'course_id', 'title', 'category', 'author_id', 'file_id', 'description', 'date_posted')	
+
+
+# FRONTEND PROVIDES: COURSE_ID, DESCRIPTION, CATEGORY, ATTACHMENT, TITLE
+class ForumReply(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	forum_id = db.Column(db.Integer, db.ForeignKey('forum.id'), nullable=False)
+	author_id = db.Column(db.Integer, nullable=False)
+	answer = db.Column(db.String(1000), nullable=False)
+	date_posted = db.Column(db.DateTime, nullable=False)
+
+	def __init__(self, forum_id, author_id, answer, date_posted):
+		self.forum_id = forum_id
+		self.author_id = author_id
+		self.answer = answer
+		self.date_posted = date_posted
+
+
+class ForumReplySchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('forum_id', 'author_id', 'answer', 'date_posted')	
