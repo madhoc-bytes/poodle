@@ -3,6 +3,8 @@ from flask_cors import CORS
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
 import quiz
+import profile
+import avatar
 import courses.assignment as assignment
 import courses.courses as courses
 import courses.content as content
@@ -338,3 +340,83 @@ def submit_quiz(quiz_id):
 
 if __name__ == '__main__':
 	app.run(debug=True)
+
+# PROFILE
+
+@app.route('/profile/edit', methods=['PUT'])
+def edit_profile():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	first_name = request.json['firstName']
+	last_name = request.json['lastName']
+	password = request.json['password']
+
+	return profile.edit(user_id, first_name, last_name, password)
+
+@app.route('/profile/stars', methods=['GET'])
+def get_stars():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return profile.get_stars(user_id)
+
+@app.route('/profile/stars/add', methods=['PUT'])
+def add_stars():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	stars = request.json['stars']
+
+	return profile.add_star(user_id, stars)
+
+@app.route('/profile/info', methods=['GET'])
+def get_info():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return profile.get_info(user_id)
+
+# AVATAR
+
+@app.route('/profile/avatar', methods=['GET'])
+def get_avatar():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return avatar.get_avatar_url(user_id)
+
+@app.route('/profile/avatar/preview', methods=['POST'])
+def get_avatar_preview():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	attributes = request.json
+
+	return avatar.get_avatar_preview(user_id, attributes)
+
+@app.route('/profile/avatar/unlock', methods=['PUT'])
+def unlock_attribute():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	attribute = request.json['attribute']
+	style = request.json['style']
+
+	return avatar.unlock_attribute(user_id, attribute, style)
+
+@app.route('/profile/avatar/update', methods=['PUT'])
+def update_avatar():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	attributes = request.json['attributes']
+
+	return avatar.update_avatar(user_id, attributes)
+
+@app.route('/profile/avatar/<attribute>')
+def get_attribute_styles(attribute):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return avatar.get_attributes(user_id, attribute)

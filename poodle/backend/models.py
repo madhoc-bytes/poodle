@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from sqlalchemy.orm import relationship
-from sqlalchemy import LargeBinary
+from sqlalchemy import LargeBinary, PickleType
 from sqlalchemy.ext.mutable import MutableDict, MutableList
 
 db = SQLAlchemy()
@@ -26,6 +26,7 @@ class User(db.Model):
 	email = db.Column(db.String(120), unique=True, nullable=False)
 	password = db.Column(db.String(100), nullable=False)
 	is_teacher = db.Column(db.Boolean, default=False, nullable=False)
+	stars = db.Column(db.Integer, default=0, nullable=False)
 
 	def __init__(self, first_name, last_name, email, password, is_teacher):
 		self.first_name = first_name
@@ -134,7 +135,7 @@ class OnlineClass(db.Model):
 
 class UserSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('id', 'first_name', 'last_name', 'email', 'is_teacher')
+		fields = ('id', 'first_name', 'last_name', 'email', 'is_teacher', 'stars')
 
 class FileSchema(ma.SQLAlchemyAutoSchema):
 	class Meta:
@@ -205,3 +206,57 @@ class QuizScoreSchema(ma.SQLAlchemySchema):
 	class Meta:
 		fields = ('quiz_id', 'user_id', 'time_started', 'score')
 
+class Avatar(db.Model):
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+	url = db.Column(db.String(1000), nullable=False)
+
+	# accessories = db.Column(MutableList.as_mutable(db.String(100)), default=list)
+	# clothesColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
+	# clothing = db.Column(MutableList.as_mutable(db.String(100)), default=list)
+	# facialHair = db.Column(MutableList.as_mutable(db.String(100)), default=list)
+	# facialHairColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
+	# hairColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
+	# skinColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
+	# top = db.Column(MutableList.as_mutable(db.String(100)), default=list)
+	
+	accessories = db.Column(PickleType, nullable=False)
+	clothesColor = db.Column(PickleType, nullable=False)
+	clothing = db.Column(PickleType, nullable=False)
+	facialHair = db.Column(PickleType, nullable=False)
+	facialHairColor = db.Column(PickleType, nullable=False)
+	hairColor = db.Column(PickleType, nullable=False)
+	skinColor = db.Column(PickleType, nullable=False)
+	top = db.Column(PickleType, nullable=False)
+
+	accessoriesStyle = db.Column(db.String(100), nullable=False)
+	clothesColorStyle = db.Column(db.String(100), nullable=False)
+	clothingStyle = db.Column(db.String(100), nullable=False)
+	facialHairStyle = db.Column(db.String(100), nullable=False)
+	facialHairColorStyle = db.Column(db.String(100), nullable=False)
+	hairColorStyle = db.Column(db.String(100), nullable=False)
+	skinColorStyle = db.Column(db.String(100), nullable=False)
+	topStyle = db.Column(db.String(100), nullable=False)
+
+	def __init__(self, user_id, url, accessories, clothesColor, clothing, facialHair, facialHairColor, hairColor, skinColor, top, accessoriesStyle, clothesColorStyle, clothingStyle, facialHairStyle, facialHairColorStyle, hairColorStyle, skinColorStyle, topStyle):
+		self.user_id = user_id
+		self.url = url
+		self.accessories = accessories
+		self.clothesColor = clothesColor
+		self.clothing = clothing
+		self.facialHair = facialHair
+		self.facialHairColor = facialHairColor
+		self.hairColor = hairColor
+		self.skinColor = skinColor
+		self.top = top
+		self.accessoriesStyle = accessoriesStyle
+		self.clothesColorStyle = clothesColorStyle
+		self.clothingStyle = clothingStyle
+		self.facialHairStyle = facialHairStyle
+		self.facialHairColorStyle = facialHairColorStyle
+		self.hairColorStyle = hairColorStyle
+		self.skinColorStyle = skinColorStyle
+		self.topStyle = topStyle
+
+class AvatarSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('user_id', 'url', 'accessories', 'clothesColor', 'clothing', 'facialHair', 'facialHairColor', 'hairColor', 'skinColor', 'top', 'accessoriesStyle', 'clothesColorStyle', 'clothingStyle', 'facialHairStyle', 'facialHairColorStyle', 'hairColorStyle', 'skinColorStyle', 'topStyle')
