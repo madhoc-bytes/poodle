@@ -21,6 +21,7 @@ import TeacherGradeAssignment from './pages/TeacherCoursePages/TeacherGradeAssig
 import StudentCourseContent from './pages/StudentCoursePages/StudentCourseContent'
 import StudentCourseLeaderboards from './pages/StudentCoursePages/StudentCourseLeaderboards'
 import TeacherCourseLeaderboards from './pages/TeacherCoursePages/TeacherCourseLeaderboards'
+import CourseForums from './pages/CourseForums'
 
 function App() {
   return (
@@ -41,7 +42,7 @@ function App() {
         <Route path="/teacher/:courseId/editquiz/:quizId" element={<TeacherEditQuiz />} />
         <Route path="/teacher/:courseId/Assignments" element={<TeacherCourseAssignments />} />
         <Route path="/teacher/:courseId/assignment-grade/:assignmentId" element={<TeacherGradeAssignment />} />
-        <Route path="/teacher/:courseId/Forums" element={<TeacherCourseParticipants />} />
+        <Route path="/teacher/:courseId/Forums" element={<CourseForums />} />
         <Route path="/teacher/:courseId/Leaderboards" element={<TeacherCourseLeaderboards />} />
 
         {/* Student Course Pages */}
