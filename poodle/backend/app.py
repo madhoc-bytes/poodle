@@ -8,6 +8,8 @@ import courses.courses as courses
 import courses.content as content
 import courses.classes as classes
 import courses.leaderboards as leaderboards
+import courses.forums as forums
+
 import validate as v
 import timeline
 
@@ -354,10 +356,17 @@ def create_forum_post(course_id):
 
 	title = request.json['title']
 	category = request.json['category']
-	attachment = request.json['attachment']
 	description = request.json['description']
 
-	return forums.create(user_id, course_id, title, category, attachment, description)
+	return forums.create(user_id, course_id, title, category, description)
+
+@app.route('/courses/forums/post/<int:post_id>/attach-file', methods=['POST'])
+def upload_forum_multimedia(post_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	attachment = request.json['file']
+	return forums.upload_multimedia(user_id, post_id, attachment)
 
 
 @app.route('/courses/forums/<int:forum_id>/post-answer', methods=['POST'])
