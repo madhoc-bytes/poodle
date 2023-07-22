@@ -18,7 +18,7 @@ def create(user_id, course_id, title, category, description):
 	
 	if user.is_teacher:
 		course = Course.query.get(course_id)
-		if course.creator not user_id:
+		if course.creator != user_id:
 			raise Unauthorized('Permission denied: Unauthorised user')
 	else:
 		enrolment = Enrolment.query.filter_by(user_id=user_id, course_id = course_id).first()
@@ -73,7 +73,7 @@ def reply(user_id, forum_id, answer):
 			
 	if user.is_teacher:
 		course = Course.query.get(course_id)
-		if course.creator not user_id:
+		if course.creator != user_id:
 			raise Unauthorized('Permission denied: Unauthorised user')
 	else:
 		enrolment = Enrolment.query.filter_by(user_id=user_id, course_id = course_id).first()
@@ -100,15 +100,15 @@ def get_posts(user_id, course_id, category, phrase):
 			
 	if user.is_teacher:
 		course = Course.query.get(course_id)
-		if course.creator not user_id:
+		if course.creator != user_id:
 			raise Unauthorized('Permission denied: Unauthorised user')
 	else:
 		enrolment = Enrolment.query.filter_by(user_id=user_id, course_id = course_id).first()
 		if not enrolment:
 			raise Unauthorized('Permission denied: Unauthorised user')
 	
-#TODO: Check if phrase is empty/null (if so, return all results under category and course_id)
-#TODO: If category = 'all', return everything, otherwise filter on category 
+	#TODO: Check if phrase is empty/null (if so, return all results under category and course_id)
+	#TODO: If category = 'all', return everything, otherwise filter on category 
 	
 	results = []
 	forum_posts = ForumPost.query.filter_by(course_id = course_id).all()
