@@ -18,7 +18,7 @@ def create(user_id, course_id, title, category, description):
 	
 	if user.is_teacher:
 		course = Course.query.get(course_id)
-		if course.creator not user_id:
+		if course.creator != user_id:
 			raise Unauthorized('Permission denied: Unauthorised user')
 	else:
 		enrolment = Enrolment.query.filter_by(user_id=user_id, course_id = course_id).first()
@@ -39,6 +39,9 @@ def upload_multimedia(user_id, post_id, attachment):
 
 	forum_post = ForumPost.query.get(post_id)
 
+	if not forum_post:
+		raise NotFound('Post not found')
+
 	current_time = datetime.now()
 	file = File(folder_id=0, name=attachment.filename, date_created=current_time, file_path='')
 	db.session.add(file)
@@ -56,24 +59,24 @@ def upload_multimedia(user_id, post_id, attachment):
 	db.session.commit()
 	return jsonify({'message': 'Multimedia successfully uploaded', 'file_id': file.id}), 201
 
-def reply(user_id, forum_id, answer):
+def reply(user_id, forum_post_id, answer):
 	
-	forum_post = ForumPost.query(forum_id)
+	forum_post = ForumPost.query.get(forum_post_id)
 	if not forum_post:
-		raise NotFound('Post not found')
+		raise NotFound('Forum Post not found')
 
 	course_id = forum_post.course_id
 	course = Course.query.get(course_id)
 	if not course:
 		raise NotFound('Course not found')
 	
-	user = User.query(user_id)
+	user = User.query.get(user_id)
 	if not user:
 		raise Unauthorized('User not found')
 			
 	if user.is_teacher:
 		course = Course.query.get(course_id)
-		if course.creator not user_id:
+		if course.creator != user_id:
 			raise Unauthorized('Permission denied: Unauthorised user')
 	else:
 		enrolment = Enrolment.query.filter_by(user_id=user_id, course_id = course_id).first()
@@ -81,7 +84,7 @@ def reply(user_id, forum_id, answer):
 			raise Unauthorized('Permission denied: Unauthorised user')
 
 	current_time = datetime.now()
-	new_forum_reply = ForumReply(forum_id=forum_id, author_id=author_id, answer=answer, date_posted=current_time)
+	new_forum_reply = ForumReply(forum_post_id=forum_post_id, author_id=user_id, answer=answer, date_posted=current_time)
 	db.session.add(new_forum_reply)
 	db.session.commit()
 	
@@ -89,41 +92,103 @@ def reply(user_id, forum_id, answer):
 
 def get_posts(user_id, course_id, category, phrase):
 
-	course_id = forum_post.course_id
 	course = Course.query.get(course_id)
 	if not course:
 		raise NotFound('Course not found')
 	
-	user = User.query(user_id)
+	user = User.query.get(user_id)
 	if not user:
 		raise Unauthorized('User not found')
 			
 	if user.is_teacher:
 		course = Course.query.get(course_id)
-		if course.creator not user_id:
+		if course.creator != user_id:
 			raise Unauthorized('Permission denied: Unauthorised user')
 	else:
 		enrolment = Enrolment.query.filter_by(user_id=user_id, course_id = course_id).first()
 		if not enrolment:
 			raise Unauthorized('Permission denied: Unauthorised user')
 	
-#TODO: Check if phrase is empty/null (if so, return all results under category and course_id)
-#TODO: If category = 'all', return everything, otherwise filter on category 
+	#TODO: Check if phrase is empty/null (if so, return all results under category and course_id)
+	#TODO: If category = 'all', return everything, otherwise filter on category 
 	
 	results = []
 	forum_posts = ForumPost.query.filter_by(course_id = course_id).all()
 	
-	if category == 'All':
-		for forum_post in forum_posts:
-			author = User.query(forum_post.author_id)
+	for forum_post in forum_posts:
+		author = User.query.get(forum_post.author_id)
 
-			results.append({
-				"title": forum_post.title,
-				"post_id": forum_post.id,
-				"category": forum_post.category,
-				"first_name": author.first_name,
-				"last_name": author.last_name,
-				"num_replies": len(ForumReply.query.filter_by(forum_id = forum_post.id).all())
-			})
+		results.append({
+			"title": forum_post.title,
+			"post_id": forum_post.id,
+			"category": forum_post.category,
+			"first_name": author.first_name,
+			"last_name": author.last_name,
+			"date_posted": forum_post.date_posted,
+			"num_replies": len(ForumReply.query.filter_by(forum_post_id = forum_post.id).all())
+		})
+	# Filter on category
+	if category != 'All':
+		results = list(filter(lambda x: x["category"] == category, results))
 
-	return jsonify(results), 200
+	# Filter on phrase
+	if phrase != None:
+		results = list(filter(lambda x: phrase.lower() in x["title"].lower(), results))	
+
+	sorted_results = sorted(results, key=lambda x: x["date_posted"], reverse=True)
+	return jsonify(sorted_results), 200
+
+def get_post_replies(user_id, course_id, post_id):
+
+	# Check course, user and post exists
+	course = Course.query.get(course_id)
+	if not course:
+		raise NotFound('Course not found')
+	user = User.query.get(user_id)
+	if not user:
+		raise Unauthorized('User not found')
+	forum_post = ForumPost.query.get(post_id)
+	if not forum_post:
+		raise NotFound('Post not found')
+	
+	# Check user is enrolled in course
+	if user.is_teacher:
+		course = Course.query.get(course_id)
+		if course.creator != user_id:
+			raise Unauthorized('Permission denied: Unauthorised user')
+	else:
+		enrolment = Enrolment.query.filter_by(user_id=user_id, course_id = course_id).first()
+		if not enrolment:
+			raise Unauthorized('Permission denied: Unauthorised user')
+		
+	# Get replies
+	replies = ForumReply.query.filter_by(forum_post_id = post_id).all()
+	answers = [] # store replies in list
+	for reply in replies:
+		author = User.query.get(reply.author_id)
+		answers.append({
+			"answer": reply.answer,
+			"date_posted": reply.date_posted,
+			"first_name": author.first_name,
+			"last_name": author.last_name,
+			"author_id": reply.author_id,
+		})
+
+	sorted_answers = sorted(answers, key=lambda x: x["date_posted"], reverse=True)
+	
+	author = User.query.get(forum_post.author_id)
+	result = {
+		"post_id": post_id,
+		"title": forum_post.title,
+		"category": forum_post.category,
+		"author_id": forum_post.author_id,
+		"first_name": author.first_name,
+		"last_name": author.last_name,
+		"file_id": forum_post.file_id,
+		"date_posted": forum_post.date_posted,
+		"description": forum_post.description,
+		"replies": sorted_answers
+	}
+
+	return jsonify(result), 200
+
