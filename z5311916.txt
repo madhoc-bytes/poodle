@@ -63,3 +63,7 @@ Connected content page with backend - teachers and students can properly add and
 Debugged a lot of random stuff for quizzes and assignments.
 Presented Demo B.
 Planned database and routes for sprint 3 - calender, forums, profile page and leaderboards.
+Implemented calender and leaderboards functionality for front end. Just need to style for next week.
+
+Week 9
+Implemented forums backend and frontend functionality.
