@@ -360,31 +360,35 @@ def create_forum_post(course_id):
 
 	return forums.create(user_id, course_id, title, category, description)
 
-@app.route('/courses/forums/post/<int:post_id>/attach-file', methods=['POST'])
+@app.route('/courses/forums/post/<int:post_id>/attach-file', methods=['PUT'])
 def upload_forum_multimedia(post_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	attachment = request.json['file']
+	attachment = request.files['file']
 	return forums.upload_multimedia(user_id, post_id, attachment)
 
 
-@app.route('/courses/forums/<int:forum_id>/post-answer', methods=['POST'])
-def reply_forum_post(forum_id):
+@app.route('/courses/forums/<int:forum_post_id>/post-answer', methods=['POST'])
+def reply_forum_post(forum_post_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	answer = request.json['answer']
 
-	return forums.reply(user_id, forum_id, answer)
+	return forums.reply(user_id, forum_post_id, answer)
 
 
 #TODO: Check if phrase is empty/null (if so, return all results under category and course_id)
 #TODO: If category = 'all', return everything, otherwise filter on category 
+@app.route('/courses/<int:course_id>/forums/category/<string:category>/search/', methods=['GET'])
 @app.route('/courses/<int:course_id>/forums/category/<string:category>/search/<string:phrase>', methods=['GET'])
-def get_forum_posts(course_id, category, phrase):
+def get_forum_posts(course_id, category, phrase=None):
 	token = get_token(request)
 	user_id = v.validate_token(token)
+
+	print('phrase: ', phrase)
+	print('category: ', category)
 
 	return forums.get_posts(user_id, course_id, category, phrase)
 
@@ -392,11 +396,11 @@ def get_forum_posts(course_id, category, phrase):
 #TODO: ensure user is part of the course, ensure post is part of the course
 #TODO: post.course_id = course_id
 @app.route('/courses/<int:course_id>/forums/post/<int:post_id>', methods=['GET'])
-def get_forum_post_replies(course_id, post_id, category, phrase):
+def get_forum_post_replies(course_id, post_id):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	return forums.get_post_replies(user_id, course_id, post_id, category, phrase)
+	return forums.get_post_replies(user_id, course_id, post_id)
 
 
 # HELPERS

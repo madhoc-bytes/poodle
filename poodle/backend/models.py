@@ -174,13 +174,13 @@ class ForumPost(db.Model):
 
 class ForumReply(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	forum_id = db.Column(db.Integer, db.ForeignKey('forumpost.id'), nullable=False)
+	forum_post_id = db.Column(db.Integer, db.ForeignKey('forumpost.id'), nullable=False)
 	author_id = db.Column(db.Integer, nullable=False)
 	answer = db.Column(db.String(1000), nullable=False)
 	date_posted = db.Column(db.DateTime, nullable=False)
 
-	def __init__(self, forum_id, author_id, answer, date_posted):
-		self.forum_id = forum_id
+	def __init__(self, forum_post_id, author_id, answer, date_posted):
+		self.forum_post_id = forum_post_id
 		self.author_id = author_id
 		self.answer = answer
 		self.date_posted = date_posted
