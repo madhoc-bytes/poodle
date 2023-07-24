@@ -10,6 +10,7 @@ import {
   TableBody,
   TableHead,
   TextField,
+  tableCellClasses,
   Button,
   Link,
   Tabs,
@@ -18,6 +19,27 @@ import {
   Paper,
 } from "@mui/material";
 import { useParams } from "react-router";
+import { styled } from "@mui/material/styles";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
 
 const TeacherGradeAssignment = () => {
   // const assignmentSubmissions = [{ id: 1, studentName: "Handy", grade: 0 }];
@@ -124,37 +146,44 @@ const TeacherGradeAssignment = () => {
     <>
       <NavBar />
       <Toolbar />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Typography variant="h5">Assignment Submissions</Typography>
-        <Tabs value={tabValue} onChange={handleTabChange}>
+      <Box component="main" sx={{ flexGrow: 1, p: 20, paddingTop: 0 }}>
+        <h1>Assignment Submissions</h1>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          sx={{ paddingBottom: "20px" }}
+        >
           <Tab label="Ungraded" />
           <Tab label="Graded" />
         </Tabs>
         {tabValue === 0 && (
           <>
-            <Typography variant="h5">Ungraded Submissions</Typography>
+            <Typography variant="h5" sx={{ marginBottom: "20px" }}>
+              Ungraded Submissions
+            </Typography>
             <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }}>
+              <Table>
                 <TableHead>
-                  <TableRow>
-                    <TableCell>Student Name</TableCell>
-                    <TableCell>Submission File</TableCell>
-                    <TableCell>Grade</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
+                  <StyledTableRow>
+                    <StyledTableCell>Student Name</StyledTableCell>
+                    <StyledTableCell>Submission File</StyledTableCell>
+                    <StyledTableCell>Grade</StyledTableCell>
+                    <StyledTableCell></StyledTableCell>
+                  </StyledTableRow>
                 </TableHead>
                 <TableBody>
                   {ungradedSubmissions.map((submission) => (
-                    <TableRow key={submission.id}>
-                      <TableCell>{submission.student_email}</TableCell>
-                      <TableCell>
-                        {" "}
+                    <StyledTableRow key={submission.id}>
+                      <StyledTableCell>
+                        {submission.student_email}
+                      </StyledTableCell>
+                      <StyledTableCell>
                         <Link onClick={() => handleGetFile(submission.file_id)}>
                           Submission
                         </Link>
-                      </TableCell>
+                      </StyledTableCell>
 
-                      <TableCell>
+                      <StyledTableCell>
                         <TextField
                           type="number"
                           value={scores[submission.id] || ""}
@@ -162,8 +191,8 @@ const TeacherGradeAssignment = () => {
                             handleScoreChange(submission.id, e.target.value)
                           }
                         />
-                      </TableCell>
-                      <TableCell>
+                      </StyledTableCell>
+                      <StyledTableCell>
                         <Button
                           variant="contained"
                           color="primary"
@@ -171,8 +200,8 @@ const TeacherGradeAssignment = () => {
                         >
                           Mark
                         </Button>
-                      </TableCell>
-                    </TableRow>
+                      </StyledTableCell>
+                    </StyledTableRow>
                   ))}
                 </TableBody>
               </Table>
@@ -181,28 +210,32 @@ const TeacherGradeAssignment = () => {
         )}
         {tabValue === 1 && (
           <>
-            <Typography variant="h5">Graded Submissions</Typography>
+            <Typography variant="h5" sx={{ marginBottom: "20px" }}>
+              Graded Submissions
+            </Typography>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }}>
                 <TableHead>
-                  <TableRow>
-                    <TableCell>Student Name</TableCell>
-                    <TableCell>Submission File</TableCell>
-                    <TableCell>Grade</TableCell>
-                  </TableRow>
+                  <StyledTableRow>
+                    <StyledTableCell>Student Name</StyledTableCell>
+                    <StyledTableCell>Submission File</StyledTableCell>
+                    <StyledTableCell>Grade</StyledTableCell>
+                  </StyledTableRow>
                 </TableHead>
                 <TableBody>
                   {gradedSubmissions.map((submission) => (
-                    <TableRow key={submission.id}>
-                      <TableCell>{submission.student_email}</TableCell>
-                      <TableCell>
+                    <StyledTableRow key={submission.id}>
+                      <StyledTableCell>
+                        {submission.student_email}
+                      </StyledTableCell>
+                      <StyledTableCell>
                         <Link onClick={() => handleGetFile(submission.file_id)}>
                           Submission
                         </Link>
-                      </TableCell>
+                      </StyledTableCell>
 
-                      <TableCell>{submission.score}</TableCell>
-                    </TableRow>
+                      <StyledTableCell>{submission.score}</StyledTableCell>
+                    </StyledTableRow>
                   ))}
                 </TableBody>
               </Table>

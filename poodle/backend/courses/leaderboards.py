@@ -110,16 +110,22 @@ def get_median(students_ranked):
     marks = []
     # get the median
     for student in students_ranked:
-        student['mark'] = int(student['mark'])
-        marks.append(student['mark'])
+        if (student['mark']):
+            student['mark'] = int(student['mark'])
+            marks.append(student['mark'])
+    if marks == []:
+        return 0
     return median(marks)
 
 def get_mean(students_ranked):
     marks = []
     # get the median
     for student in students_ranked:
-        student['mark'] = int(student['mark'])
-        marks.append(student['mark'])
+        if (student['mark']):
+            student['mark'] = int(student['mark'])
+            marks.append(student['mark'])
+    if marks == []:
+        return 0
     return mean(marks)
 
 def get_student_rank(students_ranked, user_id):

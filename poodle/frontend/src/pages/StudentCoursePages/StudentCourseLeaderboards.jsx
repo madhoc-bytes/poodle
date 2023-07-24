@@ -24,25 +24,24 @@ import { useParams } from "react-router-dom";
 import CourseSidebar from "../../components/CourseSidebar";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-        fontSize: 14,
-    },
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
 }));
 
-
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-      border: 0,
-    },
-  }));
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
 
 const StudentCourseLeaderboards = () => {
   const courseId = useParams().courseId;
@@ -70,11 +69,11 @@ const StudentCourseLeaderboards = () => {
       console.log("ERROR");
     } else {
       setLeaderboards(data);
-        // If length of data greater than 0, set currLeaderboard to 0
-        if (data.length > 0) {
-            setCurrLeaderboard(0);
-        }
-      console.log(data)
+      // If length of data greater than 0, set currLeaderboard to 0
+      if (data.length > 0) {
+        setCurrLeaderboard(0);
+      }
+      console.log(data);
     }
   };
 
@@ -84,102 +83,148 @@ const StudentCourseLeaderboards = () => {
       <CourseSidebar />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        <Typography variant="h4">Leaderboards</Typography>
-        <Box sx={{ display: "flex" }}>
-            {/* Assessment Sidebar */}
-            <Box
-                sx={{
-                    display: "flex",
-                    marginRight: "20px",
-                    // flexShrink: 0,
-                    "& .MuiDrawer-paper": {
-                        width: 240,
-                        boxSizing: "border-box",
+        <h1>Course Leaderboards</h1>
+        <Box gap={5} sx={{ display: "flex", p: 1 }}>
+          {/* Assessment Sidebar */}
+          <Box
+            sx={{
+              display: "flex",
+              marginRight: "20px",
+              maxWidth: "300px",
+            }}
+          >
+            <List>
+              {leaderboards.map((item, index) => (
+                <ListItemButton
+                  key={index}
+                  onClick={() => setCurrLeaderboard(index)}
+                  sx={{
+                    backgroundColor:
+                      index === currLeaderboard ? "rgb(149,117,222)" : "white",
+                    color: index === currLeaderboard ? "white" : "black",
+                    "&:hover": {
+                      backgroundColor: "rgb(149,117,222)",
                     },
-                }}
-            >
-                <List>
-                    {leaderboards.map((item, index) => (
-                        <ListItemButton
-                            key={index}
-                            onClick={() => setCurrLeaderboard(index)}
-                            sx={{
-                                backgroundColor: index === currLeaderboard ? "yellow" : "white",
-                                "&:hover": {
-                                    backgroundColor: "yellow",
-                                },
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Typography>{item.name}</Typography>
-                        </ListItemButton>
-                    ))}
-                </List>
-            </Box>
-            {/* Leaderboard table */}
-            <Box>
-                {currLeaderboard !== null && (
-                    <Box>
-                        {/* <Typography variant="h5">{leaderboards[currLeaderboard].name}</Typography> */}
-                        <Box sx={{ display: "flex", marginTop: "10px", flexDirection: "column" }}>
-                            <TableContainer component={Paper}>
-                                <Table sx={{ width: '40vw' }} aria-label="customized table">
-                                    <TableHead>
-                                        <TableRow>
-                                            <StyledTableCell align="left">Rank</StyledTableCell>
-                                            <StyledTableCell align="left">Student</StyledTableCell>
-                                            <StyledTableCell align="right">Mark</StyledTableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {leaderboards[currLeaderboard].top_ten.map((student, index) => (
-                                            <StyledTableRow key={index}>
-                                                <StyledTableCell component="th" scope="row" align="left">
-                                                    {index + 1}
-                                                </StyledTableCell>
-                                                <StyledTableCell align="left">{student.first_name} {student.last_name}</StyledTableCell>
-                                                <StyledTableCell align="right">{student.mark}</StyledTableCell>
-                                            </StyledTableRow>
-                                        ))}
-                                    </TableBody>
-                                    
-                                </Table>
-                            </TableContainer>
-
-                            <Toolbar />
-
-                            {/* Show curr Student if not in top 10 */}
-                            {leaderboards[currLeaderboard].curr_student.rank > 10 && (
-                                <TableContainer component={Paper}>
-                                <Table sx={{ width: '40vw' }} aria-label="customized table">
-                                <TableBody>
-                                <StyledTableRow key={1}>
-                                    <StyledTableCell component="th" scope="row" align="left">
-                                        {leaderboards[currLeaderboard].curr_student.rank}
-                                    </StyledTableCell>
-                                    <StyledTableCell align="left">{leaderboards[currLeaderboard].curr_student.first_name} {leaderboards[currLeaderboard].curr_student.last_name}</StyledTableCell>
-                                    <StyledTableCell align="right">{leaderboards[currLeaderboard].curr_student.mark}</StyledTableCell>
-                                </StyledTableRow>
-                                </TableBody>
-                                </Table>
-                                </TableContainer>
-                            )}
-
-                        </Box>
-                    </Box>
-                )}
-            </Box>
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography>
+                    <b>{item.name}</b>
+                  </Typography>
+                </ListItemButton>
+              ))}
+            </List>
+          </Box>
+          {/* Leaderboard table */}
+          <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
             {/* Display median and mean */}
-            <Box>
-                {currLeaderboard !== null && (
-                    <Box>
-                        <Typography variant="h5">Median: {leaderboards[currLeaderboard].median}</Typography>
-                        <Typography variant="h5">Mean: {leaderboards[currLeaderboard].mean}</Typography>
-                    </Box>
-                )}
-            </Box>
-        </Box>
+            {/* <Box sx={{ display: "flex" }}></Box> */}
+            {currLeaderboard !== null && (
+              <Box>
+                {/* <Typography variant="h5">{leaderboards[currLeaderboard].name}</Typography> */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    marginTop: "10px",
+                    flexDirection: "column",
+                  }}
+                >
+                  <TableContainer component={Paper}>
+                    <Table aria-label="customized table">
+                      <TableHead>
+                        <TableRow>
+                          <StyledTableCell align="left">Rank</StyledTableCell>
+                          <StyledTableCell align="left">
+                            Student
+                          </StyledTableCell>
+                          <StyledTableCell align="right">Mark</StyledTableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {leaderboards[currLeaderboard].top_ten.map(
+                          (student, index) => (
+                            <StyledTableRow key={index}>
+                              <StyledTableCell
+                                component="th"
+                                scope="row"
+                                align="left"
+                              >
+                                {index + 1}
+                              </StyledTableCell>
+                              <StyledTableCell align="left">
+                                {student.first_name} {student.last_name}
+                              </StyledTableCell>
+                              <StyledTableCell align="right">
+                                {student.mark}
+                              </StyledTableCell>
+                            </StyledTableRow>
+                          )
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Box>
+              </Box>
+            )}
+          </Box>
+          {leaderboards[0] && (
+            <Box
+              gap={3}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Box
+                sx={{
+                  width: "150px",
+                  height: "150px",
+                  borderRadius: "50%",
+                  backgroundColor: "rgb(149,117,222)",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginRight: "10px",
+                  flexDirection: "column",
+                }}
+              >
+                <Typography variant="h5">Median</Typography>
 
+                <Typography
+                  variant="h5"
+                  sx={{ color: "black", fontWeight: "bold" }}
+                >
+                  {leaderboards[currLeaderboard].median}
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box
+                  sx={{
+                    width: "150px",
+                    height: "150px",
+                    borderRadius: "50%",
+                    backgroundColor: "rgb(149,117,222)",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginRight: "10px",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Typography variant="h5">Mean</Typography>
+
+                  <Typography
+                    variant="h5"
+                    sx={{ color: "black", fontWeight: "bold" }}
+                  >
+                    {leaderboards[currLeaderboard].mean}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </Box>
       </Box>
     </Box>
   );
