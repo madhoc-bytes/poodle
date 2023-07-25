@@ -414,9 +414,17 @@ def update_avatar():
 
 	return avatar.update_avatar(user_id, attributes)
 
-@app.route('/profile/avatar/<attribute>')
+@app.route('/profile/avatar/<attribute>', methods=['GET'])
 def get_attribute_styles(attribute):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	return avatar.get_attributes(user_id, attribute)
+
+
+@app.route('/profile/avatar/<int:target_id>', methods=['GET'])
+def get_target_avatar(target_id):
+	token = get_token(request)
+	user_id = v.valudate_token(token)
+
+	return avatar.get_avatar_by_user(user_id, target_id)

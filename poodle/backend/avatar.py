@@ -9,102 +9,50 @@ import pickle
 total_attributes = {
     'accessories' : ['nothing',
 		'eyepatch',
-		'kurt',
-		'prescription01',
 		'prescription02',
-		'round',
-		'sunglasses',
 		'wayfarers'],
 	'clothing' : ['blazerAndShirt',
-		'blazerAndSweater',
-		'collarAndSweater',
 		'graphicShirt',
 		'hoodie',
 		'overall',
 		'shirtCrewNeck',
-		'shirtScoopNeck',
 		'shirtVNeck'],
-	'clothesColor' : ['25557c',
-		'262e33',
-		'3c4f5c',
+	'clothesColor' : ['262e33',
 		'5199e4',
-		'65c9ff',
 		'929598',
 		'a7ffc4',
-		'b1e2ff',
-		'e6e6e6',
 		'ff488e',
-		'ff5c5c',
-		'ffafb9',
-		'ffffb1',
-		'ffffff'],
+		'ffffb1'],
 	'facialHair' : ['nothing',
-		'beardLight',
 		'beardMajestic',
-		'beardMedium',
-		'moustacheFancy',
-		'moustacheMagnum'],
-	'facialHairColor' : ['2c1b18',
-		'4a312c',
-		'724133',
+		'moustacheFancy'],
+	'facialHairColor' : ['724133',
 		'a55728',
 		'b58143',
 		'c93305',
-		'd6b370',
-		'e8e1e1',
-		'ecdcbf',
-		'f59797'],
-	'hairColor': ['2c1b18',
-		'4a312c',
-		'724133',
+		'e8e1e1'],
+	'hairColor': ['4a312c',
 		'a55728',
-		'b58143',
 		'c93305',
-		'd6b370',
-		'e8e1e1',
-		'ecdcbf',
-		'f59797'],
+		'd6b370'],
 	'skinColor' : ['614335',
-		'ae5d29',
 		'd08b5b',
 		'edb98a',
 		'f8d25c',
-		'fd9841',
 		'ffdbb4'],
 	'top' : ['bigHair',
 		'bob',
-		'bun',
 		'curly',
-		'curvy',
-		'dreads',
 		'dreads01',
-		'dreads02',
 		'frida',
-		'frizzle',
 		'fro',
-		'froBand',
 		'hat',
-		'hijab',
-		'longButNotTooLong',
-		'miaWallace',
-		'shaggy',
-		'shaggyMullet',
-		'shavedSides',
 		'shortCurly',
-		'shortFlat',
 		'shortRound',
-		'shortWaved',
 		'sides',
-		'straight01',
 		'straight02',
-		'straightAndStrand',
-		'theCaesar',
-		'theCaesarAndSidePart',
-		'turban',
 		'winterHat02',
-		'winterHat03',
 		'winterHat04',
-		'winterHat1'
 ]
 
 
@@ -195,12 +143,34 @@ def unlock_attribute(user_id, attribute, style):
 		raise BadRequest('Style already unlocked')
 	
 	avatar.__dict__[attribute + 'Style'] = style
+	
 	curr_att_list.append(style)
-	print(curr_att_list)
-	avatar.__dict__[attribute] = pickle.dumps(curr_att_list)
-	# print(avatar.__dict__[attribute])
-	print(avatar.top)
+
+	avatar.__dict__[attribute] = pickle.dumps((curr_att_list,))
 	user.stars -= 1
+
+	new_avatar = Avatar(		
+		user_id = avatar.user_id,
+		url = avatar.url,
+		accessories = avatar.accessories,
+		clothesColor = avatar.clothesColor,
+		clothing = avatar.clothing,
+		facialHair = avatar.facialHair,
+		facialHairColor = avatar.facialHairColor,
+		hairColor = avatar.hairColor,
+		skinColor = avatar.skinColor,
+		top = avatar.top,
+		accessoriesStyle = avatar.accessoriesStyle,
+		clothesColorStyle = avatar.clothesColorStyle,
+		clothingStyle = avatar.clothingStyle,
+		facialHairStyle = avatar.facialHairStyle,
+		facialHairColorStyle = avatar.facialHairColorStyle,
+		hairColorStyle = avatar.hairColorStyle,
+		skinColorStyle = avatar.skinColorStyle,
+		topStyle = avatar.topStyle
+	)
+	db.session.delete(avatar)
+	db.session.add(new_avatar)
 	db.session.commit()
 
 	return jsonify({'message': 'Attribute unlocked successfully'}), 200
@@ -262,3 +232,18 @@ def get_attributes(user_id, attribute):
 	locked = list(set(total_attributes[attribute]).difference(unlocked))
 	
 	return jsonify({'unlocked': unlocked, 'locked' : locked}), 200
+
+def get_avatar_by_user(user_id, target_id):
+	user = User.query.get(user_id)
+
+	if not user:
+		raise NotFound('User not found')
+
+	target = User.query.get(target_id)
+	if not target:
+		raise NotFound('Target not found')
+	
+	avatar = Avatar.query.get(target_id)
+
+	return jsonify({'avatar_url': avatar.url}), 200
+	

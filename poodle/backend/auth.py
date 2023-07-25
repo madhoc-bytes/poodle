@@ -26,16 +26,15 @@ def register(email, password, first_name, last_name, is_teacher):
 
 	user = User.query.filter_by(email=email).first()
 
-	accessories=['nothing', 'prescription01', 'prescription02'],
-	clothesColor=['262e33', '3c4f5c', '5199e4', '929598', 'e6e6e6', 'ffffff'],
-	clothing=['shirtCrewNeck', 'shirtScoopNeck', 'shirtVNeck'],
-	facialHair=['nothing', 'beardMedium'],
-	facialHairColor=['2c1b18', '724133', 'b58143'],
-	hairColor=['2c1b18', '4a312c', 'a55728', 'd6b370'],
-	skinColor=['614335', 'ae5d29', 'd08b5b', 'edb98a', 'f8d25c', 'fd9841', 'ffdbb4'],
-	top=['bigHair', 'bob', 'dreads01', 'shortFlat', 'shortRound',\
-		'straight01', 'straight02', 'straightAndStrand', 'theCaesar',\
-		'theCaesarAndSidePart'],
+	accessories=['nothing', 'prescription02'],
+	clothesColor=['262e33', '5199e4', '929598', 'ffffff'],
+	clothing=['blazerAndShirt', 'graphicShirt', 'shirtCrewNeck', 'shirtVNeck'],
+	facialHair=['nothing', 'beardMajestic'],
+	facialHairColor=['724133', 'a55728'],
+	hairColor=['4a312c', 'a55728'],
+	skinColor=['614335', 'd08b5b', 'edb98a', 'f8d25c', 'ffdbb4'],
+	top=['bigHair', 'bob', 'curly', 'dreads01', 'shortCurly', 'shortRound',\
+		'straight02', 'winterHat02', 'winterHat04'],
 
 	new_avatar = Avatar(
 		user_id=user.id,
@@ -44,8 +43,8 @@ def register(email, password, first_name, last_name, is_teacher):
 		clothesColorStyle='262e33',
 		clothingStyle='shirtCrewNeck',
 		facialHairStyle='nothing',
-		facialHairColorStyle='2c1b18',
-		hairColorStyle='2c1b18',
+		facialHairColorStyle='724133',
+		hairColorStyle='4a312c',
 		skinColorStyle='d08b5b',
 		topStyle='shortRound',
 
