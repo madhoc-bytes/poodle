@@ -47,11 +47,25 @@ const NavBar = () => {
     fetchCourseName();
   }, []);
 
-  const handleDashboardClick = () => {
-    if (location.pathname.includes("/student")) navigate("/student/dashboard");
-    else if (location.pathname.includes("/teacher"))
-      navigate("/teacher/dashboard");
-    else console.log("ERROR, not student or teacher path");
+  const handleDashboardClick = async () => {
+    const response = await fetch(
+      new URL(`/profile/is_teacher/me`, "http://localhost:5000"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      console.log(data);
+      if (data) navigate("/teacher/dashboard");
+      else navigate("/student/dashboard");
+    }
   };
 
   const [dropdown, setDropdown] = useState(null);
@@ -62,6 +76,10 @@ const NavBar = () => {
 
   const handleClose = () => {
     setDropdown(null);
+  };
+
+  const handleProfile = () => {
+    navigate("/myprofile");
   };
 
   const handleLogout = () => {
@@ -104,7 +122,7 @@ const NavBar = () => {
             open={Boolean(dropdown)}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose}>View Profile</MenuItem>
+            <MenuItem onClick={handleProfile}>View Profile</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </div>

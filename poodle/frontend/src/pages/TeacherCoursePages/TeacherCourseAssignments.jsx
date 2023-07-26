@@ -341,7 +341,6 @@ const TeacherCourseAssignments = () => {
           open={openModal}
           onClose={handleCloseModal}
           TransitionComponent={Transition}
-          sx={{ borderRadius: "50px" }}
         >
           <DialogTitle
             sx={{

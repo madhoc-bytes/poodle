@@ -9,9 +9,10 @@ import courses.content as content
 import courses.classes as classes
 import courses.leaderboards as leaderboards
 import courses.forums as forums
+import profiles
+import timeline
 
 import validate as v
-import timeline
 
 # init app
 app = Flask(__name__)
@@ -402,6 +403,17 @@ def get_forum_post_replies(course_id, post_id):
 
 	return forums.get_post_replies(user_id, course_id, post_id)
 
+# Profile
+@app.route('/profile/is_teacher/me', methods=['GET'])
+def get_is_me_teacher():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return profiles.get_is_user_teacher(user_id)
+
+@app.route('/profile/is_teacher/<int:user_id>', methods=['GET'])
+def get_is_user_teacher(user_id):
+	return profiles.get_is_user_teacher(user_id)
 
 # HELPERS
 def get_token(request):

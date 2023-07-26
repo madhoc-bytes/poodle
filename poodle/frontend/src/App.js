@@ -22,6 +22,8 @@ import StudentCourseContent from './pages/StudentCoursePages/StudentCourseConten
 import StudentCourseLeaderboards from './pages/StudentCoursePages/StudentCourseLeaderboards'
 import TeacherCourseLeaderboards from './pages/TeacherCoursePages/TeacherCourseLeaderboards'
 import CourseForums from './pages/CourseForums'
+import ProfilePage from './pages/ProfilePage'
+import MyProfilePage from './pages/MyProfilePage'
 
 function App() {
   return (
@@ -30,6 +32,10 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        <Route path="/myprofile" element={<MyProfilePage />} />
+        <Route path="/profile/:userId" element={<ProfilePage />} />
+
         <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
         <Route path="/student/dashboard" element={<StudentDashboard />} />
 
