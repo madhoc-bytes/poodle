@@ -28,11 +28,17 @@ Week 5
 - Completed the backend tasks for sprint 1
 
 Week 6
-<<<<<<< HEAD
 - Began work on quizzes and assignments for sprint 2
 
 Week 7
 - Redoing the quizzes and assignment databases to be more efficient
-=======
-- Began work on quizzes and assignments for sprint 2
->>>>>>> origin/yangAssigments
+
+Week 8
+- Completed quizzes to be ready in time for demo B
+- Met to go through our demonstration and how we are going to show off all the features in sprint 2
+
+Week 9
+- Started and finished routes for Profile
+- Started and finished routes for Avatar
+	- Still needs some tweaking, as some functionalities are not working
+- Started on badges for profile
