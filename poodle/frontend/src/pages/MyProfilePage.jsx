@@ -12,8 +12,12 @@ import {
   Slide,
   DialogTitle,
   Avatar,
+  AppBar,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import CloseIcon from "@mui/icons-material/Close";
 import { createAvatar } from "@dicebear/core";
 import { avataaars } from "@dicebear/collection";
 
@@ -28,8 +32,23 @@ const MyProfilePage = () => {
     lastName: "Wang",
     email: "huangandy05@gmail.com",
     password: "Andy@123",
-    avatar:
-      "https://api.dicebear.com/6.x/avataaars/svg?seed=Cookie&accessories[]&accessoriesColor=262e33&accessoriesProbability=100&clothesColor=262e33&clothing=shirtCrewNeck&clothingGraphic=bat&eyebrows=default&eyes=default&facialHair[]&facialHairColor=2c1b18&facialHairProbability=100&hairColor=2c1b18&hatColor=929598&mouth=default&skinColor=d08b5b&top=shortRound",
+    avatar: {
+      seed: "Cookie",
+      accessories: [],
+      accessoriesProbability: 100,
+      clothesColor: ["262e33"],
+      clothing: ["shirtCrewNeck"],
+      eyebrows: ["default"],
+      eyes: ["default"],
+      facialHair: [],
+      facialHairColor: ["724133"],
+      facialHairProbability: 100,
+      hairColor: ["4a312c"],
+      hatColor: ["transparent"],
+      mouth: ["default"],
+      skinColor: ["d08b5b"],
+      top: ["shortRound"],
+    },
   });
   const [isTeacher, setIsTeacher] = useState();
   const [openEditProfile, setOpenEditProfile] = useState(false);
@@ -41,7 +60,8 @@ const MyProfilePage = () => {
   const [errors, setErrors] = useState({});
 
   const [newAvatar, setNewAvatar] = useState("");
-  const [newClothing, setNewClothing] = useState("");
+
+  const [selectedTab, setSelectedTab] = useState(0);
 
   const total_attributes = {
     accessories: ["nothing", "eyepatch", "prescription02", "wayfarers"],
@@ -56,7 +76,7 @@ const MyProfilePage = () => {
     clothesColor: ["262e33", "5199e4", "929598", "a7ffc4", "ff488e", "ffffb1"],
     facialHair: ["nothing", "beardMajestic", "moustacheFancy"],
     facialHairColor: ["724133", "a55728", "b58143", "c93305", "e8e1e1"],
-    hairColor: ["4a312c", "a55728", "c93305", "d6b370"],
+    hairColor: ["4a312c", "a55728", "c93305", "d6b370", "b58143"],
     skinColor: ["614335", "d08b5b", "edb98a", "f8d25c", "ffdbb4"],
     top: [
       "bigHair",
@@ -75,16 +95,28 @@ const MyProfilePage = () => {
     ],
   };
 
+  // const defaultAvatar = {
+  //   seed: "Cookie",
+  //   accessories: [],
+  //   accessoriesProbability: 100,
+  //   clothesColor: ["262e33"],
+  //   clothing: ["shirtCrewNeck"],
+  //   eyebrows: ["default"],
+  //   eyes: ["default"],
+  //   facialHair: [],
+  //   facialHairColor: ["724133"],
+  //   facialHairProbability: 100,
+  //   hairColor: ["4a312c"],
+  //   hatColor: ["transparent"],
+  //   mouth: ["default"],
+  //   skinColor: ["d08b5b"],
+  //   top: ["shortRound"],
+  // };
+
   useEffect(() => {
     fetchIsTeacher();
     setNewAvatar(userDetails.avatar);
   }, []);
-  // https://api.dicebear.com/6.x/avataaars/svg?seed=Cookie&accessories[]&accessoriesColor=262e33&accessoriesProbability=100&clothesColor=262e33&clothing=shirtCrewNeck&clothingGraphic=bat&eyebrows=default&eyes=default&facialHair[]&facialHairColor=2c1b18&facialHairProbability=100&hairColor=2c1b18&hatColor=929598&mouth=default&skinColor=d08b5b&top=shortRound
-  useEffect(() => {
-    setNewAvatar(
-      `https://api.dicebear.com/6.x/avataaars/svg?seed=Cookie&clothing=${newClothing}&accessories[]&accessoriesColor=262e33&accessoriesProbability=100&clothesColor=262e33&clothingGraphic=bat&eyebrows=default&eyes=default&facialHair[]&facialHairColor=2c1b18&facialHairProbability=100&hairColor=2c1b18&hatColor=929598&mouth=default&skinColor=d08b5b&top=shortRound`
-    );
-  }, [newClothing]);
 
   const fetchIsTeacher = async () => {
     const response = await fetch(
@@ -153,21 +185,70 @@ const MyProfilePage = () => {
     setOpenEditAvatar(false);
   };
 
-  const OptionButton = ({ meow, option, onClick }) => {
+  const OptionButton = ({ attribute, option, onClick }) => {
     const handleClick = () => {
-      onClick(option);
+      const newAvatarOptions = {
+        ...newAvatar,
+        [attribute]: [option],
+      };
+
+      onClick(newAvatarOptions);
     };
 
-    console.log(option);
+    console.log(newAvatar);
+
+    const defaultAvatarOptions = {
+      seed: "Cookie",
+      accessories: [],
+      accessoriesProbability: 100,
+      clothesColor: ["262e33"],
+      clothing: ["shirtCrewNeck"],
+      eyebrows: ["default"],
+      eyes: ["default"],
+      facialHair: [],
+      facialHairColor: ["724133"],
+      facialHairProbability: 100,
+      hairColor: ["4a312c"],
+      hatColor: ["transparent"],
+      mouth: ["default"],
+      skinColor: ["d08b5b"],
+      top: ["shortRound"],
+    };
+
+    const updatedAvatarOptions = {
+      ...defaultAvatarOptions,
+      [attribute]: [option],
+    };
+
+    if (attribute === "facialHairColor") {
+      updatedAvatarOptions.facialHair = ["beardMajestic"];
+    }
+    const avatar = createAvatar(
+      avataaars,
+      updatedAvatarOptions
+    ).toDataUriSync();
 
     return (
       <Button onClick={handleClick}>
-        <Avatar
-          src={`https://api.dicebear.com/6.x/avataaars/svg?seed=Cookie&${meow}=${option}&accessories[]&accessoriesColor=262e33&accessoriesProbability=100&clothesColor=262e33&clothing=hoodie&clothingGraphic=bat&eyebrows=default&eyes=default&facialHair[]&facialHairColor=2c1b18&facialHairProbability=100&hairColor=${option}&hatColor=929598&mouth=default&skinColor=d08b5b&top=shortRound`}
-          alt={option}
-          sx={{ width: 100, height: 100 }}
-        />
+        <Avatar src={avatar} alt={option} sx={{ width: 200, height: 200 }} />
       </Button>
+    );
+  };
+
+  const saveAvatar = () => {
+    // fetch save
+    handleCloseEditAvatar();
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setSelectedTab(newValue);
+  };
+
+  const TabPanel = ({ children, value, index }) => {
+    return (
+      <div role="tabpanel" hidden={value !== index}>
+        {value === index && <Box p={3}>{children}</Box>}
+      </div>
     );
   };
 
@@ -199,10 +280,10 @@ const MyProfilePage = () => {
             User Profile
           </Typography>
           <img
-            src={userDetails.avatar}
+            src={createAvatar(avataaars, userDetails.avatar).toDataUriSync()}
             alt="Avatar"
             height={350}
-            style={{ borderRadius: "50%" }}
+            style={{ borderRadius: "50%", marginBottom: "20px" }}
           />
           <Button
             variant="contained"
@@ -342,41 +423,115 @@ const MyProfilePage = () => {
           </Button>
         </Box>
       </Dialog>
-      {/* EditAvatar Modal */}
+      {/* Edit Avatar Dialog */}
       <Dialog
-        PaperProps={{
-          style: { borderRadius: 15, width: "400px" },
-        }}
+        fullScreen
         open={openEditAvatar}
         onClose={handleCloseEditAvatar}
         TransitionComponent={Transition}
       >
-        <DialogTitle
+        <Toolbar />
+        <IconButton
+          color="inherit"
+          onClick={handleCloseEditAvatar}
+          aria-label="close"
           sx={{
-            textAlign: "center",
-            fontWeight: "bold",
+            position: "absolute",
+            right: "8px",
+            top: "70px",
+            zIndex: 1,
           }}
         >
-          Edit Avatar
-        </DialogTitle>
-        <DialogContent>
-          <img src={newAvatar} height={350} style={{ borderRadius: "50%" }} />{" "}
-          <Button onClick={() => setNewClothing("blazerAndShirt")}>
-            blazer
-          </Button>
-          {total_attributes["hairColor"].map((option) => (
-            <OptionButton
-              key={option}
-              meow={"hairColor"}
-              option={option}
-              onClick={() =>
-                setNewAvatar(
-                  `https://api.dicebear.com/6.x/avataaars/svg?seed=Cookie&accessories[]&accessoriesColor=262e33&accessoriesProbability=100&clothesColor=262e33&clothing=hoodie&clothingGraphic=bat&eyebrows=default&eyes=default&facialHair[]&facialHairColor=2c1b18&facialHairProbability=100&hairColor=${option}&hatColor=929598&mouth=default&skinColor=d08b5b&top=shortRound`
-                )
-              }
-            />
-          ))}
-        </DialogContent>
+          <CloseIcon />
+        </IconButton>
+        <Box sx={{ p: 4 }}>
+          <DialogTitle
+            sx={{
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+          >
+            <Typography variant="h3" fontWeight={"bold"}>
+              Edit Avatar
+            </Typography>
+          </DialogTitle>
+          <Box
+            sx={{
+              display: "flex",
+              // marginRight: "200px",
+              alignItems: "center",
+              flexDirection: "column",
+              width: "90%",
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "row", width: "90%" }}>
+              <img
+                src={createAvatar(avataaars, newAvatar).toDataUriSync()}
+                height={500}
+                style={{ borderRadius: "50%" }}
+              />
+              <Box sx={{ flexGrow: 1 }}>
+                <AppBar
+                  position="static"
+                  sx={{
+                    background: "grey",
+                    width: "1070px",
+                    margin: "50px 0 0 0",
+                    marginRight: "auto",
+                    borderRadius: "10px",
+                    alignItems: "center",
+                  }}
+                >
+                  <Tabs
+                    value={selectedTab}
+                    onChange={handleTabChange}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    textColor="secondary"
+                    indicatorColor="secondary"
+                  >
+                    {Object.keys(total_attributes).map(
+                      (attributeType, index) => (
+                        <Tab
+                          key={index}
+                          label={attributeType}
+                          sx={{
+                            color: "white",
+                            maxWidth: "200px",
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                          }}
+                        />
+                      )
+                    )}
+                  </Tabs>
+                </AppBar>
+                {Object.keys(total_attributes).map((attributeType, index) => (
+                  <TabPanel key={index} value={selectedTab} index={index}>
+                    {total_attributes[attributeType].map(
+                      (option, optionIndex) => (
+                        <OptionButton
+                          key={option}
+                          attribute={attributeType}
+                          option={option}
+                          onClick={setNewAvatar}
+                        />
+                      )
+                    )}
+                  </TabPanel>
+                ))}
+              </Box>
+            </Box>
+            <Button
+              color="secondary"
+              variant="contained"
+              sx={{ width: "5px" }}
+              onClick={saveAvatar}
+            >
+              Save
+            </Button>
+          </Box>
+        </Box>
       </Dialog>
     </>
   );
