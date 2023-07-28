@@ -222,12 +222,10 @@ class OnlineClassSchema(ma.SQLAlchemySchema):
 		model = OnlineClass
 		fields = ('id', 'name','course_id')
 
-
 class QuizSchema(ma.SQLAlchemySchema):
 	class Meta:
 		model = Quiz
 		fields = ('quiz_id', 'course_id', 'due_date', 'name', 'questions', 'time_limit', 'is_deployed')
-
 
 class QuizScore(db.Model):
 	quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.quiz_id'), primary_key=True)
@@ -250,9 +248,10 @@ class QuizScoreSchema(ma.SQLAlchemySchema):
 class ForumReplySchema(ma.SQLAlchemySchema):
 	class Meta:
 		fields = ('forum_id', 'author_id', 'answer', 'date_posted')	
+
 class Avatar(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-	url = db.Column(db.String(1000), nullable=False)
+	# url = db.Column(db.String(1000), nullable=False)
 
 	# accessories = db.Column(MutableList.as_mutable(db.String(100)), default=list)
 	# clothesColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
@@ -263,44 +262,31 @@ class Avatar(db.Model):
 	# skinColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
 	# top = db.Column(MutableList.as_mutable(db.String(100)), default=list)
 	
-	accessories = db.Column(PickleType, nullable=False)
-	clothesColor = db.Column(PickleType, nullable=False)
-	clothing = db.Column(PickleType, nullable=False)
-	facialHair = db.Column(PickleType, nullable=False)
-	facialHairColor = db.Column(PickleType, nullable=False)
-	hairColor = db.Column(PickleType, nullable=False)
-	skinColor = db.Column(PickleType, nullable=False)
-	top = db.Column(PickleType, nullable=False)
+	# accessories = db.Column(PickleType, nullable=False)
+	# clothesColor = db.Column(PickleType, nullable=False)
+	# clothing = db.Column(PickleType, nullable=False)
+	# facialHair = db.Column(PickleType, nullable=False)
+	# facialHairColor = db.Column(PickleType, nullable=False)
+	# hairColor = db.Column(PickleType, nullable=False)
+	# skinColor = db.Column(PickleType, nullable=False)
+	# top = db.Column(PickleType, nullable=False)
+ 
+	attributes = db.Column(MutableDict.as_mutable(db.JSON), default=dict)
+	curr_attributes = db.Column(MutableDict.as_mutable(db.JSON), default=dict)
+	# accessoriesStyle = db.Column(db.String(100), nullable=False)
+	# clothesColorStyle = db.Column(db.String(100), nullable=False)
+	# clothingStyle = db.Column(db.String(100), nullable=False)
+	# facialHairStyle = db.Column(db.String(100), nullable=False)
+	# facialHairColorStyle = db.Column(db.String(100), nullable=False)
+	# hairColorStyle = db.Column(db.String(100), nullable=False)
+	# skinColorStyle = db.Column(db.String(100), nullable=False)
+	# topStyle = db.Column(db.String(100), nullable=False)
 
-	accessoriesStyle = db.Column(db.String(100), nullable=False)
-	clothesColorStyle = db.Column(db.String(100), nullable=False)
-	clothingStyle = db.Column(db.String(100), nullable=False)
-	facialHairStyle = db.Column(db.String(100), nullable=False)
-	facialHairColorStyle = db.Column(db.String(100), nullable=False)
-	hairColorStyle = db.Column(db.String(100), nullable=False)
-	skinColorStyle = db.Column(db.String(100), nullable=False)
-	topStyle = db.Column(db.String(100), nullable=False)
-
-	def __init__(self, user_id, url, accessories, clothesColor, clothing, facialHair, facialHairColor, hairColor, skinColor, top, accessoriesStyle, clothesColorStyle, clothingStyle, facialHairStyle, facialHairColorStyle, hairColorStyle, skinColorStyle, topStyle):
+	def __init__(self, user_id, attributes, curr_attributes):
 		self.user_id = user_id
-		self.url = url
-		self.accessories = accessories
-		self.clothesColor = clothesColor
-		self.clothing = clothing
-		self.facialHair = facialHair
-		self.facialHairColor = facialHairColor
-		self.hairColor = hairColor
-		self.skinColor = skinColor
-		self.top = top
-		self.accessoriesStyle = accessoriesStyle
-		self.clothesColorStyle = clothesColorStyle
-		self.clothingStyle = clothingStyle
-		self.facialHairStyle = facialHairStyle
-		self.facialHairColorStyle = facialHairColorStyle
-		self.hairColorStyle = hairColorStyle
-		self.skinColorStyle = skinColorStyle
-		self.topStyle = topStyle
+		self.attributes = attributes
+		self.curr_attributes = curr_attributes
 
 class AvatarSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('user_id', 'url', 'accessories', 'clothesColor', 'clothing', 'facialHair', 'facialHairColor', 'hairColor', 'skinColor', 'top', 'accessoriesStyle', 'clothesColorStyle', 'clothingStyle', 'facialHairStyle', 'facialHairColorStyle', 'hairColorStyle', 'skinColorStyle', 'topStyle')
+		fields = ('user_id', 'attributes', 'curr_attributes')

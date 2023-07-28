@@ -3,7 +3,6 @@ from flask_cors import CORS
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
 import courses.quiz as quiz
-import profile
 import avatar
 import courses.assignment as assignment
 import courses.courses as courses
@@ -11,7 +10,7 @@ import courses.content as content
 import courses.classes as classes
 import courses.leaderboards as leaderboards
 import courses.forums as forums
-import profiles
+import profiles as profile
 import timeline
 
 import validate as v
@@ -406,30 +405,6 @@ def get_forum_post_replies(course_id, post_id):
 	return forums.get_post_replies(user_id, course_id, post_id)
 
 # Profile
-@app.route('/profile/is_teacher/me', methods=['GET'])
-def get_is_me_teacher():
-	token = get_token(request)
-	user_id = v.validate_token(token)
-
-	return profiles.get_is_user_teacher(user_id)
-
-@app.route('/profile/is_teacher/<int:user_id>', methods=['GET'])
-def get_is_user_teacher(user_id):
-	return profiles.get_is_user_teacher(user_id)
-
-# HELPERS
-def get_token(request):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	else:
-		return token
-
-if __name__ == '__main__':
-	app.run(debug=True)
-
-# PROFILE
-
 @app.route('/profile/edit', methods=['PUT'])
 def edit_profile():
 	token = get_token(request)
@@ -441,46 +416,50 @@ def edit_profile():
 
 	return profile.edit(user_id, first_name, last_name, password)
 
-@app.route('/profile/stars', methods=['GET'])
-def get_stars():
-	token = get_token(request)
-	user_id = v.validate_token(token)
+# @app.route('/profile/stars', methods=['GET'])
+# def get_stars():
+# 	token = get_token(request)
+# 	user_id = v.validate_token(token)
 
-	return profile.get_stars(user_id)
+# 	return profile.get_stars(user_id)
 
-@app.route('/profile/stars/add', methods=['PUT'])
-def add_stars():
-	token = get_token(request)
-	user_id = v.validate_token(token)
+# @app.route('/profile/stars/add', methods=['PUT'])
+# def add_stars():
+# 	token = get_token(request)
+# 	user_id = v.validate_token(token)
 
-	stars = request.json['stars']
+# 	stars = request.json['stars']
 
-	return profile.add_star(user_id, stars)
+# 	return profile.add_star(user_id, stars)
 
 @app.route('/profile/info', methods=['GET'])
-def get_info():
+def get_my_info():
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	return profile.get_info(user_id)
 
-# AVATAR
-
-@app.route('/profile/avatar', methods=['GET'])
-def get_avatar():
+@app.route('/profile/info/<int:user_id>', methods=['GET'])
+def get_user_info(user_id):
 	token = get_token(request)
-	user_id = v.validate_token(token)
+	v.validate_token(token)
 
-	return avatar.get_avatar_url(user_id)
+	return profile.get_info(user_id)
 
-@app.route('/profile/avatar/preview', methods=['POST'])
+# AVATAR
+@app.route('/profile/avatar/preview', methods=['GET'])
 def get_avatar_preview():
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	attributes = request.json
+	return avatar.get_avatar_preview(user_id)
+     
+@app.route('/profile/avatar/preview/<int:user_id>', methods=['GET'])
+def get_target_avatar(user_id):
+	token = get_token(request)
+	v.validate_token(token)
 
-	return avatar.get_avatar_preview(user_id, attributes)
+	return avatar.get_avatar_preview(user_id)
 
 @app.route('/profile/avatar/unlock', methods=['PUT'])
 def unlock_attribute():
@@ -501,17 +480,20 @@ def update_avatar():
 
 	return avatar.update_avatar(user_id, attributes)
 
-@app.route('/profile/avatar/<attribute>', methods=['GET'])
-def get_attribute_styles(attribute):
+@app.route('/profile/avatar/attributes', methods=['GET'])
+def get_attributes():
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	return avatar.get_attributes(user_id, attribute)
+	return avatar.get_attributes(user_id)
 
+# HELPERS
+def get_token(request):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	else:
+		return token
 
-@app.route('/profile/avatar/<int:target_id>', methods=['GET'])
-def get_target_avatar(target_id):
-	token = get_token(request)
-	user_id = v.valudate_token(token)
-
-	return avatar.get_avatar_by_user(user_id, target_id)
+if __name__ == '__main__':
+	app.run(debug=True)

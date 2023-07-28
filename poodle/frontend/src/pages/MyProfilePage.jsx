@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
+import LockIcon from "@mui/icons-material/Lock";
 import { createAvatar } from "@dicebear/core";
 import { avataaars } from "@dicebear/collection";
 
@@ -27,30 +28,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const MyProfilePage = () => {
   const token = localStorage.getItem("token");
-  const [userDetails, setUserDetails] = useState({
-    firstName: "Handy",
-    lastName: "Wang",
-    email: "huangandy05@gmail.com",
-    password: "Andy@123",
-    avatar: {
-      seed: "Cookie",
-      accessories: [],
-      accessoriesProbability: 100,
-      clothesColor: ["262e33"],
-      clothing: ["shirtCrewNeck"],
-      eyebrows: ["default"],
-      eyes: ["default"],
-      facialHair: [],
-      facialHairColor: ["724133"],
-      facialHairProbability: 100,
-      hairColor: ["4a312c"],
-      hatColor: ["transparent"],
-      mouth: ["default"],
-      skinColor: ["d08b5b"],
-      top: ["shortRound"],
-    },
-  });
-  const [isTeacher, setIsTeacher] = useState();
+  const [userDetails, setUserDetails] = useState({});
+  const [userAvatar, setUserAvatar] = useState({});
+  const [userAttributes, setUserAttributes] = useState({});
+
   const [openEditProfile, setOpenEditProfile] = useState(false);
   const [openEditAvatar, setOpenEditAvatar] = useState(false);
   const [newFirstName, setNewFirstName] = useState("");
@@ -58,6 +39,8 @@ const MyProfilePage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const [newAvatar, setNewAvatar] = useState("");
 
@@ -95,32 +78,34 @@ const MyProfilePage = () => {
     ],
   };
 
-  // const defaultAvatar = {
-  //   seed: "Cookie",
-  //   accessories: [],
-  //   accessoriesProbability: 100,
-  //   clothesColor: ["262e33"],
-  //   clothing: ["shirtCrewNeck"],
-  //   eyebrows: ["default"],
-  //   eyes: ["default"],
-  //   facialHair: [],
-  //   facialHairColor: ["724133"],
-  //   facialHairProbability: 100,
-  //   hairColor: ["4a312c"],
-  //   hatColor: ["transparent"],
-  //   mouth: ["default"],
-  //   skinColor: ["d08b5b"],
-  //   top: ["shortRound"],
-  // };
+  const defaultAvatarOptions = {
+    seed: "Cookie",
+    accessories: [],
+    accessoriesProbability: 100,
+    clothesColor: ["262e33"],
+    clothing: ["shirtCrewNeck"],
+    eyebrows: ["default"],
+    eyes: ["default"],
+    facialHair: [],
+    facialHairColor: ["724133"],
+    facialHairProbability: 100,
+    hairColor: ["4a312c"],
+    hatColor: ["transparent"],
+    mouth: ["default"],
+    skinColor: ["d08b5b"],
+    top: ["shortRound"],
+  };
 
   useEffect(() => {
-    fetchIsTeacher();
-    setNewAvatar(userDetails.avatar);
+    fetchUserDetails();
+    fetchAvatar();
+    fetchAttributes();
   }, []);
 
-  const fetchIsTeacher = async () => {
+  const fetchUserDetails = async () => {
+    // fetch user details from backend
     const response = await fetch(
-      new URL(`/profile/is_teacher/me`, "http://localhost:5000"),
+      new URL(`/profile/info`, "http://localhost:5000"),
       {
         method: "GET",
         headers: {
@@ -132,13 +117,53 @@ const MyProfilePage = () => {
     const data = await response.json();
     if (data.error) {
       console.log("ERROR");
-    } else setIsTeacher(data);
+    } else setUserDetails(data);
+  };
+
+  const fetchAvatar = async () => {
+    const response = await fetch(
+      new URL(`/profile/avatar/preview`, "http://localhost:5000"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      setUserAvatar(data);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchAttributes = async () => {
+    const response = await fetch(
+      new URL(`/profile/avatar/attributes`, "http://localhost:5000"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      setUserAttributes(data);
+      console.log(data);
+    }
   };
 
   const handleOpenEditProfile = () => {
     setOpenEditProfile(true);
-    setNewFirstName(userDetails.firstName);
-    setNewLastName(userDetails.lastName);
+    setNewFirstName(userDetails.first_name);
+    setNewLastName(userDetails.last_name);
     setNewPassword("");
     setConfirmPassword("");
     setErrors({});
@@ -148,16 +173,16 @@ const MyProfilePage = () => {
     setOpenEditProfile(false);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     // Validation checks
     const newErrors = {};
     const passwordRegex =
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
-    if (newFirstName.trim() === "" || !/^[a-zA-Z]+$/.test(newFirstName)) {
+    if (!/^[a-zA-Z]+$/.test(newFirstName) && newFirstName !== "") {
       newErrors.newFirstName = "First name must consist of letters only";
     }
-    if (newLastName.trim() === "" || !/^[a-zA-Z]+$/.test(newLastName)) {
+    if (!/^[a-zA-Z]+$/.test(newLastName) && newLastName !== "") {
       newErrors.newLastName = "Last name must consist of letters only";
     }
     if (!passwordRegex.test(newPassword) && newPassword !== "") {
@@ -171,17 +196,35 @@ const MyProfilePage = () => {
 
     if (Object.keys(newErrors).length === 0) {
       // fetch post
-
+      const response = await fetch(
+        new URL(`/profile/edit`, "http://localhost:5000"),
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            firstName: newFirstName,
+            lastName: newLastName,
+            password: newPassword,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.error) console.log("ERROR");
+      fetchUserDetails();
       handleCloseEditProfile();
     }
   };
 
   const handleOpenEditAvatar = () => {
+    setNewAvatar(userAvatar);
     setOpenEditAvatar(true);
   };
 
   const handleCloseEditAvatar = () => {
-    setNewAvatar(userDetails.avatar);
+    setNewAvatar(userAvatar);
     setOpenEditAvatar(false);
   };
 
@@ -193,26 +236,6 @@ const MyProfilePage = () => {
       };
 
       onClick(newAvatarOptions);
-    };
-
-    console.log(newAvatar);
-
-    const defaultAvatarOptions = {
-      seed: "Cookie",
-      accessories: [],
-      accessoriesProbability: 100,
-      clothesColor: ["262e33"],
-      clothing: ["shirtCrewNeck"],
-      eyebrows: ["default"],
-      eyes: ["default"],
-      facialHair: [],
-      facialHairColor: ["724133"],
-      facialHairProbability: 100,
-      hairColor: ["4a312c"],
-      hatColor: ["transparent"],
-      mouth: ["default"],
-      skinColor: ["d08b5b"],
-      top: ["shortRound"],
     };
 
     const updatedAvatarOptions = {
@@ -228,16 +251,55 @@ const MyProfilePage = () => {
       updatedAvatarOptions
     ).toDataUriSync();
 
+    console.log(userAttributes[attribute], option);
+    console.log(option in userAttributes[attribute]);
+
+    const isOptionUnlocked = userAttributes[attribute].includes(option);
+
     return (
-      <Button onClick={handleClick}>
-        <Avatar src={avatar} alt={option} sx={{ width: 200, height: 200 }} />
-      </Button>
+      <>
+        <Button onClick={handleClick} disabled={!isOptionUnlocked}>
+          <Avatar src={avatar} alt={option} sx={{ width: 200, height: 200 }} />
+          {!isOptionUnlocked && (
+            <LockIcon
+              sx={{
+                position: "absolute",
+                top: "0%",
+                left: "5%",
+                color: "black",
+                fontSize: "3rem",
+              }}
+            />
+          )}
+        </Button>
+      </>
     );
   };
 
-  const saveAvatar = () => {
+  const saveAvatar = async () => {
     // fetch save
-    handleCloseEditAvatar();
+    const response = await fetch(
+      new URL(`/profile/avatar/update`, "http://localhost:5000"),
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          attributes: newAvatar,
+        }),
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+      alert("Error saving avatar");
+    } else {
+      fetchAvatar();
+      handleCloseEditAvatar();
+      console.log(data);
+    }
   };
 
   const handleTabChange = (event, newValue) => {
@@ -256,94 +318,96 @@ const MyProfilePage = () => {
     <>
       <NavBar />
       <Toolbar />
-      <Box
-        gap={15}
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          p: 20,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {/* Left section: Avatar */}
+      {!isLoading && (
         <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Typography
-            variant="h4"
-            sx={{ textAlign: "center", marginBottom: 2 }}
-          >
-            User Profile
-          </Typography>
-          <img
-            src={createAvatar(avataaars, userDetails.avatar).toDataUriSync()}
-            alt="Avatar"
-            height={350}
-            style={{ borderRadius: "50%", marginBottom: "20px" }}
-          />
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleOpenEditAvatar}
-          >
-            Customise avatar
-          </Button>
-        </Box>
-        <Box
+          gap={15}
           sx={{
             display: "flex",
             flexDirection: "row",
-            maxWidth: "700px",
+            p: 20,
+            justifyContent: "center",
+            alignItems: "center",
           }}
-          gap={2}
         >
+          {/* Left section: Avatar */}
           <Box
-            sx={{ display: "flex", flexDirection: "row", overflow: "hidden" }}
-            gap={5}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Typography
+              variant="h4"
+              sx={{ textAlign: "center", marginBottom: 2 }}
+            >
+              User Profile
+            </Typography>
+            <img
+              src={createAvatar(avataaars, userAvatar).toDataUriSync()}
+              alt="Avatar"
+              height={350}
+              style={{ borderRadius: "50%", marginBottom: "20px" }}
+            />
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleOpenEditAvatar}
+            >
+              Customise avatar
+            </Button>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              maxWidth: "700px",
+            }}
+            gap={2}
           >
             <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                minWidth: "170px",
-              }}
-              gap={2}
+              sx={{ display: "flex", flexDirection: "row", overflow: "hidden" }}
+              gap={5}
             >
-              {/* Right section: User Details */}
-              <Typography variant="h6" fontWeight={"bold"}>
-                First Name:
-              </Typography>
-              <Typography variant="h6" fontWeight={"bold"}>
-                Last Name:
-              </Typography>
-              <Typography variant="h6" fontWeight={"bold"}>
-                Email:
-              </Typography>
-              <Typography variant="h6" fontWeight={"bold"}>
-                Role:
-              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  minWidth: "170px",
+                }}
+                gap={2}
+              >
+                {/* Right section: User Details */}
+                <Typography variant="h6" fontWeight={"bold"}>
+                  First Name:
+                </Typography>
+                <Typography variant="h6" fontWeight={"bold"}>
+                  Last Name:
+                </Typography>
+                <Typography variant="h6" fontWeight={"bold"}>
+                  Email:
+                </Typography>
+                <Typography variant="h6" fontWeight={"bold"}>
+                  Role:
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }} gap={2}>
+                <Typography variant="h6">{userDetails.first_name}</Typography>
+                <Typography variant="h6">{userDetails.last_name}</Typography>
+                <Typography variant="h6"> {userDetails.email}</Typography>
+                <Typography variant="h6">
+                  {userDetails.is_teacher ? "Teacher" : "Student"}
+                </Typography>
+              </Box>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: "column" }} gap={2}>
-              <Typography variant="h6">{userDetails.firstName}</Typography>
-              <Typography variant="h6">{userDetails.lastName}</Typography>
-              <Typography variant="h6"> {userDetails.email}</Typography>
-              <Typography variant="h6">
-                {isTeacher ? "Teacher" : "Student"}
-              </Typography>
-            </Box>
+            <IconButton
+              sx={{ marginLeft: "20px", marginBottom: "130px" }}
+              onClick={handleOpenEditProfile}
+            >
+              <EditIcon />
+            </IconButton>
           </Box>
-          <IconButton
-            sx={{ marginLeft: "20px", marginBottom: "130px" }}
-            onClick={handleOpenEditProfile}
-          >
-            <EditIcon />
-          </IconButton>
         </Box>
-      </Box>
+      )}
 
       {/* Edit Profile Dialog */}
       <Dialog
@@ -445,7 +509,7 @@ const MyProfilePage = () => {
           <CloseIcon />
         </IconButton>
         <Box sx={{ p: 4 }}>
-          <DialogTitle
+          <Box
             sx={{
               textAlign: "center",
               fontWeight: "bold",
@@ -454,7 +518,7 @@ const MyProfilePage = () => {
             <Typography variant="h3" fontWeight={"bold"}>
               Edit Avatar
             </Typography>
-          </DialogTitle>
+          </Box>
           <Box
             sx={{
               display: "flex",
@@ -465,17 +529,33 @@ const MyProfilePage = () => {
             }}
           >
             <Box sx={{ display: "flex", flexDirection: "row", width: "90%" }}>
-              <img
-                src={createAvatar(avataaars, newAvatar).toDataUriSync()}
-                height={500}
-                style={{ borderRadius: "50%" }}
-              />
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <img
+                  src={createAvatar(avataaars, newAvatar).toDataUriSync()}
+                  height={500}
+                  style={{ borderRadius: "50%", marginBottom: "30px" }}
+                />
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  onClick={saveAvatar}
+                >
+                  Update avatar
+                </Button>
+              </Box>
+
               <Box sx={{ flexGrow: 1 }}>
                 <AppBar
                   position="static"
                   sx={{
                     background: "grey",
-                    width: "1070px",
+                    width: "1200px",
                     margin: "50px 0 0 0",
                     marginRight: "auto",
                     borderRadius: "10px",
@@ -498,8 +578,8 @@ const MyProfilePage = () => {
                           sx={{
                             color: "white",
                             maxWidth: "200px",
-                            fontSize: "12px",
-                            fontWeight: "bold",
+                            fontSize: "15px",
+                            // fontWeight: "bold",
                           }}
                         />
                       )
@@ -522,14 +602,6 @@ const MyProfilePage = () => {
                 ))}
               </Box>
             </Box>
-            <Button
-              color="secondary"
-              variant="contained"
-              sx={{ width: "5px" }}
-              onClick={saveAvatar}
-            >
-              Save
-            </Button>
           </Box>
         </Box>
       </Dialog>

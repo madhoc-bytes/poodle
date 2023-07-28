@@ -49,7 +49,7 @@ const NavBar = () => {
 
   const handleDashboardClick = async () => {
     const response = await fetch(
-      new URL(`/profile/is_teacher/me`, "http://localhost:5000"),
+      new URL(`/profile/info`, "http://localhost:5000"),
       {
         method: "GET",
         headers: {
@@ -63,7 +63,7 @@ const NavBar = () => {
       console.log("ERROR");
     } else {
       console.log(data);
-      if (data) navigate("/teacher/dashboard");
+      if (data.is_teacher) navigate("/teacher/dashboard");
       else navigate("/student/dashboard");
     }
   };
