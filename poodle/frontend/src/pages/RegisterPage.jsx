@@ -37,20 +37,26 @@ const RegisterPage = () => {
     const passwordRegex =
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
-    if (!formValues.firstName || !/^[a-zA-Z]+$/.test(formValues.firstName)) {
+    if (
+      formValues.firstName.trim() === "" ||
+      !/^[a-zA-Z]+$/.test(formValues.firstName)
+    ) {
       setAlertContent("First name must consist of letters only");
       setAlert(true);
     } else if (
-      !formValues.lastName ||
+      formValues.lastName.trim() === "" ||
       !/^[a-zA-Z]+$/.test(formValues.lastName)
     ) {
       setAlertContent("Last name must consist of letters only");
       setAlert(true);
-    } else if (!formValues.email || !emailRegex.test(formValues.email)) {
+    } else if (
+      formValues.email.trim() === "" ||
+      !emailRegex.test(formValues.email)
+    ) {
       setAlertContent("Email must be valid");
       setAlert(true);
     } else if (
-      !formValues.password ||
+      formValues.password.trim() === "" ||
       !passwordRegex.test(formValues.password)
     ) {
       setAlertContent(
