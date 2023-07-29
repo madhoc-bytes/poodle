@@ -1,5 +1,5 @@
 from flask import jsonify
-from models import User, UserSchema, Avatar, AvatarSchema, db
+from models import User, UserSchema, Avatar, Badge, db
 from datetime import datetime, timedelta
 from secrets import token_urlsafe
 from variables import secret_key
@@ -56,18 +56,13 @@ def register(email, password, first_name, last_name, is_teacher):
 		hairColor=pickle.dumps(hairColor),
 		skinColor=pickle.dumps(skinColor),
 		top=pickle.dumps(top)
-
-		# accessories=[],
-		# clothesColor=[],
-		# clothing=[],
-		# facialHair=[],
-		# facialHairColor=[],
-		# hairColor=[],
-		# skinColor=[],
-		# top=[]
 	)
 
 	db.session.add(new_avatar)
+
+	new_badges = Badge(user_id=user.id)
+
+	db.session.add(new_badges)
 	db.session.commit()
 	return user_schema.jsonify(new_user), 200
 

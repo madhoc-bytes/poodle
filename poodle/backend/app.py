@@ -5,6 +5,7 @@ import auth
 import quiz
 import profile
 import avatar
+import badges
 import courses.assignment as assignment
 import courses.courses as courses
 import courses.content as content
@@ -425,6 +426,31 @@ def get_attribute_styles(attribute):
 @app.route('/profile/avatar/<int:target_id>', methods=['GET'])
 def get_target_avatar(target_id):
 	token = get_token(request)
-	user_id = v.valudate_token(token)
+	user_id = v.validate_token(token)
 
 	return avatar.get_avatar_by_user(user_id, target_id)
+
+@app.route('/profile/badges/tallies', methods=['GET'])
+def get_tallies():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return badges.get_tallies(user_id)
+
+@app.route('/profile/badges/levels', methods=['GET'])
+def get_badge_levels():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return badges.get_badge_levels(user_id)
+
+@app.route('/profile/badges/update', methods=['PUT'])
+def update_badges():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	efficient = request.json['efficient']
+	academic = request.json['academic']
+	helpful = request.json['helpful']
+
+	return badges.update_badges(user_id, efficient, academic, helpful)

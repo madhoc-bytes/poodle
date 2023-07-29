@@ -210,15 +210,6 @@ class Avatar(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 	url = db.Column(db.String(1000), nullable=False)
 
-	# accessories = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# clothesColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# clothing = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# facialHair = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# facialHairColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# hairColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# skinColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# top = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	
 	accessories = db.Column(PickleType, nullable=False)
 	clothesColor = db.Column(PickleType, nullable=False)
 	clothing = db.Column(PickleType, nullable=False)
@@ -260,3 +251,18 @@ class Avatar(db.Model):
 class AvatarSchema(ma.SQLAlchemySchema):
 	class Meta:
 		fields = ('user_id', 'url', 'accessories', 'clothesColor', 'clothing', 'facialHair', 'facialHairColor', 'hairColor', 'skinColor', 'top', 'accessoriesStyle', 'clothesColorStyle', 'clothingStyle', 'facialHairStyle', 'facialHairColorStyle', 'hairColorStyle', 'skinColorStyle', 'topStyle')
+
+
+class Badge(db.Model):
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+	efficient = db.Column(db.Integer, default=0, nullable=False)
+	academic = db.Column(db.Integer, default=0, nullable=False)
+	helpful = db.Column(db.Integer, default=0, nullable=False)
+
+	def __init__(self, user_id):
+		self.user_id = user_id
+	
+class BadgeSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('user_id', 'distinguished', 'efficient', 'academic', 'helpful')
+
