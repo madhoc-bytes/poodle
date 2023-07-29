@@ -488,13 +488,6 @@ def get_attributes():
 
 	return avatar.get_attributes(user_id)
 
-@app.route('/profile/avatar/<int:target_id>', methods=['GET'])
-def get_target_avatar(target_id):
-	token = get_token(request)
-	user_id = v.validate_token(token)
-
-	return avatar.get_avatar_by_user(user_id, target_id)
-
 @app.route('/profile/badges/tallies', methods=['GET'])
 def get_tallies():
 	token = get_token(request)
@@ -518,7 +511,7 @@ def update_badges():
 	academic = request.json['academic']
 	helpful = request.json['helpful']
 
-	return badges.update_badges(user_id, efficient, academic, helpful)
+	return badges.update_tallies(user_id, efficient, academic, helpful)
 # HELPERS
 def get_token(request):
 	token = request.headers.get('Authorization')
