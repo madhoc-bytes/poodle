@@ -18,10 +18,12 @@ import {
   TableCell,
   tableCellClasses,
   TableBody,
+  Link,
 } from "@mui/material";
 import NavBar from "../../components/NavBar";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import CourseSidebar from "../../components/CourseSidebar";
+import UserAvatar from "../../components/UserAvatar";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -48,6 +50,8 @@ const StudentCourseLeaderboards = () => {
   const [leaderboards, setLeaderboards] = useState([]);
   const [currLeaderboard, setCurrLeaderboard] = useState(null);
   const token = localStorage.getItem("token");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchLeaderboards();
@@ -118,7 +122,6 @@ const StudentCourseLeaderboards = () => {
           {/* Leaderboard table */}
           <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
             {/* Display median and mean */}
-            {/* <Box sx={{ display: "flex" }}></Box> */}
             {currLeaderboard !== null && (
               <Box>
                 {/* <Typography variant="h5">{leaderboards[currLeaderboard].name}</Typography> */}
@@ -152,7 +155,22 @@ const StudentCourseLeaderboards = () => {
                                 {index + 1}
                               </StyledTableCell>
                               <StyledTableCell align="left">
-                                {student.first_name} {student.last_name}
+                                <Box
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <UserAvatar
+                                    userId={student.id}
+                                    token={token}
+                                  />
+                                  <Link
+                                    sx={{ fontStyle: "none" }}
+                                    onClick={() =>
+                                      window.open(`/profile/${student.id}`)
+                                    }
+                                  >
+                                    {student.first_name} {student.last_name}
+                                  </Link>
+                                </Box>
                               </StyledTableCell>
                               <StyledTableCell align="right">
                                 {student.mark}
@@ -160,6 +178,51 @@ const StudentCourseLeaderboards = () => {
                             </StyledTableRow>
                           )
                         )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <TableContainer component={Paper} sx={{ marginTop: "100px" }}>
+                    <Table aria-label="customized table">
+                      <TableBody>
+                        <StyledTableRow>
+                          <StyledTableCell
+                            component="th"
+                            scope="row"
+                            align="left"
+                          >
+                            {leaderboards[currLeaderboard].curr_student.rank}
+                          </StyledTableCell>
+                          <StyledTableCell align="left">
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              <UserAvatar
+                                userId={
+                                  leaderboards[currLeaderboard].curr_student.id
+                                }
+                                token={token}
+                              />
+                              <Link
+                                sx={{ fontStyle: "none" }}
+                                onClick={() =>
+                                  window.open(
+                                    `/profile/${leaderboards[currLeaderboard].curr_student.id}`
+                                  )
+                                }
+                              >
+                                {
+                                  leaderboards[currLeaderboard].curr_student
+                                    .first_name
+                                }{" "}
+                                {
+                                  leaderboards[currLeaderboard].curr_student
+                                    .last_name
+                                }
+                              </Link>
+                            </Box>
+                          </StyledTableCell>
+                          <StyledTableCell align="right">
+                            {leaderboards[currLeaderboard].curr_student.mark}
+                          </StyledTableCell>
+                        </StyledTableRow>
                       </TableBody>
                     </Table>
                   </TableContainer>

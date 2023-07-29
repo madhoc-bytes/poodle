@@ -135,7 +135,7 @@ const TeacherCourseQuizzes = () => {
       <CourseSidebar />
       <Box
         sx={{
-          p: 5,
+          p: 3,
           flexGrow: "1",
         }}
       >

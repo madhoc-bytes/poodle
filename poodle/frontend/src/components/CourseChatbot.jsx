@@ -209,12 +209,14 @@ const CourseChatbot = ({ courseId }) => {
 
   return (
     <>
-      <Box sx={{ position: "fixed", bottom: 16, right: 16, zindex: 9999 }}>
+      <Box
+        sx={{ position: "fixed", bottom: "50px", right: "50px", zindex: 9999 }}
+      >
         <IconButton
           onClick={toggleChat}
-          sx={{ backgroundColor: "#ffafcc", height: "70px", width: "70px" }}
+          sx={{ backgroundColor: "#ffafcc", height: "100px", width: "100px" }}
         >
-          <SmartToyIcon sx={{ color: "white", fontSize: 50 }} />
+          <SmartToyIcon sx={{ color: "white", fontSize: 70 }} />
         </IconButton>
       </Box>
       {isChatOpen && (

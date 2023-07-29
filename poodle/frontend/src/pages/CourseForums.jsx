@@ -5,16 +5,12 @@ import {
   Box,
   Divider,
   Toolbar,
-  Card,
-  CardContent,
   Typography,
-  Grid,
   List,
   Dialog,
   DialogContent,
   DialogTitle,
   Slide,
-  IconButton,
   FormControl,
   Link,
   InputLabel,
@@ -26,8 +22,8 @@ import {
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import CourseSidebar from "../components/CourseSidebar";
+import UserAvatar from "../components/UserAvatar";
 import { useParams } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 
@@ -90,6 +86,9 @@ const formatDateForPost = (dateString) => {
 const CourseForums = () => {
   const courseId = useParams().courseId;
   const token = localStorage.getItem("token");
+
+  const [isTeacher, setIsTeacher] = useState(false);
+
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchPost, setSearchPost] = useState("");
   const [forumPosts, setForumPosts] = useState([]);
@@ -99,7 +98,13 @@ const CourseForums = () => {
 
   // Create new post popup
   const [newPostTitle, setNewPostTitle] = useState("");
-  const categories = ["General", "Quizzes", "Lectures", "Assignments"];
+  const categories = [
+    "Announcements",
+    "Assignments",
+    "General",
+    "Lectures",
+    "Quizzes",
+  ];
   const [newPostCategory, setNewPostCategory] = useState("General");
   const [newPostFile, setNewPostFile] = useState(null);
   const [newPostDescription, setNewPostDescription] = useState("");
@@ -110,6 +115,42 @@ const CourseForums = () => {
     fetchForumPosts();
   }, [selectedCategory, searchPost]);
 
+  useEffect(() => {
+    fetchIsTeacher();
+  }, []);
+
+  const getColorFromLabel = (label) => {
+    const lowerCaseLabel = label.toLowerCase();
+    if (lowerCaseLabel === "general") {
+      return "rgb(52,152,219)";
+    } else if (lowerCaseLabel === "assignments") {
+      return "rgb(155,89,182)";
+    } else if (lowerCaseLabel === "quizzes") {
+      return "rgb(231,76,60)";
+    } else if (lowerCaseLabel === "lectures") {
+      return "rgb(46,204,113)";
+    } else {
+      return "rgb(247,39,146)";
+    }
+  };
+
+  const fetchIsTeacher = async () => {
+    // fetch user details from backend
+    const response = await fetch(
+      new URL(`/profile/info`, "http://localhost:5000"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else setIsTeacher(data.is_teacher);
+  };
   const fetchForumPosts = async () => {
     console.log("hi");
     const response = await fetch(
@@ -332,9 +373,13 @@ const CourseForums = () => {
           <Box sx={{ display: "flex", flexDirection: "row" }} gap={1}>
             <Chip
               label={post.category}
-              color={"primary"}
+              // color={"primary"}
               size={"small"}
-              sx={{ fontSize: "9px" }}
+              sx={{
+                fontSize: "9px",
+                backgroundColor: getColorFromLabel(post.category),
+                color: "white",
+              }}
             />{" "}
             <Typography variant="body1">
               {post.first_name} {post.last_name}
@@ -488,28 +533,61 @@ const CourseForums = () => {
                   overflowY: "auto",
                   wordWrap: "break-word",
                 }}
+                gap={3}
               >
-                <Box sx={{ p: 10, paddingTop: "20px", paddingBottom: "30px" }}>
-                  <Typography variant="h3">{currPost.title}</Typography>
-                  <Typography variant="h5">
-                    {currPost.first_name} {currPost.last_name}
+                <Box
+                  sx={{
+                    padding: "30px 30px 10px 30px",
+                  }}
+                >
+                  <Typography variant="h3" sx={{ marginBottom: "10px" }}>
+                    {currPost.title}
                   </Typography>
-                  {formatDateForPost(currPost.date_posted)} in{" "}
-                  <Chip
-                    label={currPost.category}
-                    color={"primary"}
-                    size={"small"}
-                    sx={{ maxWidth: "70px", fontSize: "10px" }}
-                  />
-                  <Typography variant="body1">
-                    {currPost.description}
-                  </Typography>
-                  {/* {currPost} */}
-                  {currPost.file_id && (
-                    <Link onClick={() => handleGetFile(currPost.file_id)}>
-                      Attachment
-                    </Link>
-                  )}
+                  <Box
+                    sx={{
+                      display: "flex",
+                    }}
+                  >
+                    <UserAvatar userId={currPost.author_id} token={token} />
+                    <Box>
+                      <Link
+                        sx={{ fontStyle: "none" }}
+                        onClick={() =>
+                          window.open(`/profile/${currPost.author_id}`)
+                        }
+                      >
+                        <Typography variant="h6">
+                          {currPost.first_name} {currPost.last_name}
+                        </Typography>
+                      </Link>
+                      <Typography
+                        variant="body2"
+                        display={"inline"}
+                        sx={{ color: "grey" }}
+                      >
+                        {formatDateForPost(currPost.date_posted)} in{" "}
+                      </Typography>
+                      <Chip
+                        label={currPost.category}
+                        color={"primary"}
+                        size={"small"}
+                        sx={{
+                          fontSize: "10px",
+                          backgroundColor: getColorFromLabel(currPost.category),
+                          color: "white",
+                        }}
+                      />
+                      <Typography variant="body1">
+                        {currPost.description}
+                      </Typography>
+                      {/* {currPost} */}
+                      {currPost.file_id && (
+                        <Link onClick={() => handleGetFile(currPost.file_id)}>
+                          Attachment
+                        </Link>
+                      )}
+                    </Box>
+                  </Box>
                 </Box>
 
                 <Box sx={{ p: 15, paddingTop: "0px" }}>
@@ -524,25 +602,39 @@ const CourseForums = () => {
                       sx={{
                         width: "100%",
                         marginBottom: "25px",
-                        // borderTop: "1px solid grey",
+                        display: "flex",
                       }}
                     >
-                      <Typography
-                        variant="h5"
-                        display={"inline"}
-                        sx={{ marginBottom: "20px", color: "blue" }}
-                      >
-                        {reply.first_name} {reply.last_name} {"    "}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        display={"inline"}
-                        sx={{ color: "grey" }}
-                      >
-                        {formatDateForPost(reply.date_posted)}
-                      </Typography>
-
-                      <Typography variant="body1">{reply.answer}</Typography>
+                      <UserAvatar userId={reply.author_id} token={token} />
+                      <Box>
+                        <Link
+                          sx={{ fontStyle: "none" }}
+                          onClick={() =>
+                            window.open(`/profile/${reply.author_id}`)
+                          }
+                        >
+                          <Typography
+                            variant="h6"
+                            display={"inline"}
+                            sx={{ marginBottom: "20px", marginRight: "5px" }}
+                          >
+                            {reply.first_name} {reply.last_name}
+                          </Typography>
+                        </Link>
+                        <Typography
+                          variant="body2"
+                          display={"inline"}
+                          sx={{ color: "grey" }}
+                        >
+                          {formatDateForPost(reply.date_posted)}
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          sx={{ wordBreak: "break-all" }}
+                        >
+                          {reply.answer}
+                        </Typography>
+                      </Box>
                     </Box>
                   ))}
                   <Typography variant="h5">Your Answer</Typography>
@@ -605,15 +697,33 @@ const CourseForums = () => {
             {/* Category */}
             <Box display="flex" justifyContent="center" flexWrap="wrap" gap={2}>
               <Typography variant="subtitle1">Category:</Typography>
-              {categories.map((category, index) => (
-                <Chip
-                  key={index}
-                  label={category}
-                  clickable
-                  color={newPostCategory === category ? "primary" : "default"}
-                  onClick={() => setNewPostCategory(category)}
-                />
-              ))}
+              {categories.map(
+                (category, index) =>
+                  (isTeacher || category !== "Announcements") && (
+                    <Chip
+                      key={index}
+                      label={category}
+                      clickable
+                      size={"small"}
+                      sx={{
+                        backgroundColor:
+                          newPostCategory === category
+                            ? getColorFromLabel(category)
+                            : "rgb(235,235,235)",
+                        color: newPostCategory === category ? "white" : "black",
+                        "&:hover": {
+                          backgroundColor:
+                            newPostCategory === category
+                              ? getColorFromLabel(category)
+                              : "rgb(235,235,235)",
+                          color:
+                            newPostCategory === category ? "white" : "black",
+                        },
+                      }}
+                      onClick={() => setNewPostCategory(category)}
+                    />
+                  )
+              )}
             </Box>
             {/* Attachment */}
             <Box>

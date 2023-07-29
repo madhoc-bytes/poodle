@@ -416,21 +416,21 @@ def edit_profile():
 
 	return profile.edit(user_id, first_name, last_name, password)
 
-# @app.route('/profile/stars', methods=['GET'])
-# def get_stars():
-# 	token = get_token(request)
-# 	user_id = v.validate_token(token)
+@app.route('/profile/stars', methods=['GET'])
+def get_stars():
+	token = get_token(request)
+	user_id = v.validate_token(token)
 
-# 	return profile.get_stars(user_id)
+	return profile.get_stars(user_id)
 
-# @app.route('/profile/stars/add', methods=['PUT'])
-# def add_stars():
-# 	token = get_token(request)
-# 	user_id = v.validate_token(token)
+@app.route('/profile/stars/add', methods=['PUT'])
+def add_stars():
+	token = get_token(request)
+	user_id = v.validate_token(token)
 
-# 	stars = request.json['stars']
+	stars = request.json['stars']
 
-# 	return profile.add_star(user_id, stars)
+	return profile.add_star(user_id, stars)
 
 @app.route('/profile/info', methods=['GET'])
 def get_my_info():

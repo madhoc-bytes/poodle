@@ -28,12 +28,13 @@ class User(db.Model):
 	is_teacher = db.Column(db.Boolean, default=False, nullable=False)
 	stars = db.Column(db.Integer, default=0, nullable=False)
 
-	def __init__(self, first_name, last_name, email, password, is_teacher):
+	def __init__(self, first_name, last_name, email, password, is_teacher, stars):
 		self.first_name = first_name
 		self.last_name = last_name
 		self.email = email
 		self.password = password
 		self.is_teacher = is_teacher
+		self.stars = stars
 
 
 class Course(db.Model):
@@ -251,36 +252,8 @@ class ForumReplySchema(ma.SQLAlchemySchema):
 
 class Avatar(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-	# url = db.Column(db.String(1000), nullable=False)
-
-	# accessories = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# clothesColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# clothing = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# facialHair = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# facialHairColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# hairColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# skinColor = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	# top = db.Column(MutableList.as_mutable(db.String(100)), default=list)
-	
-	# accessories = db.Column(PickleType, nullable=False)
-	# clothesColor = db.Column(PickleType, nullable=False)
-	# clothing = db.Column(PickleType, nullable=False)
-	# facialHair = db.Column(PickleType, nullable=False)
-	# facialHairColor = db.Column(PickleType, nullable=False)
-	# hairColor = db.Column(PickleType, nullable=False)
-	# skinColor = db.Column(PickleType, nullable=False)
-	# top = db.Column(PickleType, nullable=False)
- 
 	attributes = db.Column(MutableDict.as_mutable(db.JSON), default=dict)
 	curr_attributes = db.Column(MutableDict.as_mutable(db.JSON), default=dict)
-	# accessoriesStyle = db.Column(db.String(100), nullable=False)
-	# clothesColorStyle = db.Column(db.String(100), nullable=False)
-	# clothingStyle = db.Column(db.String(100), nullable=False)
-	# facialHairStyle = db.Column(db.String(100), nullable=False)
-	# facialHairColorStyle = db.Column(db.String(100), nullable=False)
-	# hairColorStyle = db.Column(db.String(100), nullable=False)
-	# skinColorStyle = db.Column(db.String(100), nullable=False)
-	# topStyle = db.Column(db.String(100), nullable=False)
 
 	def __init__(self, user_id, attributes, curr_attributes):
 		self.user_id = user_id

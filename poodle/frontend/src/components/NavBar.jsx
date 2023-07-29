@@ -7,11 +7,15 @@ import {
   Button,
   MenuItem,
 } from "@mui/material";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { createAvatar } from "@dicebear/core";
+import { avataaars } from "@dicebear/collection";
+import UserAvatar from "./UserAvatar";
 
 const NavBar = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const [userAvatar, setUserAvatar] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   const { courseId } = useParams();
 
@@ -43,7 +47,29 @@ const NavBar = () => {
     }
   };
 
+  const fetchAvatar = async () => {
+    const response = await fetch(
+      new URL(`/profile/avatar/preview`, "http://localhost:5000"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      setUserAvatar(data);
+      console.log(data);
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
+    fetchAvatar();
     fetchCourseName();
   }, []);
 
@@ -105,27 +131,40 @@ const NavBar = () => {
         >
           Poodle
         </Typography>
+        {!isLoading && (
+          <>
+            <Typography variant="h4" component="div" sx={{ color: "black" }}>
+              {courseName}
+            </Typography>
 
-        <Typography variant="h4" component="div" sx={{ color: "black" }}>
-          {courseName}
-        </Typography>
-
-        <div>
-          <Button
-            sx={{ backgroundColor: "white", color: "black", height: "56px" }}
-            onClick={handleOpen}
-          >
-            Profile
-          </Button>
-          <Menu
-            anchorEl={dropdown}
-            open={Boolean(dropdown)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={handleProfile}>View Profile</MenuItem>
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
-          </Menu>
-        </div>
+            <div>
+              <Button
+                sx={{
+                  backgroundColor: "white",
+                  color: "black",
+                  height: "50px",
+                  borderRadius: "50%",
+                }}
+                onClick={handleOpen}
+              >
+                <img
+                  src={createAvatar(avataaars, userAvatar).toDataUriSync()}
+                  alt="Avatar"
+                  height={50}
+                  style={{ borderRadius: "50%", backgroundColor: "lightGrey" }}
+                />
+              </Button>
+              <Menu
+                anchorEl={dropdown}
+                open={Boolean(dropdown)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleProfile}>View Profile</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
+            </div>
+          </>
+        )}
       </Toolbar>
     </AppBar>
   );

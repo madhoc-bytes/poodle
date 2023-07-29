@@ -33,7 +33,8 @@ total_attributes = {
 	'hairColor': ['4a312c',
 		'a55728',
 		'c93305',
-		'd6b370'],
+		'd6b370',
+		'b58143'],
 	'skinColor' : ['614335',
 		'd08b5b',
 		'edb98a',
@@ -73,8 +74,8 @@ def unlock_attribute(user_id, attribute, style):
 	if not user:
 		raise NotFound('User not found')
 	
-	# if user.stars < 1:
-	# 	raise BadRequest('Not enough stars')
+	if user.stars < 1:
+		raise BadRequest('Not enough stars')
 	
 	if attribute not in total_attributes:
 		raise BadRequest('Invalid attribute')
@@ -87,12 +88,17 @@ def unlock_attribute(user_id, attribute, style):
 	if style in user_attributes[attribute]:
 		raise BadRequest('Style already unlocked')
 
-	# user.stars -= 1
+	user.stars -= 1
 	user_attributes[attribute].append(style)
-	avatar.attributes = user_attributes
+	# replace the old attributes with the new one
+	avatar.attributes[attribute] = user_attributes[attribute]
+ 
+	# avatar.attributes = user_attributes
+	# print(user_attributes)
 	db.session.commit()
+	print(avatar.attributes)
 
-	return jsonify({'message': 'Attribute unlocked successfully'}), 200
+	return jsonify({'message': (f"{attribute}:{style} unlocked successfully")}), 200
 
 def update_avatar(user_id, att_json):
 	user = User.query.get(user_id)

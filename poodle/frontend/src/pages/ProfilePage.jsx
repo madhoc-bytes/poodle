@@ -35,7 +35,6 @@ const ProfilePage = () => {
     } else setUserDetails(data);
   };
 
-  // TODO: fetch user avatar from backend
   const fetchAvatar = async () => {
     const response = await fetch(
       new URL(`/profile/avatar/preview/${userId}`, "http://localhost:5000"),

@@ -19,6 +19,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
 import LockIcon from "@mui/icons-material/Lock";
+import StarsIcon from "@mui/icons-material/Stars";
 import { createAvatar } from "@dicebear/core";
 import { avataaars } from "@dicebear/collection";
 
@@ -31,6 +32,7 @@ const MyProfilePage = () => {
   const [userDetails, setUserDetails] = useState({});
   const [userAvatar, setUserAvatar] = useState({});
   const [userAttributes, setUserAttributes] = useState({});
+  const [userStars, setUserStars] = useState();
 
   const [openEditProfile, setOpenEditProfile] = useState(false);
   const [openEditAvatar, setOpenEditAvatar] = useState(false);
@@ -100,6 +102,7 @@ const MyProfilePage = () => {
     fetchUserDetails();
     fetchAvatar();
     fetchAttributes();
+    fetchStars();
   }, []);
 
   const fetchUserDetails = async () => {
@@ -160,6 +163,26 @@ const MyProfilePage = () => {
     }
   };
 
+  const fetchStars = async () => {
+    const response = await fetch(
+      new URL(`/profile/stars`, "http://localhost:5000"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      setUserStars(data.stars);
+      console.log(data);
+    }
+  };
+
   const handleOpenEditProfile = () => {
     setOpenEditProfile(true);
     setNewFirstName(userDetails.first_name);
@@ -213,8 +236,10 @@ const MyProfilePage = () => {
       );
       const data = await response.json();
       if (data.error) console.log("ERROR");
-      fetchUserDetails();
-      handleCloseEditProfile();
+      else {
+        fetchUserDetails();
+        handleCloseEditProfile();
+      }
     }
   };
 
@@ -224,25 +249,29 @@ const MyProfilePage = () => {
   };
 
   const handleCloseEditAvatar = () => {
-    setNewAvatar(userAvatar);
     setOpenEditAvatar(false);
+    setNewAvatar(userAvatar);
   };
 
   const OptionButton = ({ attribute, option, onClick }) => {
-    const handleClick = () => {
-      const newAvatarOptions = {
-        ...newAvatar,
-        [attribute]: [option],
-      };
+    const [openUnlockDialog, setOpenUnlockDialog] = useState(false);
 
-      onClick(newAvatarOptions);
+    const isOptionUnlocked = userAttributes[attribute].includes(option);
+
+    const handleClick = () => {
+      if (isOptionUnlocked) {
+        const newAvatarOptions = {
+          ...newAvatar,
+          [attribute]: [option],
+        };
+        onClick(newAvatarOptions);
+      } else setOpenUnlockDialog(true);
     };
 
     const updatedAvatarOptions = {
       ...defaultAvatarOptions,
       [attribute]: [option],
     };
-
     if (attribute === "facialHairColor") {
       updatedAvatarOptions.facialHair = ["beardMajestic"];
     }
@@ -251,27 +280,100 @@ const MyProfilePage = () => {
       updatedAvatarOptions
     ).toDataUriSync();
 
-    console.log(userAttributes[attribute], option);
-    console.log(option in userAttributes[attribute]);
+    const handleCloseUnlockDialog = () => {
+      setOpenUnlockDialog(false);
+    };
 
-    const isOptionUnlocked = userAttributes[attribute].includes(option);
+    const handleUnlock = async () => {
+      if (userStars < 1) {
+        alert("Not enough stars");
+        return;
+      }
+
+      const response = await fetch(
+        new URL(`/profile/avatar/unlock`, "http://localhost:5000"),
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            attribute,
+            style: option,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.error) console.log("ERROR");
+      else {
+        console.log(data.message);
+      }
+      fetchStars();
+      fetchAttributes();
+      setOpenUnlockDialog(false);
+      alert("Unlocked " + option);
+    };
 
     return (
       <>
-        <Button onClick={handleClick} disabled={!isOptionUnlocked}>
-          <Avatar src={avatar} alt={option} sx={{ width: 200, height: 200 }} />
+        <Button onClick={handleClick} sx={{ borderRadius: "50%" }}>
+          <Avatar
+            src={avatar}
+            alt={option}
+            sx={{
+              width: 200,
+              height: 200,
+              "&:hover": {
+                backgroundColor: "lightGrey",
+              },
+            }}
+          />
           {!isOptionUnlocked && (
             <LockIcon
               sx={{
                 position: "absolute",
                 top: "0%",
                 left: "5%",
-                color: "black",
+                color: "grey",
                 fontSize: "3rem",
               }}
             />
           )}
         </Button>
+        <Dialog
+          open={openUnlockDialog}
+          onClose={handleCloseUnlockDialog}
+          PaperProps={{
+            style: { borderRadius: 15, width: "520px" },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {`Do you want to purchase ${option} for 1 `} <StarsIcon /> ?
+          </DialogTitle>
+          <Box sx={{ display: "flex", justifyContent: "center", p: 1 }} gap={5}>
+            <Button
+              onClick={handleUnlock}
+              color="secondary"
+              variant="contained"
+            >
+              Yes
+            </Button>
+            <Button
+              onClick={handleCloseUnlockDialog}
+              color="primary"
+              variant="contained"
+            >
+              No
+            </Button>
+          </Box>
+        </Dialog>
       </>
     );
   };
@@ -495,10 +597,29 @@ const MyProfilePage = () => {
         TransitionComponent={Transition}
       >
         <Toolbar />
-        <IconButton
-          color="inherit"
-          onClick={handleCloseEditAvatar}
-          aria-label="close"
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "20px",
+            position: "absolute",
+            left: "60px",
+            top: "90px",
+            zIndex: 1,
+          }}
+        >
+          <Typography
+            variant="h4"
+            fontWeight={"bold"}
+            sx={{ display: "inline-flex", alignItems: "center" }}
+            gap={0.5}
+          >
+            {userStars}
+            <StarsIcon />
+          </Typography>
+        </Box>
+        <Box
           sx={{
             position: "absolute",
             right: "8px",
@@ -506,8 +627,15 @@ const MyProfilePage = () => {
             zIndex: 1,
           }}
         >
-          <CloseIcon />
-        </IconButton>
+          <IconButton
+            color="inherit"
+            onClick={handleCloseEditAvatar}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
         <Box sx={{ p: 4 }}>
           <Box
             sx={{
@@ -522,7 +650,6 @@ const MyProfilePage = () => {
           <Box
             sx={{
               display: "flex",
-              // marginRight: "200px",
               alignItems: "center",
               flexDirection: "column",
               width: "90%",
@@ -554,7 +681,7 @@ const MyProfilePage = () => {
                 <AppBar
                   position="static"
                   sx={{
-                    background: "grey",
+                    background: "black",
                     width: "1200px",
                     margin: "50px 0 0 0",
                     marginRight: "auto",
