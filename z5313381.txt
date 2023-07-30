@@ -5,6 +5,37 @@ Group formed and named. Jira created and set up. I set up a hierarchy of folders
 Week 2
 User stories completed on Google Drive. Additional features brainstormed and clarified with team but not fully refined (point system, leaderboard, exact implementation of gamification etc.). Completed user stories for the timeline facet of the project and determined with team that I will be working on the back end with Jeffery. Likely to use Python for backend due to overall team experience with flask. We collectively gained some valuable feedback from our tutor and will look to solve some of the problems raised with respect to gamification, online lessons, etc. Project Proposal is due next Friday so we will look to formalise all ideas for submission.
 
+
 Week 3
 Confirmed boundaries of additional features. Project proposal finished and submitted 2pm Friday. Personal contributions toward the proposal included the creation and discussion surrounding the tech stack diagram and contribution toward the editing of the storyboards for user stories, in particular the management of the storyboards for the timeline and forum user stories. We will start implementing the skeleton of the general system and set up a good code foundation for the whole project in the coming week. ER diagrams and schemas will be drawn up and discussed in the coming days to ensure a quality system is thoughtfully designed. 
+
+
+Week 4
+Worked towards the implementation of the backend with Jeffery. Deliberations were made toward the authentication process with tokens for active users, with routes set up to handle requests from the front-end. Analysed documentation for SQLAlchemy and Marshmallow to better understand the future implementation of the backend and usage of the database. As the demo is relatively soon, I looked to work on as much of the backbone of the backend as possible, to implement functionality surrounding courses as authentication has been roughly looked after by Jeffery. 
+
+
+Week 5
+Focused heavily on the backend, in particular on properly setting up the database with Jeffery. Many iterative chances and decisions were made as to the database relations between students and courses, as well as courses and online classes. Extensive cURL tests were established and many bugs were exposed in the process of improving backend functionality. Jira was carefully managed in the lead-up to the demo on Thursday, and the demo was successfully performed. The group retrospective was quite constructive, with areas of improvement identified moving forward.
+
+
+Week 6
+Consulted with Mark on how to implement the quizzes and assignments- issues arose with auto marking quizzes considering the mixed nature of quizzes inclusive of both multiple choice and open ended questions. Helped produce documentation for the quizzes and assignments. Consulted with Jeffery and and worked on implementing a file system in the context of Poodle. At this point, file paths will be established upon the creation of courses, and files will be stored within those locations, and retrieved for users via a URL to the stored path. 
+
+
+Week 7
+Worked on effectively implementing content and assignments with Jeffery, and implemented the storage of files into Poodle. Limited cURL tests were performed, as testing select features in the backend required front-end interaction. Content and assignment features were quickly implemented with meticulous planning with Jeffery and pair programming. Group meetings were used to discuss plans for approaching Demo B, as well as any requirements between frontend and backend missed in documentation. Small features relevant to assignment functionality were planned but fully implemented during Week 7, and will need to be done as Demo B is next week.
+
+
+Week 8
+Worked towards meeting all requirements for demo B. All features were heavily tested and debugged with front-end ahead of the Demo. Confusing bugs associated with date and file formats arose as there was insufficient foresight in planning earlier in sprint 2. Prepared for Demo B, running along edge cases for Poodle to ensure a consistent experience was to be delivered. After the demo, ensured there was a productive retrospective meeting and formalised the meeting into the Retrospective B deliverable.
+
+
+Week 9
+Implemented Forums with Andy. Began working on the report following Eddy's delegations to the group. I will personally be working on covering the overview of the system with Jeffery, as well as working on discussing the functionality of Poodle alongside Mark. Poodle has been implemented for the post part, following last weeks effort on Timeline and Forum functionalities. Little coding is personally left for next week as forum functionalities have already been implemented in Poodle. 
+
+
+Week 10
+
+
+
 
