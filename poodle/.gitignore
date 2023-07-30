@@ -24,4 +24,3 @@ yarn-error.log*
 
 /backend/instance/database.db
 /backend/__pycache__
-/backend/fsh/
