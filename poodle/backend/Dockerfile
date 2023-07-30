@@ -34,7 +34,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Expose the port that the application listens on.
-# EXPOSE 5000
+EXPOSE 5000
 
 # Run the application.
-ENTRYPOINT flask run
+ENTRYPOINT python3 app.py
