@@ -39,11 +39,7 @@ const MyProfilePage = () => {
   const [userAvatar, setUserAvatar] = useState({});
   const [userAttributes, setUserAttributes] = useState({});
   const [userStars, setUserStars] = useState();
-  const [badges, setBadges] = useState({
-    academic: 30,
-    efficient: 0,
-    helpful: 25,
-  });
+  const [badges, setBadges] = useState({});
 
   const [openEditProfile, setOpenEditProfile] = useState(false);
   const [openEditAvatar, setOpenEditAvatar] = useState(false);
@@ -132,6 +128,7 @@ const MyProfilePage = () => {
     fetchAvatar();
     fetchAttributes();
     fetchStars();
+    fetchBadges();
   }, []);
 
   const fetchUserDetails = async () => {
@@ -208,6 +205,26 @@ const MyProfilePage = () => {
       console.log("ERROR");
     } else {
       setUserStars(data.stars);
+      console.log(data);
+    }
+  };
+
+  const fetchBadges = async () => {
+    const response = await fetch(
+      new URL(`/profile/badges/tallies`, "http://localhost:5000"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      setBadges(data.tallies);
       console.log(data);
     }
   };
@@ -814,34 +831,37 @@ const MyProfilePage = () => {
         TransitionComponent={Transition}
       >
         <Toolbar />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "20px",
-            position: "absolute",
-            left: "80px",
-            top: "90px",
-            zIndex: 1,
-          }}
-        >
-          <Typography
-            variant="h4"
-            fontWeight={"bold"}
-            sx={{ display: "inline-flex", alignItems: "center" }}
-            gap={0.5}
+        {!userDetails.is_teacher && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "20px",
+              position: "absolute",
+              left: "80px",
+              top: "90px",
+              zIndex: 1,
+            }}
           >
-            {userStars}
-            <StarsIcon />
-            <IconButton
-              onClick={(e) => handlePopoverOpen(e, "stars")}
-              sx={{ marginLeft: 0 }}
+            <Typography
+              variant="h4"
+              fontWeight={"bold"}
+              sx={{ display: "inline-flex", alignItems: "center" }}
+              gap={0.5}
             >
-              <InfoIcon sx={{ fontSize: "20px" }} />
-            </IconButton>
-          </Typography>
-        </Box>
+              {userStars}
+              <StarsIcon />
+              <IconButton
+                onClick={(e) => handlePopoverOpen(e, "stars")}
+                sx={{ marginLeft: 0 }}
+              >
+                <InfoIcon sx={{ fontSize: "20px" }} />
+              </IconButton>
+            </Typography>
+          </Box>
+        )}
+
         <Box
           sx={{
             position: "absolute",

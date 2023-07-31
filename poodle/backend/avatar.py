@@ -93,10 +93,7 @@ def unlock_attribute(user_id, attribute, style):
 	# replace the old attributes with the new one
 	avatar.attributes[attribute] = user_attributes[attribute]
  
-	# avatar.attributes = user_attributes
-	# print(user_attributes)
 	db.session.commit()
-	print(avatar.attributes)
 
 	return jsonify({'message': (f"{attribute}:{style} unlocked successfully")}), 200
 

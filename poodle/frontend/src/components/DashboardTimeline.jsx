@@ -37,6 +37,7 @@ const DashboardTimeline = () => {
     <Box
       sx={{
         margin: "20px 30px",
+        height: "calc(100% - 64px)",
       }}
     >
       <Typography variant="h3" component="h1" align="center" gutterBottom>
@@ -45,16 +46,18 @@ const DashboardTimeline = () => {
       <Box
         sx={{
           display: "flex",
+          height: "90%",
           backgroundColor: "white",
           flexDirection: "column",
           borderRadius: "30px",
+          overflowY: "auto",
           boxShadow:
             "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
         }}
       >
         {/* Desconstruct the timeline */}
-        {timeline.map((item) => (
-          <>
+        {timeline.map((item, index) => (
+          <Box key={index}>
             <Box
               sx={{
                 display: "flex",
@@ -87,7 +90,7 @@ const DashboardTimeline = () => {
                       hour: "2-digit",
                       minute: "2-digit",
                       hour12: false,
-                    })}{" "}
+                    })}
                   </Typography>
                 </Box>
 
@@ -119,7 +122,7 @@ const DashboardTimeline = () => {
                 </Box>
               </Box>
             </Box>
-          </>
+          </Box>
         ))}
       </Box>
     </Box>

@@ -22,15 +22,12 @@ const ProfilePage = () => {
   const [userDetails, setUserDetails] = useState({});
   const [userAvatar, setUserAvatar] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [badges, setBadges] = useState({
-    academic: 30,
-    efficient: 30,
-    helpful: 25,
-  });
+  const [badges, setBadges] = useState({});
 
   useEffect(() => {
     fetchUserDetails();
     fetchAvatar();
+    fetchBadges();
   }, []);
 
   const fetchUserDetails = async () => {
@@ -69,6 +66,26 @@ const ProfilePage = () => {
       setUserAvatar(data);
       console.log(data);
       setIsLoading(false);
+    }
+  };
+
+  const fetchBadges = async () => {
+    const response = await fetch(
+      new URL(`/profile/badges/tallies`, "http://localhost:5000"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      setBadges(data.tallies);
+      console.log(data);
     }
   };
 
