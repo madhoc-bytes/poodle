@@ -4,6 +4,7 @@ from .content import get_file
 from datetime import datetime, timedelta
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
+import badges
 import os
 
 def create(user_id, course_id, title, description, due_date, max_marks):
@@ -237,7 +238,7 @@ def update_score(user_id, submission_id, score):
 	# Update efficient badge
 	due_date = assignment.due_date
 	submission_time = submission.submission_time
-
+	prev = badge.efficent
 	diff = due_date - submission_time
 	if (diff > timedelta(days=1, hours=12)):
 		badge.efficient += 3
@@ -245,7 +246,10 @@ def update_score(user_id, submission_id, score):
 		badge.efficient += 2
 	elif (diff > timedelta(hours=12)):
 		badge.efficient += 1
+	curr = badge.efficient
+	badges.check_tallies(badge.user_id, prev, curr)
 
+	prev = badge.academic
 	# Update academic badge
 	if (scoreInt >= 95):
 		badge.academic += 3
@@ -253,6 +257,9 @@ def update_score(user_id, submission_id, score):
 		badge.academic += 2
 	elif (scoreInt >= 75):
 		badge.academic += 1
+
+	curr = badge.academic
+	badges.check_tallies(badge.user_id, prev, curr)
 
 	db.session.commit()
 	return jsonify({'message': 'Score updated successfully'}), 201

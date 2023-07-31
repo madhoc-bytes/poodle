@@ -3,6 +3,7 @@ from models import User, Course, CourseSchema, File, Folder, FolderSchema, Enrol
 from datetime import datetime, timedelta
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
+import badges
 import os
 
 def create(user_id, course_id, title, category, description):
@@ -82,16 +83,15 @@ def reply(user_id, forum_post_id, answer):
 			raise Unauthorized('Permission denied: Unauthorised user')
 
 	badge = Badge.query.get(user_id)
+	prev = badge.helpful
 	badge.helpful += 1
+	curr = badge.helpful
+
+	badges.check_tallies(user_id, prev, curr)
 
 	current_time = datetime.now()
 	new_forum_reply = ForumReply(forum_post_id=forum_post_id, author_id=user_id, answer=answer, date_posted=current_time)
 	db.session.add(new_forum_reply)
-	db.session.commit()
- 
-	badge = Badge.query.get(user_id)
-	badge.helpful += 1
- 
 	db.session.commit()
 
 	return jsonify({'message': 'Forum reply successfully made', 'forum_reply_id': new_forum_reply.id}), 200
