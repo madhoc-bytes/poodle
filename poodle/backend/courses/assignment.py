@@ -232,19 +232,18 @@ def update_score(user_id, submission_id, score):
 	
 	submission.score = scoreInt
 
-
-	badge = Badge.query.get(user_id)
+	badge = Badge.query.get(Submission.query.get(submission_id).student_id)
 	
 	# Update efficient badge
 	due_date = assignment.due_date
 	submission_time = submission.submission_time
 
 	diff = due_date - submission_time
-	if (diff < timedelta(days=1, hours=12)):
+	if (diff > timedelta(days=1, hours=12)):
 		badge.efficient += 3
-	elif (diff < timedelta(days=1)):
+	elif (diff > timedelta(days=1)):
 		badge.efficient += 2
-	elif (diff < timedelta(hours=12)):
+	elif (diff > timedelta(hours=12)):
 		badge.efficient += 1
 
 	# Update academic badge
@@ -255,9 +254,7 @@ def update_score(user_id, submission_id, score):
 	elif (scoreInt >= 75):
 		badge.academic += 1
 
-
 	db.session.commit()
-
 	return jsonify({'message': 'Score updated successfully'}), 201
 
 def fetch_score(user_id, submission_id):

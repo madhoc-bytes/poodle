@@ -82,6 +82,8 @@ const StudentDashboard = () => {
         sx={{
           display: "flex",
           flexDirection: "row",
+          height: "calc(100vh - 64px)",
+          position: "relative", // Add position: relative to the parent container
         }}
       >
         <Box
@@ -125,19 +127,19 @@ const StudentDashboard = () => {
           </Box>
         </Box>
         {/* Calendar */}
-        <Box sx={{ width: "50%", height: "100vh" }}>
+        <Box sx={{ width: "50%" }}>
           <DashboardTimeline />
         </Box>
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: "50%",
+            borderLeft: "2px solid black",
+          }}
+        />
       </Box>
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          bottom: 0,
-          left: "50%",
-          borderLeft: "2px solid black",
-        }}
-      />
     </>
   );
 };

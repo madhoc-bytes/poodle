@@ -20,7 +20,7 @@ def register(email, password, first_name, last_name, is_teacher):
 		email=email, 
 		password=password,
 		is_teacher=is_teacher,
-		stars=100
+		stars=0
 	)
 	
 	db.session.add(new_user)

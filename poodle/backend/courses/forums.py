@@ -1,10 +1,9 @@
 from flask import jsonify, send_file
-from models import User, Course, CourseSchema, File, Folder, FolderSchema, Enrolment, ForumPost, ForumPostSchema, ForumReply, ForumReplySchema, db, Badge 
+from models import User, Course, CourseSchema, File, Folder, FolderSchema, Enrolment, ForumPost, ForumPostSchema, ForumReply, ForumReplySchema, Badge, db 
 from datetime import datetime, timedelta
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import os
-
 
 def create(user_id, course_id, title, category, description):
 
@@ -36,26 +35,25 @@ def create(user_id, course_id, title, category, description):
 
 
 def upload_multimedia(user_id, post_id, attachment):
+    
+	user = User.query.get(user_id)
+	if not user:
+		raise Unauthorized('User not found')
 
 	forum_post = ForumPost.query.get(post_id)
-
 	if not forum_post:
 		raise NotFound('Post not found')
-
 	current_time = datetime.now()
 	file = File(folder_id=0, name=attachment.filename, date_created=current_time, file_path='')
 	db.session.add(file)
-	db.session.commit()
-
-	# save locally to fsh content	
+	db.session.commit()	
+ 
+	# save locally to fsh content
 	unique_name = str(file.id)
 	destination = os.path.join(os.getcwd(), 'fsh', unique_name)
 	attachment.save(destination)
-
 	file.file_path = destination
-
 	forum_post.file_id = file.id
-
 	db.session.commit()
 	return jsonify({'message': 'Multimedia successfully uploaded', 'file_id': file.id}), 201
 
@@ -90,7 +88,12 @@ def reply(user_id, forum_post_id, answer):
 	new_forum_reply = ForumReply(forum_post_id=forum_post_id, author_id=user_id, answer=answer, date_posted=current_time)
 	db.session.add(new_forum_reply)
 	db.session.commit()
-	
+ 
+	badge = Badge.query.get(user_id)
+	badge.helpful += 1
+ 
+	db.session.commit()
+
 	return jsonify({'message': 'Forum reply successfully made', 'forum_reply_id': new_forum_reply.id}), 200
 
 def get_posts(user_id, course_id, category, phrase):
