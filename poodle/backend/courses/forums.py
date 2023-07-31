@@ -1,5 +1,5 @@
 from flask import jsonify, send_file
-from models import User, Course, CourseSchema, File, Folder, FolderSchema, Enrolment, ForumPost, ForumPostSchema, ForumReply, ForumReplySchema, db 
+from models import User, Course, CourseSchema, File, Folder, FolderSchema, Enrolment, ForumPost, ForumPostSchema, ForumReply, ForumReplySchema, db, Badge 
 from datetime import datetime, timedelta
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
@@ -82,6 +82,9 @@ def reply(user_id, forum_post_id, answer):
 		enrolment = Enrolment.query.filter_by(user_id=user_id, course_id = course_id).first()
 		if not enrolment:
 			raise Unauthorized('Permission denied: Unauthorised user')
+
+	badge = Badge.query.get(user_id)
+	badge.helpful += 1
 
 	current_time = datetime.now()
 	new_forum_reply = ForumReply(forum_post_id=forum_post_id, author_id=user_id, answer=answer, date_posted=current_time)

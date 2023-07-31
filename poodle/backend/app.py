@@ -488,6 +488,7 @@ def get_attributes():
 
 	return avatar.get_attributes(user_id)
 
+# BADGES
 @app.route('/profile/badges/tallies', methods=['GET'])
 def get_tallies():
 	token = get_token(request)
