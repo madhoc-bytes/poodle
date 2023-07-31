@@ -263,3 +263,18 @@ class Avatar(db.Model):
 class AvatarSchema(ma.SQLAlchemySchema):
 	class Meta:
 		fields = ('user_id', 'attributes', 'curr_attributes')
+
+
+class Badge(db.Model):
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+	efficient = db.Column(db.Integer, default=0, nullable=False)
+	academic = db.Column(db.Integer, default=0, nullable=False)
+	helpful = db.Column(db.Integer, default=0, nullable=False)
+
+	def __init__(self, user_id):
+		self.user_id = user_id
+	
+class BadgeSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('user_id', 'distinguished', 'efficient', 'academic', 'helpful')
+

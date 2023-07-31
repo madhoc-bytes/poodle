@@ -231,6 +231,31 @@ def update_score(user_id, submission_id, score):
 		raise Unauthorized('Invalid Mark')
 	
 	submission.score = scoreInt
+
+
+	badge = Badge.query.get(user_id)
+	
+	# Update efficient badge
+	due_date = assignment.due_date
+	submission_time = submission.submission_time
+
+	diff = due_date - submission_time
+	if (diff < timedelta(days=1, hours=12)):
+		badge.efficient += 3
+	elif (diff < timedelta(days=1)):
+		badge.efficient += 2
+	elif (diff < timedelta(hours=12)):
+		badge.efficient += 1
+
+	# Update academic badge
+	if (scoreInt >= 95):
+		badge.academic += 3
+	elif (scoreInt >= 85):
+		badge.academic += 2
+	elif (scoreInt >= 75):
+		badge.academic += 1
+
+
 	db.session.commit()
 
 	return jsonify({'message': 'Score updated successfully'}), 201

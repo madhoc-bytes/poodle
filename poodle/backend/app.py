@@ -4,6 +4,7 @@ from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
 import courses.quiz as quiz
 import avatar
+import badges
 import courses.assignment as assignment
 import courses.courses as courses
 import courses.content as content
@@ -487,6 +488,30 @@ def get_attributes():
 
 	return avatar.get_attributes(user_id)
 
+@app.route('/profile/badges/tallies', methods=['GET'])
+def get_tallies():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return badges.get_tallies(user_id)
+
+@app.route('/profile/badges/levels', methods=['GET'])
+def get_badge_levels():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return badges.get_badge_levels(user_id)
+
+@app.route('/profile/badges/update', methods=['PUT'])
+def update_badges():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	efficient = request.json['efficient']
+	academic = request.json['academic']
+	helpful = request.json['helpful']
+
+	return badges.update_tallies(user_id, efficient, academic, helpful)
 # HELPERS
 def get_token(request):
 	token = request.headers.get('Authorization')
