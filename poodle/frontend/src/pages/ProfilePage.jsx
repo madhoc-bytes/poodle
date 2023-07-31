@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
-import { Toolbar, Typography, Box } from "@mui/material";
+import {
+  Toolbar,
+  Typography,
+  Box,
+  LinearProgress,
+  Popover,
+  IconButton,
+} from "@mui/material";
 import { useParams } from "react-router";
 import { createAvatar } from "@dicebear/core";
 import { avataaars } from "@dicebear/collection";
+import SchoolIcon from "@mui/icons-material/School";
+import InfoIcon from "@mui/icons-material/Info";
+import MoreTimeIcon from "@mui/icons-material/MoreTime";
+import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 
 const ProfilePage = () => {
   const userId = useParams().userId;
@@ -11,6 +22,11 @@ const ProfilePage = () => {
   const [userDetails, setUserDetails] = useState({});
   const [userAvatar, setUserAvatar] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [badges, setBadges] = useState({
+    academic: 30,
+    efficient: 30,
+    helpful: 25,
+  });
 
   useEffect(() => {
     fetchUserDetails();
@@ -56,6 +72,22 @@ const ProfilePage = () => {
     }
   };
 
+  // State and functions to handle the popover
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [popoverInfo, setPopoverInfo] = useState("hi");
+  const handlePopoverOpen = (event, badge) => {
+    if (badge === "academic")
+      setPopoverInfo("Gained by getting high scores in assignments");
+    else if (badge === "efficient")
+      setPopoverInfo("Gained by handing in work early");
+    else if (badge === "helpful")
+      setPopoverInfo("Gained by replying to forum posts");
+    setAnchorEl(event.currentTarget);
+  };
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <NavBar />
@@ -92,31 +124,215 @@ const ProfilePage = () => {
               style={{ borderRadius: "50%" }}
             />
           </Box>
-          <Box sx={{ display: "flex", flexDirection: "row" }} gap={5}>
-            <Box sx={{ display: "flex", flexDirection: "column" }} gap={2}>
-              {/* Right section: User Details */}
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box sx={{ display: "flex", flexDirection: "row" }} gap={5}>
+              <Box sx={{ display: "flex", flexDirection: "column" }} gap={2}>
+                {/* Right section: User Details */}
 
-              <Typography variant="h6" fontWeight={"bold"}>
-                First Name:
-              </Typography>
-              <Typography variant="h6" fontWeight={"bold"}>
-                Last Name:
-              </Typography>
-              <Typography variant="h6" fontWeight={"bold"}>
-                Email:
-              </Typography>
-              <Typography variant="h6" fontWeight={"bold"}>
-                Role:
-              </Typography>
+                <Typography variant="h6" fontWeight={"bold"}>
+                  First Name:
+                </Typography>
+                <Typography variant="h6" fontWeight={"bold"}>
+                  Last Name:
+                </Typography>
+                <Typography variant="h6" fontWeight={"bold"}>
+                  Email:
+                </Typography>
+                <Typography variant="h6" fontWeight={"bold"}>
+                  Role:
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column" }} gap={2}>
+                <Typography variant="h6">{userDetails.first_name}</Typography>
+                <Typography variant="h6">{userDetails.last_name}</Typography>
+                <Typography variant="h6"> {userDetails.email}</Typography>
+                <Typography variant="h6">
+                  {userDetails.is_teacher ? "Teacher" : "Student"}
+                </Typography>
+              </Box>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: "column" }} gap={2}>
-              <Typography variant="h6">{userDetails.first_name}</Typography>
-              <Typography variant="h6">{userDetails.last_name}</Typography>
-              <Typography variant="h6"> {userDetails.email}</Typography>
-              <Typography variant="h6">
-                {userDetails.is_teacher ? "Teacher" : "Student"}
-              </Typography>
-            </Box>
+            {!userDetails.is_teacher && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  paddingTop: "60px",
+                }}
+                gap={5}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                  gap={2}
+                >
+                  <SchoolIcon
+                    sx={{
+                      fontSize: "100px",
+                      borderRadius: "25%",
+                      boxShadow:
+                        badges.academic > 29
+                          ? `0 0 0 4px #cd7f32, 0 0 0 8px silver, 0 0 0 12px gold`
+                          : Math.floor(badges.academic / 10) === 2
+                          ? `0 0 0 4px #cd7f32, 0 0 0 8px silver`
+                          : Math.floor(badges.academic / 10) === 1
+                          ? `0 0 0 4px #cd7f32`
+                          : "",
+                      marginBottom: "10px",
+                    }}
+                  />
+                  <LinearProgress
+                    variant="determinate"
+                    value={
+                      badges.academic >= 30 ? 100 : (badges.academic % 10) * 10
+                    }
+                    sx={{
+                      width: "200px",
+                      height: "10px",
+                      borderRadius: "10px",
+                      backgroundColor: "lightGrey",
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: "green",
+                      },
+                    }}
+                  />
+                  <Typography variant="h5">
+                    Academic Apex
+                    <IconButton
+                      onClick={(e) => handlePopoverOpen(e, "academic")}
+                      sx={{ marginLeft: 0 }}
+                    >
+                      <InfoIcon sx={{ fontSize: "20px" }} />
+                    </IconButton>
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                  gap={2}
+                >
+                  <MoreTimeIcon
+                    sx={{
+                      fontSize: "100px",
+                      boxShadow:
+                        badges.efficient > 29
+                          ? `0 0 0 4px #cd7f32, 0 0 0 8px silver, 0 0 0 12px gold`
+                          : Math.floor(badges.efficient / 10) === 2
+                          ? `0 0 0 4px #cd7f32, 0 0 0 8px silver`
+                          : Math.floor(badges.efficient / 10) === 1
+                          ? `0 0 0 4px #cd7f32`
+                          : "",
+                      marginBottom: "10px",
+                      borderRadius: "25%",
+                    }}
+                  />
+                  <LinearProgress
+                    variant="determinate"
+                    value={
+                      badges.efficient >= 30
+                        ? 100
+                        : (badges.efficient % 10) * 10
+                    }
+                    sx={{
+                      width: "200px",
+                      height: "10px",
+                      borderRadius: "10px",
+                      backgroundColor: "lightGrey",
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: "green",
+                      },
+                    }}
+                  />
+                  <Typography variant="h5">
+                    Efficient Executor{" "}
+                    <IconButton
+                      onClick={(e) => handlePopoverOpen(e, "efficient")}
+                      sx={{ marginLeft: 0 }}
+                    >
+                      <InfoIcon sx={{ fontSize: "20px" }} />
+                    </IconButton>
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                  gap={2}
+                >
+                  <LocalLibraryIcon
+                    sx={{
+                      fontSize: "100px",
+                      boxShadow:
+                        badges.helpful > 29
+                          ? `0 0 0 4px #cd7f32, 0 0 0 8px silver, 0 0 0 12px gold`
+                          : Math.floor(badges.helpful / 10) === 2
+                          ? `0 0 0 4px #cd7f32, 0 0 0 8px silver`
+                          : Math.floor(badges.helpful / 10) === 1
+                          ? `0 0 0 4px #cd7f32`
+                          : "",
+                      marginBottom: "10px",
+                      borderRadius: "25%",
+                    }}
+                  />
+                  <LinearProgress
+                    variant="determinate"
+                    value={
+                      badges.helpful >= 30 ? 100 : (badges.helpful % 10) * 10
+                    }
+                    sx={{
+                      width: "200px",
+                      height: "10px",
+                      borderRadius: "10px",
+                      backgroundColor: "lightGrey",
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: "green",
+                      },
+                    }}
+                  />
+                  <Typography variant="h5">
+                    Helpful Learner{" "}
+                    <IconButton
+                      onClick={(e) => handlePopoverOpen(e, "helpful")}
+                      sx={{ marginLeft: 0 }}
+                    >
+                      <InfoIcon sx={{ fontSize: "20px" }} />
+                    </IconButton>
+                  </Typography>
+                </Box>
+                <Popover
+                  open={Boolean(anchorEl)}
+                  anchorEl={anchorEl}
+                  onClose={handlePopoverClose}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  PaperProps={{
+                    sx: {
+                      backgroundColor: "black",
+                      color: "white",
+                      display: "flex",
+                      justifyContent: "center",
+                    },
+                  }}
+                >
+                  <Typography variant="p" sx={{ p: 1 }}>
+                    {popoverInfo}
+                  </Typography>
+                </Popover>
+              </Box>
+            )}
           </Box>
         </Box>
       )}
