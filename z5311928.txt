@@ -48,6 +48,30 @@ Week 5
 - Completed and handed in retro A
 
 Week 6
+- Discussed with backend what db should look like for quizzes and assignments and what routes were required
+- Started on assignments frontend using dummy data because backend was not ready
+- Discussed with backend how we would deal with uploading and downloading files
 
+Week 7
+- Andy handed off quiz frontend to me to connect with backend and improve UI
+- Fully completed student and teacher assignments frontend with dummy data - still need to connect to backend
+- Decided that we would store files in a 'fsh' folder in the backend directory and upload and download using routes
 
+Week 8
+- Connected assignments to backend and solved some bugs relating to datetime when backend sends datetimes to frontend
+- Connected quizzes to backend and tested
+- There were some bugs relating to file downloads including the file type not being sent back - fixed those up
+- Planned demo B
+- Executed demo B
+- Held retro after demo B
+- Edited and handed in retro B
+- Assigned Jira stories and points for sprint 3
+- Began discussions for db and routes for sprint 3
 
+Week 9
+- Completed planning for sprint 3 - have a clear view of what db will look like and what routes we are going to use
+- Andy completed functionality for frontend timeline - I completed styling of the timeline
+- Completed styling of frontend for leaderboards and forums
+- Completed frontend for user profiles
+
+Week 10
