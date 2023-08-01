@@ -66,4 +66,11 @@ Planned database and routes for sprint 3 - calender, forums, profile page and le
 Implemented calender and leaderboards functionality for front end. Just need to style for next week.
 
 Week 9
-Implemented forums backend and frontend functionality.
+Implemented fully forums backend and frontend functionality - fairly smooth without problems.
+Fixed some styling for leaderboards and quizzes with pair programming.
+Started planning for project report, splitting up roles, how to structure.
+
+Week 10
+Completed project demo - functionalities, wrote about apis and third party services, reviewed other sections and implementation challenges.
+Minor fixes for website - 
+Plan project demo - splitting up roles, presentation structure, how to talk about technical quality and engineering practice
