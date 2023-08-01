@@ -181,51 +181,66 @@ const StudentCourseLeaderboards = () => {
                       </TableBody>
                     </Table>
                   </TableContainer>
-                  <TableContainer component={Paper} sx={{ marginTop: "100px" }}>
-                    <Table aria-label="customized table">
-                      <TableBody>
-                        <StyledTableRow>
-                          <StyledTableCell
-                            component="th"
-                            scope="row"
-                            align="left"
-                          >
-                            {leaderboards[currLeaderboard].curr_student.rank}
-                          </StyledTableCell>
-                          <StyledTableCell align="left">
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <UserAvatar
-                                userId={
-                                  leaderboards[currLeaderboard].curr_student.id
-                                }
-                                token={token}
-                              />
-                              <Link
-                                sx={{ fontStyle: "none" }}
-                                onClick={() =>
-                                  window.open(
-                                    `/profile/${leaderboards[currLeaderboard].curr_student.id}`
-                                  )
-                                }
+                  {leaderboards[currLeaderboard].curr_student.mark !== -1 &&
+                    leaderboards[currLeaderboard].curr_student.mark && (
+                      <TableContainer
+                        component={Paper}
+                        sx={{ marginTop: "100px" }}
+                      >
+                        <Table aria-label="customized table">
+                          <TableBody>
+                            <StyledTableRow>
+                              <StyledTableCell
+                                component="th"
+                                scope="row"
+                                align="left"
                               >
                                 {
                                   leaderboards[currLeaderboard].curr_student
-                                    .first_name
-                                }{" "}
+                                    .rank
+                                }
+                              </StyledTableCell>
+                              <StyledTableCell align="left">
+                                <Box
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <UserAvatar
+                                    userId={
+                                      leaderboards[currLeaderboard].curr_student
+                                        .id
+                                    }
+                                    token={token}
+                                  />
+                                  <Link
+                                    sx={{ fontStyle: "none" }}
+                                    onClick={() =>
+                                      window.open(
+                                        `/profile/${leaderboards[currLeaderboard].curr_student.id}`
+                                      )
+                                    }
+                                  >
+                                    {
+                                      leaderboards[currLeaderboard].curr_student
+                                        .first_name
+                                    }{" "}
+                                    {
+                                      leaderboards[currLeaderboard].curr_student
+                                        .last_name
+                                    }
+                                  </Link>
+                                </Box>
+                              </StyledTableCell>
+                              <StyledTableCell align="right">
                                 {
                                   leaderboards[currLeaderboard].curr_student
-                                    .last_name
+                                    .mark
                                 }
-                              </Link>
-                            </Box>
-                          </StyledTableCell>
-                          <StyledTableCell align="right">
-                            {leaderboards[currLeaderboard].curr_student.mark}
-                          </StyledTableCell>
-                        </StyledTableRow>
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                              </StyledTableCell>
+                            </StyledTableRow>
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    )}
                 </Box>
               </Box>
             )}
@@ -258,7 +273,7 @@ const StudentCourseLeaderboards = () => {
                   variant="h5"
                   sx={{ color: "black", fontWeight: "bold" }}
                 >
-                  {leaderboards[currLeaderboard].median}
+                  {leaderboards[currLeaderboard].median.toFixed(2)}
                 </Typography>
               </Box>
               <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -281,7 +296,7 @@ const StudentCourseLeaderboards = () => {
                     variant="h5"
                     sx={{ color: "black", fontWeight: "bold" }}
                   >
-                    {leaderboards[currLeaderboard].mean}
+                    {leaderboards[currLeaderboard].mean.toFixed(2)}
                   </Typography>
                 </Box>
               </Box>

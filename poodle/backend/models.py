@@ -276,5 +276,5 @@ class Badge(db.Model):
 	
 class BadgeSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('user_id', 'distinguished', 'efficient', 'academic', 'helpful')
+		fields = ('user_id', 'efficient', 'academic', 'helpful')
 

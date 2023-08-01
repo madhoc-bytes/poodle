@@ -60,13 +60,13 @@ const MyProfilePage = () => {
   const [popoverInfo, setPopoverInfo] = useState("hi");
   const handlePopoverOpen = (event, badge) => {
     if (badge === "academic")
-      setPopoverInfo("Gained by getting high scores in assignments");
+      setPopoverInfo("Gain by getting high scores in assignments");
     else if (badge === "efficient")
-      setPopoverInfo("Gained by handing in work early");
+      setPopoverInfo("Gain by handing in work early");
     else if (badge === "helpful")
-      setPopoverInfo("Gained by replying to forum posts");
+      setPopoverInfo("Gain by replying to forum posts");
     else if (badge === "stars")
-      setPopoverInfo("Stars are gained by completing badges");
+      setPopoverInfo("Gain stars by completing badges");
     setAnchorEl(event.currentTarget);
   };
   const handlePopoverClose = () => {

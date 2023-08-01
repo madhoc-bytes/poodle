@@ -45,8 +45,8 @@ def retrieve(user_id, course_id):
             curr_student_info = {
                 'rank': rank, 
                 'id': user_id, 
-                'first_name': first_name,
-                'last_name': last_name,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
                 'mark': get_student_mark(students_ranked, user_id)
             }
 
@@ -89,8 +89,8 @@ def retrieve(user_id, course_id):
                 curr_student_info = {
                     'rank': rank, 
                     'id': user_id, 
-                    'first_name': first_name,
-                    'last_name': last_name,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
                     'mark': get_student_mark(students_ranked, user_id)
                 }
     

@@ -360,7 +360,10 @@ const CourseForums = () => {
           setCurrPostId(post.post_id);
         }} // Add click event listener
       >
-        <Typography variant="h6" sx={{ textOverflow: "clip" }}>
+        <Typography
+          variant="h6"
+          sx={{ textOverflow: "clip", whiteSpace: "nowrap" }}
+        >
           {post.title}
         </Typography>
         <Box
@@ -540,7 +543,7 @@ const CourseForums = () => {
                     padding: "30px 30px 10px 30px",
                   }}
                 >
-                  <Typography variant="h3" sx={{ marginBottom: "10px" }}>
+                  <Typography variant="h4" sx={{ marginBottom: "10px" }}>
                     {currPost.title}
                   </Typography>
                   <Box

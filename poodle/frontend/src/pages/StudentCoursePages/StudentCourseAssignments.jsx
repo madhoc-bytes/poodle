@@ -81,14 +81,6 @@ const StudentCourseAssignments = () => {
       alert("Please select an assignment.");
       return;
     }
-    // this.setTime(this.getTime() + h * 60 * 60 * 1000);
-    // if (
-    //   assignments.find((a) => a["id"] === selectedAssignmentId).due_date <
-    //   new Date(Date.now() - 10 * 60 * 60 * 1000)
-    // ) {
-    //   alert("NO BITCH");
-    //   return;
-    // }
 
     const formData = new FormData();
     formData.append("file", selectedFile);
@@ -207,14 +199,17 @@ const StudentCourseAssignments = () => {
                     {assignment.max_marks}
                   </Typography>
                   <br />
-                  {isAssignmentOverdue(assignment.due_date) ? (
+                  {isAssignmentOverdue(assignment.due_date) ||
+                  assignment.score ? (
                     <Button
                       variant="contained"
                       color="secondary"
                       onClick={() => handleOpenModal(assignment.id)}
                       disabled
                     >
-                      Past due date
+                      {isAssignmentOverdue(assignment.due_date)
+                        ? "Past due date"
+                        : "Graded"}
                     </Button>
                   ) : assignment.submitted === true ? (
                     <Button

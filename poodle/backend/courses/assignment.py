@@ -30,7 +30,7 @@ def create(user_id, course_id, title, description, due_date, max_marks):
 	
 	due_datetime = datetime.strptime(due_date, '%Y-%m-%dT%H:%M')
 
-	new_assignment = Assignment(course_id=course_id, title=title,description=description, due_date=due_datetime, max_marks=max_marks)
+	new_assignment = Assignment(course_id=course_id, title=title, description=description, due_date=due_datetime, max_marks=max_marks)
 
 	db.session.add(new_assignment)
 	db.session.commit()
@@ -91,7 +91,9 @@ def upload_spec(user_id, assignment_id, spec_file):
 		current_time = datetime.now()
 		file.date_created = current_time
 		file.name = spec_file.filename
-		db.session.commit()	
+		assignment.spec_name = file.name
+  
+		db.session.commit()
 		return jsonify({'message': 'Assignment spec successfully updated', 'file_id': file.id}), 201
 
 # get assignments 
@@ -238,7 +240,7 @@ def update_score(user_id, submission_id, score):
 	# Update efficient badge
 	due_date = assignment.due_date
 	submission_time = submission.submission_time
-	prev = badge.efficent
+	prev = badge.efficient
 	diff = due_date - submission_time
 	if (diff > timedelta(days=1, hours=12)):
 		badge.efficient += 3

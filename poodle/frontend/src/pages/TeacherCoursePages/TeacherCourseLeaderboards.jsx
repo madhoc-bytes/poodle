@@ -18,10 +18,12 @@ import {
   TableCell,
   tableCellClasses,
   TableBody,
+  Link,
 } from "@mui/material";
 import NavBar from "../../components/NavBar";
 import { useParams } from "react-router-dom";
 import CourseSidebar from "../../components/CourseSidebar";
+import UserAvatar from "../../components/UserAvatar";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -153,7 +155,22 @@ const TeacherCourseLeaderboards = () => {
                                 {index + 1}
                               </StyledTableCell>
                               <StyledTableCell align="left">
-                                {student.first_name} {student.last_name}
+                                <Box
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <UserAvatar
+                                    userId={student.id}
+                                    token={token}
+                                  />
+                                  <Link
+                                    sx={{ fontStyle: "none" }}
+                                    onClick={() =>
+                                      window.open(`/profile/${student.id}`)
+                                    }
+                                  >
+                                    {student.first_name} {student.last_name}
+                                  </Link>
+                                </Box>
                               </StyledTableCell>
                               <StyledTableCell align="right">
                                 {student.mark}
@@ -196,7 +213,7 @@ const TeacherCourseLeaderboards = () => {
                   variant="h5"
                   sx={{ color: "black", fontWeight: "bold" }}
                 >
-                  {leaderboards[currLeaderboard].median}
+                  {leaderboards[currLeaderboard].median.toFixed(2)}
                 </Typography>
               </Box>
               <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -219,7 +236,7 @@ const TeacherCourseLeaderboards = () => {
                     variant="h5"
                     sx={{ color: "black", fontWeight: "bold" }}
                   >
-                    {leaderboards[currLeaderboard].mean}
+                    {leaderboards[currLeaderboard].mean.toFixed(2)}
                   </Typography>
                 </Box>
               </Box>
