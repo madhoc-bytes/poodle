@@ -4,6 +4,9 @@ from datetime import datetime, timedelta
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import badges
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import os
 
 def create(user_id, course_id, title, category, description):
@@ -32,11 +35,19 @@ def create(user_id, course_id, title, category, description):
 	db.session.add(new_forum_post)
 	db.session.commit()
 
+	enrolments = Enrolment.query.filter_by(course_id=course_id).all()
+	emails = [User.query.get(enrolment['user_id']).email for enrolment in enrolments]
+
+	subject = 'New Forum Post in ' + course.name
+	content = "A new post has been created in the forums for " + course.name + ". Check Poodle to stay on top of your educational experience!"
+
+	send_email(emails, subject, content)
+
 	return jsonify({'message': 'Forum post successfully created', 'post_id': new_forum_post.id}), 200
 
 
 def upload_multimedia(user_id, post_id, attachment):
-    
+	
 	user = User.query.get(user_id)
 	if not user:
 		raise Unauthorized('User not found')
@@ -198,3 +209,33 @@ def get_post_replies(user_id, course_id, post_id):
 
 	return jsonify(result), 200
 
+def send_email(recipient_emails, subject, content):
+	try:
+		# Create a connection to the SMTP server
+		smtp_server = 'smtp.gmail.com'
+		smtp_port = 587
+		smtp_connection = smtplib.SMTP(smtp_server, smtp_port)
+		smtp_connection.ehlo()
+		smtp_connection.starttls()
+
+		# Log in to the sender's email account
+		sender_email = 'poodle3900@gmail.com'
+		sender_password = 'poodle123!'
+	
+		smtp_connection.login(sender_email, sender_password)
+
+		# Create the email message
+		msg = MIMEMultipart()
+		msg['From'] = sender_email
+		msg['To'] = ', '.join(recipient_emails)
+		msg['Subject'] = subject
+		msg.attach(MIMEText(content, 'plain'))
+
+		# Send the email
+		smtp_connection.sendmail(sender_email, recipient_emails, msg.as_string())
+		print("Email sent successfully!")
+
+		# Close the SMTP connection
+		smtp_connection.quit()
+	except Exception as e:
+		print("Failed to send email:", e)
