@@ -7,6 +7,7 @@ import SmartToyIcon from "@mui/icons-material/SmartToy";
 import { ListItemText, Typography } from "@mui/material";
 import { createAvatar } from "@dicebear/core";
 import { avataaars } from "@dicebear/collection";
+import chatBotImage from "../assets/chatBotImage.png";
 
 const theme = {
   background: "lightGrey",
@@ -262,6 +263,7 @@ const CourseChatbot = ({ courseId }) => {
             <ChatBot
               steps={steps}
               userAvatar={createAvatar(avataaars, userAvatar).toDataUriSync()}
+              botAvatar={chatBotImage}
             />
           </ThemeProvider>
         </Box>

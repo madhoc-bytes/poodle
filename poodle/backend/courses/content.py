@@ -55,10 +55,10 @@ def create_file(file_name, user_id, folder_id, file):
 	folder = Folder.query.get(folder_id)
 	course = Course.query.get(folder.course_id)
 	enrolments = Enrolment.query.filter_by(course_id=course.id).all()
-	emails = [User.query.get(enrolment['user_id']).email for enrolment in enrolments]
+	emails = [User.query.get(enrolment.user_id).email for enrolment in enrolments]
 
-	subject = 'New Content Uploaded to' + course.name
-	content = "New content has been uploaded to your course " + course.name + ". Check Poodle to stay on top of your educational experience!"
+	subject = 'New Teaching Content Uploaded to ' + course.name
+	content = "New teaching content has been added to your course " + course.name + ". Check Poodle to stay on top of your educational experience!"
 
 	send_email(emails, subject, content)
 	return jsonify({'message': 'File uploaded successfully', 'file_id' : new_file.id}), 200
@@ -110,8 +110,8 @@ def send_email(recipient_emails, subject, content):
 		smtp_connection.starttls()
 
 		# Log in to the sender's email account
-		sender_email = 'poodle3900@gmail.com'
-		sender_password = 'poodle123!'
+		sender_email = 'mechypoodle@gmail.com'
+		sender_password = 'hcmechpqxpxxznwo'
 	
 		smtp_connection.login(sender_email, sender_password)
 

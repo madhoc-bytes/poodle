@@ -36,10 +36,10 @@ def create(user_id, course_id, title, category, description):
 	db.session.commit()
 
 	enrolments = Enrolment.query.filter_by(course_id=course_id).all()
-	emails = [User.query.get(enrolment['user_id']).email for enrolment in enrolments]
+	emails = [User.query.get(enrolment.user_id).email for enrolment in enrolments]
 
 	subject = 'New Forum Post in ' + course.name
-	content = "A new post has been created in the forums for " + course.name + ". Check Poodle to stay on top of your educational experience!"
+	content = "A new post titled " + title + " has been created in the forum for " + course.name + ". Check Poodle to stay on top of your educational experience!"
 
 	send_email(emails, subject, content)
 
@@ -219,8 +219,8 @@ def send_email(recipient_emails, subject, content):
 		smtp_connection.starttls()
 
 		# Log in to the sender's email account
-		sender_email = 'poodle3900@gmail.com'
-		sender_password = 'poodle123!'
+		sender_email = 'mechypoodle@gmail.com'
+		sender_password = 'hcmechpqxpxxznwo'
 	
 		smtp_connection.login(sender_email, sender_password)
 
