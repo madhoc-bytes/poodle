@@ -4,6 +4,7 @@ from .content import get_file
 from datetime import datetime, timedelta
 from variables import secret_key
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
+import badges
 import os
 
 def create(user_id, course_id, title, description, due_date, max_marks):
@@ -29,7 +30,7 @@ def create(user_id, course_id, title, description, due_date, max_marks):
 	
 	due_datetime = datetime.strptime(due_date, '%Y-%m-%dT%H:%M')
 
-	new_assignment = Assignment(course_id=course_id, title=title,description=description, due_date=due_datetime, max_marks=max_marks)
+	new_assignment = Assignment(course_id=course_id, title=title, description=description, due_date=due_datetime, max_marks=max_marks)
 
 	db.session.add(new_assignment)
 	db.session.commit()
@@ -90,7 +91,9 @@ def upload_spec(user_id, assignment_id, spec_file):
 		current_time = datetime.now()
 		file.date_created = current_time
 		file.name = spec_file.filename
-		db.session.commit()	
+		assignment.spec_name = file.name
+  
+		db.session.commit()
 		return jsonify({'message': 'Assignment spec successfully updated', 'file_id': file.id}), 201
 
 # get assignments 
@@ -231,8 +234,36 @@ def update_score(user_id, submission_id, score):
 		raise Unauthorized('Invalid Mark')
 	
 	submission.score = scoreInt
-	db.session.commit()
 
+	badge = Badge.query.get(Submission.query.get(submission_id).student_id)
+	
+	# Update efficient badge
+	due_date = assignment.due_date
+	submission_time = submission.submission_time
+	prev = badge.efficient
+	diff = due_date - submission_time
+	if (diff > timedelta(days=1, hours=12)):
+		badge.efficient += 3
+	elif (diff > timedelta(days=1)):
+		badge.efficient += 2
+	elif (diff > timedelta(hours=12)):
+		badge.efficient += 1
+	curr = badge.efficient
+	badges.check_tallies(badge.user_id, prev, curr)
+
+	prev = badge.academic
+	# Update academic badge
+	if (scoreInt >= 95):
+		badge.academic += 3
+	elif (scoreInt >= 85):
+		badge.academic += 2
+	elif (scoreInt >= 75):
+		badge.academic += 1
+
+	curr = badge.academic
+	badges.check_tallies(badge.user_id, prev, curr)
+
+	db.session.commit()
 	return jsonify({'message': 'Score updated successfully'}), 201
 
 def fetch_score(user_id, submission_id):

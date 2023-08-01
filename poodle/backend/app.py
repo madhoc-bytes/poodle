@@ -2,11 +2,18 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 import auth
-import quiz
+import courses.quiz as quiz
+import avatar
+import badges as badges
 import courses.assignment as assignment
 import courses.courses as courses
 import courses.content as content
 import courses.classes as classes
+import courses.leaderboards as leaderboards
+import courses.forums as forums
+import profiles as profile
+import timeline
+
 import validate as v
 
 # init app
@@ -218,21 +225,13 @@ def update_score(submission_id):
 	return assignment.update_score(user_id, submission_id, score)
 
 @app.route('/courses/assignments/score/<int:submission_id>', methods=['GET']) 
-def fetch_score(submission_id): #TODO: probs wont need this route
+def fetch_score(submission_id): 
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
 	return assignment.fetch_score(user_id, submission_id)
 
-# HELPERS
-def get_token(request):
-	token = request.headers.get('Authorization')
-	if not token:
-		raise Unauthorized('Authorization token missing')
-	else:
-		return token
-
-# QUIZ
+# QUIZZES
 @app.route('/courses/<int:course_id>/quiz/create', methods=['POST'])
 def create_quiz(course_id):
 	token = get_token(request)
@@ -336,5 +335,186 @@ def submit_quiz(quiz_id):
 
 	return quiz.submit_quiz(user_id, quiz_id)
 
+# LEADERBOARD
+@app.route('/courses/<int:course_id>/leaderboards', methods=['GET'])
+def get_leaderboards(course_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return leaderboards.retrieve(user_id, course_id)
+
+# TIMELINE
+@app.route('/dashboard/timeline', methods=['GET'])
+def dashboard_timeline():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return timeline.retrieve(user_id)
+
+# FORUMS
+@app.route('/courses/<int:course_id>/forums/post-forum', methods=['POST'])
+def create_forum_post(course_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	title = request.json['title']
+	category = request.json['category']
+	description = request.json['description']
+
+	return forums.create(user_id, course_id, title, category, description)
+
+@app.route('/courses/forums/post/<int:post_id>/attach-file', methods=['PUT'])
+def upload_forum_multimedia(post_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	attachment = request.files['file']
+	return forums.upload_multimedia(user_id, post_id, attachment)
+
+
+@app.route('/courses/forums/<int:forum_post_id>/post-answer', methods=['POST'])
+def reply_forum_post(forum_post_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	answer = request.json['answer']
+
+	return forums.reply(user_id, forum_post_id, answer)
+
+
+#TODO: Check if phrase is empty/null (if so, return all results under category and course_id)
+#TODO: If category = 'all', return everything, otherwise filter on category 
+@app.route('/courses/<int:course_id>/forums/category/<string:category>/search/', methods=['GET'])
+@app.route('/courses/<int:course_id>/forums/category/<string:category>/search/<string:phrase>', methods=['GET'])
+def get_forum_posts(course_id, category, phrase=None):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	print('phrase: ', phrase)
+	print('category: ', category)
+
+	return forums.get_posts(user_id, course_id, category, phrase)
+
+
+#TODO: ensure user is part of the course, ensure post is part of the course
+#TODO: post.course_id = course_id
+@app.route('/courses/<int:course_id>/forums/post/<int:post_id>', methods=['GET'])
+def get_forum_post_replies(course_id, post_id):
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return forums.get_post_replies(user_id, course_id, post_id)
+
+# Profile
+@app.route('/profile/edit', methods=['PUT'])
+def edit_profile():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	first_name = request.json['firstName']
+	last_name = request.json['lastName']
+	password = request.json['password']
+
+	return profile.edit(user_id, first_name, last_name, password)
+
+@app.route('/profile/stars', methods=['GET'])
+def get_stars():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return profile.get_stars(user_id)
+
+@app.route('/profile/stars/add', methods=['PUT'])
+def add_stars():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	stars = request.json['stars']
+
+	return profile.add_star(user_id, stars)
+
+@app.route('/profile/info', methods=['GET'])
+def get_my_info():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return profile.get_info(user_id)
+
+@app.route('/profile/info/<int:user_id>', methods=['GET'])
+def get_user_info(user_id):
+	token = get_token(request)
+	v.validate_token(token)
+
+	return profile.get_info(user_id)
+
+# AVATAR
+@app.route('/profile/avatar/preview', methods=['GET'])
+def get_avatar_preview():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return avatar.get_avatar_preview(user_id)
+     
+@app.route('/profile/avatar/preview/<int:user_id>', methods=['GET'])
+def get_target_avatar(user_id):
+	token = get_token(request)
+	v.validate_token(token)
+
+	return avatar.get_avatar_preview(user_id)
+
+@app.route('/profile/avatar/unlock', methods=['PUT'])
+def unlock_attribute():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	attribute = request.json['attribute']
+	style = request.json['style']
+
+	return avatar.unlock_attribute(user_id, attribute, style)
+
+@app.route('/profile/avatar/update', methods=['PUT'])
+def update_avatar():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	attributes = request.json['attributes']
+
+	return avatar.update_avatar(user_id, attributes)
+
+@app.route('/profile/avatar/attributes', methods=['GET'])
+def get_attributes():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return avatar.get_attributes(user_id)
+
+# BADGES
+@app.route('/profile/badges/tallies', methods=['GET'])
+def get_tallies():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	return badges.get_tallies(user_id)
+
+
+@app.route('/profile/badges/update', methods=['PUT'])
+def update_badges():
+	token = get_token(request)
+	user_id = v.validate_token(token)
+
+	efficient = request.json['efficient']
+	academic = request.json['academic']
+	helpful = request.json['helpful']
+
+	return badges.update_tallies(user_id, efficient, academic, helpful)
+
+# HELPERS
+def get_token(request):
+	token = request.headers.get('Authorization')
+	if not token:
+		raise Unauthorized('Authorization token missing')
+	else:
+		return token
+
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(host="0.0.0.0", port=5000, debug=True)

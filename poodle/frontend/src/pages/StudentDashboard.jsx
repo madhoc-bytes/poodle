@@ -9,10 +9,11 @@ import {
   TextField,
   Button,
   Alert,
+  Toolbar,
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
+import DashboardTimeline from "../components/DashboardTimeline";
 
 const styles = {
   container: {
@@ -23,7 +24,7 @@ const styles = {
   card: {
     width: "150px",
     height: "150px",
-    margin: "5px",
+    margin: "14px",
     transition: "all 0.15s ease-in-out",
     cursor: "pointer",
     "&:hover": {
@@ -76,32 +77,69 @@ const StudentDashboard = () => {
   return (
     <>
       <NavBar />
-      <Container maxWidth="sm">
-        <Typography variant="h3" component="h1" align="center" gutterBottom>
-          Courses
-        </Typography>
+      <Toolbar />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          height: "calc(100vh - 64px)",
+          position: "relative", // Add position: relative to the parent container
+        }}
+      >
         <Box
-          sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+          sx={{
+            display: "flex",
+            margin: "20px 30px",
+            width: "50%",
+            flexDirection: "column",
+          }}
         >
-          {courses.map((course) => (
-            <Card
-              key={course.id}
-              sx={styles.card}
-              onClick={() => handleCardClick(course.id)}
-            >
-              <CardContent
-                sx={{
-                  wordWrap: "break-word",
-                }}
+          <Box>
+            {/* Courses */}
+            <Typography variant="h3" component="h1" align="center" gutterBottom>
+              Courses
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignContent: "center",
+            }}
+          >
+            {courses.map((course) => (
+              <Card
+                key={course.id}
+                sx={styles.card}
+                onClick={() => handleCardClick(course.id)}
               >
-                <Typography variant="h7" component="div">
-                  <strong>{course.name}</strong>
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
+                <CardContent
+                  sx={{
+                    wordWrap: "break-word",
+                  }}
+                >
+                  <Typography variant="h7" component="div">
+                    <strong>{course.name}</strong>
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
         </Box>
-      </Container>
+        {/* Calendar */}
+        <Box sx={{ width: "50%" }}>
+          <DashboardTimeline />
+        </Box>
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: "50%",
+            borderLeft: "2px solid black",
+          }}
+        />
+      </Box>
     </>
   );
 };

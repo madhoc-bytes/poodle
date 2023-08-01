@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from sqlalchemy.orm import relationship
-from sqlalchemy import LargeBinary
+from sqlalchemy import LargeBinary, PickleType
 from sqlalchemy.ext.mutable import MutableDict, MutableList
 
 db = SQLAlchemy()
@@ -26,13 +26,15 @@ class User(db.Model):
 	email = db.Column(db.String(120), unique=True, nullable=False)
 	password = db.Column(db.String(100), nullable=False)
 	is_teacher = db.Column(db.Boolean, default=False, nullable=False)
+	stars = db.Column(db.Integer, default=0, nullable=False)
 
-	def __init__(self, first_name, last_name, email, password, is_teacher):
+	def __init__(self, first_name, last_name, email, password, is_teacher, stars):
 		self.first_name = first_name
 		self.last_name = last_name
 		self.email = email
 		self.password = password
 		self.is_teacher = is_teacher
+		self.stars = stars
 
 
 class Course(db.Model):
@@ -42,10 +44,29 @@ class Course(db.Model):
 	online_classes = relationship('OnlineClass', backref='course', cascade='all, delete-orphan')
 	folders = relationship('Folder', backref='course', cascade='all, delete-orphan')
 	assignments = relationship('Assignment', backref='course', cascade='all, delete-orphan')
+	quizzes = relationship('Quiz', backref='course', cascade='all, delete-orphan')
+	forum_posts = relationship('ForumPost', backref='course', cascade='all, delete-orphan')
 
 	def __init__(self, name, creator):
 		self.name = name
 		self.creator = creator
+
+class Quiz(db.Model):
+	quiz_id = db.Column(db.Integer, primary_key=True)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+	due_date = db.Column(db.DateTime, nullable=False)
+	name = db.Column(db.String(100), nullable=False)
+	questions = db.Column(MutableList.as_mutable(db.JSON), default=list)
+	time_limit = db.Column(db.Integer, nullable=False)
+	is_deployed = db.Column(db.Boolean, default=False, nullable=False)
+
+	def __init__(self, course_id, due_date, name, questions, time_limit, is_deployed):
+		self.course_id = course_id
+		self.due_date = due_date
+		self.name = name
+		self.questions = questions
+		self.time_limit = time_limit
+		self.is_deployed = is_deployed
 
 class Assignment(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -132,9 +153,47 @@ class OnlineClass(db.Model):
 		self.course_id = course_id
 		self.name = name
 
+# FRONTEND PROVIDES: COURSE_ID, DESCRIPTION, CATEGORY, ATTACHMENT, TITLE
+class ForumPost(db.Model):
+	__tablename__ = 'forumpost'
+	id = db.Column(db.Integer, primary_key=True)
+	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+	title = db.Column(db.String(100), nullable=False)
+	category = db.Column(db.String(1000), nullable=False)
+	author_id = db.Column(db.Integer, nullable=False)
+	file_id = db.Column(db.Integer, nullable=True)
+	description = db.Column(db.Integer, nullable=False)
+	date_posted = db.Column(db.DateTime, nullable=False)
+	replies = relationship('ForumReply', backref='forumpost', lazy=True, cascade='all, delete-orphan')
+
+	def __init__(self, course_id, title, category, author_id, description, date_posted):
+		self.course_id = course_id
+		self.title = title
+		self.category = category
+		self.author_id = author_id
+		self.description = description
+		self.date_posted = date_posted
+
+class ForumReply(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	forum_post_id = db.Column(db.Integer, db.ForeignKey('forumpost.id'), nullable=False)
+	author_id = db.Column(db.Integer, nullable=False)
+	answer = db.Column(db.String(1000), nullable=False)
+	date_posted = db.Column(db.DateTime, nullable=False)
+
+	def __init__(self, forum_post_id, author_id, answer, date_posted):
+		self.forum_post_id = forum_post_id
+		self.author_id = author_id
+		self.answer = answer
+		self.date_posted = date_posted
+
+class ForumPostSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('id', 'course_id', 'title', 'category', 'author_id', 'file_id', 'description', 'date_posted')	
+
 class UserSchema(ma.SQLAlchemySchema):
 	class Meta:
-		fields = ('id', 'first_name', 'last_name', 'email', 'is_teacher')
+		fields = ('id', 'first_name', 'last_name', 'email', 'is_teacher', 'stars')
 
 class FileSchema(ma.SQLAlchemyAutoSchema):
 	class Meta:
@@ -164,28 +223,10 @@ class OnlineClassSchema(ma.SQLAlchemySchema):
 		model = OnlineClass
 		fields = ('id', 'name','course_id')
 
-class Quiz(db.Model):
-	quiz_id = db.Column(db.Integer, primary_key=True)
-	course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-	due_date = db.Column(db.DateTime, nullable=False)
-	name = db.Column(db.String(100), nullable=False)
-	questions = db.Column(MutableList.as_mutable(db.JSON), default=list)
-	time_limit = db.Column(db.Integer, nullable=False)
-	is_deployed = db.Column(db.Boolean, default=False, nullable=False)
-
-	def __init__(self, course_id, due_date, name, questions, time_limit, is_deployed):
-		self.course_id = course_id
-		self.due_date = due_date
-		self.name = name
-		self.questions = questions
-		self.time_limit = time_limit
-		self.is_deployed = is_deployed
-
 class QuizSchema(ma.SQLAlchemySchema):
 	class Meta:
 		model = Quiz
 		fields = ('quiz_id', 'course_id', 'due_date', 'name', 'questions', 'time_limit', 'is_deployed')
-
 
 class QuizScore(db.Model):
 	quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.quiz_id'), primary_key=True)
@@ -204,4 +245,36 @@ class QuizScore(db.Model):
 class QuizScoreSchema(ma.SQLAlchemySchema):
 	class Meta:
 		fields = ('quiz_id', 'user_id', 'time_started', 'score')
+
+class ForumReplySchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('forum_id', 'author_id', 'answer', 'date_posted')	
+
+class Avatar(db.Model):
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+	attributes = db.Column(MutableDict.as_mutable(db.JSON), default=dict)
+	curr_attributes = db.Column(MutableDict.as_mutable(db.JSON), default=dict)
+
+	def __init__(self, user_id, attributes, curr_attributes):
+		self.user_id = user_id
+		self.attributes = attributes
+		self.curr_attributes = curr_attributes
+
+class AvatarSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('user_id', 'attributes', 'curr_attributes')
+
+
+class Badge(db.Model):
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+	efficient = db.Column(db.Integer, default=0, nullable=False)
+	academic = db.Column(db.Integer, default=0, nullable=False)
+	helpful = db.Column(db.Integer, default=0, nullable=False)
+
+	def __init__(self, user_id):
+		self.user_id = user_id
+	
+class BadgeSchema(ma.SQLAlchemySchema):
+	class Meta:
+		fields = ('user_id', 'efficient', 'academic', 'helpful')
 

@@ -11,7 +11,7 @@ const itemsList = [
   "Quizzes",
   "Assignments",
   "Forums",
-  "Leaderboard",
+  "Leaderboards",
 ];
 
 const CourseSidebar = () => {

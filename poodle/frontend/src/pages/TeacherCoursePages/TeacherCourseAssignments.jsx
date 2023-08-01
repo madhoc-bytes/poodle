@@ -23,7 +23,6 @@ import {
 import NavBar from "../../components/NavBar";
 import CourseSidebar from "../../components/CourseSidebar";
 import { useParams } from "react-router";
-import { useNavigate } from "react-router-dom";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -214,7 +213,6 @@ const TeacherCourseAssignments = () => {
         console.log("ERROR");
       } else {
         console.log("success");
-        // }
       }
     }
   };
@@ -246,7 +244,7 @@ const TeacherCourseAssignments = () => {
       <CourseSidebar />
       <Box
         sx={{
-          p: 5,
+          p: 3,
           flexGrow: "1",
         }}
       >
@@ -341,7 +339,6 @@ const TeacherCourseAssignments = () => {
           open={openModal}
           onClose={handleCloseModal}
           TransitionComponent={Transition}
-          sx={{ borderRadius: "50px" }}
         >
           <DialogTitle
             sx={{

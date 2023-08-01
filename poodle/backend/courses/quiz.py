@@ -67,7 +67,7 @@ def update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit, questions):
 		quiz.name = quiz_name
 	
 	if due_date:
-		if len(due_date) is 16:
+		if len(due_date) == 16:
 			quiz.due_date = datetime.strptime(due_date, '%Y-%m-%dT%H:%M')
 		else:
 			quiz.due_date = datetime.strptime(due_date, '%Y-%m-%dT%H:%M:%S')

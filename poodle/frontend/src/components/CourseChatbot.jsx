@@ -2,26 +2,27 @@ import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
 import React, { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
-import CommentIcon from "@mui/icons-material/Comment";
 import Box from "@mui/material/Box";
-import AccessibleForwardIcon from "@mui/icons-material/AccessibleForward";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
-import { BrowserRouter, Link } from "react-router-dom";
 import { ListItemText, Typography } from "@mui/material";
+import { createAvatar } from "@dicebear/core";
+import { avataaars } from "@dicebear/collection";
+import chatBotImage from "../assets/chatBotImage.png";
 
 const theme = {
-  background: "#bde0fe",
-  headerBgColor: "#cdb4db",
+  background: "lightGrey",
+  headerBgColor: "rgb(149,117,222)",
   headerFontSize: "20px",
-  botBubbleColor: "#ffafcc",
+  botBubbleColor: "grey",
   headerFontColor: "white",
   botFontColor: "white",
-  userBubbleColor: "#ffc8dd",
+  userBubbleColor: "rgb(149,117,222)",
   userFontColor: "white",
 };
 
 const CourseChatbot = ({ courseId }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [userAvatar, setUserAvatar] = useState({});
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -207,14 +208,44 @@ const CourseChatbot = ({ courseId }) => {
     },
   ];
 
+  useEffect(() => {
+    fetchAvatar();
+  }, []);
+
+  const fetchAvatar = async () => {
+    const response = await fetch(
+      new URL(`/profile/avatar/preview`, "http://localhost:5000"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    const data = await response.json();
+    if (data.error) {
+      console.log("ERROR");
+    } else {
+      setUserAvatar(data);
+      console.log(data);
+    }
+  };
+
   return (
     <>
-      <Box sx={{ position: "fixed", bottom: 16, right: 16, zindex: 9999 }}>
+      <Box
+        sx={{ position: "fixed", bottom: "50px", right: "50px", zindex: 9999 }}
+      >
         <IconButton
           onClick={toggleChat}
-          sx={{ backgroundColor: "#ffafcc", height: "70px", width: "70px" }}
+          sx={{
+            backgroundColor: "rgb(149,117,222)",
+            height: "100px",
+            width: "100px",
+          }}
         >
-          <SmartToyIcon sx={{ color: "white", fontSize: 50 }} />
+          <SmartToyIcon sx={{ color: "white", fontSize: 70 }} />
         </IconButton>
       </Box>
       {isChatOpen && (
@@ -229,7 +260,11 @@ const CourseChatbot = ({ courseId }) => {
           }}
         >
           <ThemeProvider theme={theme}>
-            <ChatBot steps={steps} />
+            <ChatBot
+              steps={steps}
+              userAvatar={createAvatar(avataaars, userAvatar).toDataUriSync()}
+              botAvatar={chatBotImage}
+            />
           </ThemeProvider>
         </Box>
       )}

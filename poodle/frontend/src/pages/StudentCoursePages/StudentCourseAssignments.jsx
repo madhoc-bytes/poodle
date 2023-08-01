@@ -81,14 +81,6 @@ const StudentCourseAssignments = () => {
       alert("Please select an assignment.");
       return;
     }
-    // this.setTime(this.getTime() + h * 60 * 60 * 1000);
-    // if (
-    //   assignments.find((a) => a["id"] === selectedAssignmentId).due_date <
-    //   new Date(Date.now() - 10 * 60 * 60 * 1000)
-    // ) {
-    //   alert("NO BITCH");
-    //   return;
-    // }
 
     const formData = new FormData();
     formData.append("file", selectedFile);
@@ -152,7 +144,7 @@ const StudentCourseAssignments = () => {
       <CourseSidebar />
       <Box
         sx={{
-          p: 5,
+          p: 3,
           flexGrow: "1",
         }}
       >
@@ -177,7 +169,7 @@ const StudentCourseAssignments = () => {
               <Card
                 sx={{
                   width: "400px",
-                  height: "200px",
+                  minHeight: "200px",
                   borderRadius: "20px",
                   boxShadow:
                     "0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5)",
@@ -207,14 +199,17 @@ const StudentCourseAssignments = () => {
                     {assignment.max_marks}
                   </Typography>
                   <br />
-                  {isAssignmentOverdue(assignment.due_date) ? (
+                  {isAssignmentOverdue(assignment.due_date) ||
+                  assignment.score ? (
                     <Button
                       variant="contained"
                       color="secondary"
                       onClick={() => handleOpenModal(assignment.id)}
                       disabled
                     >
-                      Past due date
+                      {isAssignmentOverdue(assignment.due_date)
+                        ? "Past due date"
+                        : "Graded"}
                     </Button>
                   ) : assignment.submitted === true ? (
                     <Button
