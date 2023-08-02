@@ -18,7 +18,7 @@ def retrieve(student_id):
             if assignment.due_date > datetime.now():
                 res.append({'title': assignment.title, 'type': 'Assignments', 'course_id': course.id, 'course_name': course.name, 'due_date': assignment.due_date})
         for quiz in course.quizzes:
-            if quiz.due_date > datetime.now():
+            if quiz.due_date > datetime.now() and quiz.is_deployed:
                 res.append({'title': quiz.name, 'type': 'Quizzes', 'course_id': course.id, 'course_name': course.name, 'due_date': quiz.due_date})
     
     sorted_list = sorted(res, key=lambda x: x['due_date'])
