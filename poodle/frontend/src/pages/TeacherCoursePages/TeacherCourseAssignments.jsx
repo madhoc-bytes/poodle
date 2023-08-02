@@ -213,6 +213,7 @@ const TeacherCourseAssignments = () => {
         console.log("ERROR");
       } else {
         console.log("success");
+        fetchAssignments();
       }
     }
   };
