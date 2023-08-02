@@ -48,10 +48,29 @@ def handle_not_found(e):
 	response.status_code = e.code
 	return response
 
-# app decorators
+# APP DECORATORS
+############################################################################################################
 # AUTH
 @app.route('/register', methods=['POST'])
+
 def register():
+	'''
+    Register a new user account.
+    
+    Body:
+		JSON data containing the following fields:
+        	{ "firstName", "lastName", "email", "password", "isTeacher" }
+		
+	Parameters:
+		None
+
+    Returns:
+		User object, HTTP status code.
+	    
+	Raises:
+		BadRequest: If the provided email already exists in the database.
+		InternalServerError: If there was an issue while creating the user in the database.
+	'''
 	first_name, last_name = request.json['firstName'], request.json['lastName']
 	email, password = request.json['email'], request.json['password'] 
 	is_teacher = request.json['isTeacher']  
@@ -59,30 +78,90 @@ def register():
 
 @app.route('/login', methods=['POST'])
 def login():
+	'''
+	Login an existing user.
+
+	Body:
+		JSON data containing the following fields:
+			{ "email", "password" }
+	
+	Parameters:
+		None
+
+	Returns:
+		JSON Object: {'message', 'token', 'user_id', 'is_teacher},
+		HTTP status code
+	'''
 	email, password = request.json['email'], request.json['password']
 	return auth.login(email, password)
 
 @app.route('/logout', methods=['POST'])
 def logout():
+	'''
+	Logout an existing user.
+
+	Body:
+		None
+
+	Parameters:
+		None
+
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = request.headers.get('Authorization')
 	return auth.logout(token)
 
-# COURSES: BASICS
+# COURSES
 @app.route('/dashboard/course-list', methods=['GET'])
 def user_courses():
+	'''
+	Fetch a list of courses a user is part of (for both teachers and students).
+
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'courses': [{'course_id', 'course_name'}...]},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)	
 	return courses.user_courses(user_id)
 
 @app.route('/courses/<int:course_id>/name', methods=['GET'])
 def get_course_name(course_id):
+	'''
+	Fetch the name of a course given a course_id.
+
+	Parameters:
+		course_id (int)
+			
+	Returns:
+		JSON Object: {'courseName'},
+		HTTP status code
+
+	'''
 	token = get_token(request)
 	v.validate_token(token)
 
 	return courses.id_to_name(course_id)
 
+    
 @app.route('/courses/create', methods=['POST'])
 def create_course():
+	'''
+	Create a new course.
+
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'message', 'course_id'},
+		HTTP status code
+	
+	'''
 	token = get_token(request)
 	
 	user_id = v.validate_token(token)
@@ -90,8 +169,19 @@ def create_course():
 	
 	return courses.create(course_name, user_id)
 
+   
 @app.route('/courses/<int:course_id>/invite', methods=['POST'])
 def add_user(course_id):
+	'''
+	Invite a student to a course. 
+
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 	student_email = request.json['email']
@@ -100,14 +190,40 @@ def add_user(course_id):
 
 @app.route('/courses/<int:course_id>/students', methods=['GET'])
 def all_students(course_id):
+	'''
+	Fetch the details of all students that belong to a particular course. 
+
+	Body:
+		None
+
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'students': [{'id', 'first_name', 'last_name', 'email'}...]},
+		HTTP status code
+	'''
 	token = get_token(request)
 	v.validate_token(token)
 
 	return courses.all_students(course_id) 
 
-# COURSES: ONLINE CLASSES
 @app.route('/courses/<int:course_id>/create-class', methods=['POST'])
 def create_class(course_id):
+	'''
+	Create an online class within a course.
+
+	Body:
+		JSON data containing the following fields:
+			{ "className" }
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'message', 'class_id'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	v.validate_token(token)
 	class_name = request.json['className']
@@ -116,6 +232,19 @@ def create_class(course_id):
 
 @app.route('/courses/<int:course_id>/classes', methods=['GET'])
 def course_classes(course_id):
+	'''
+	Fetch the details of all classes that belong to a particular course.
+
+	Body:
+		None
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'classes': [{'id', 'name'}...]},
+		HTTP status code
+	'''
 	token = get_token(request)
 	v.validate_token(token)
 	
@@ -124,6 +253,20 @@ def course_classes(course_id):
 # COURSES: CONTENT
 @app.route('/courses/<int:course_id>/create-folder', methods=['POST'])
 def create_folder(course_id):
+	'''
+	Create a folder within a course.
+
+	Body:
+		JSON data containing the following fields:
+			{ "folderName" }
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'message', 'folder_id'},
+		HTTP status code
+	'''
 	token = get_token(request)	
 	user_id = v.validate_token(token)
 	
@@ -132,6 +275,19 @@ def create_folder(course_id):
 
 @app.route('/courses/<int:folder_id>/create-file', methods=['POST'])
 def upload_file(folder_id):
+	'''
+	Upload a file to a folder within a course.
+
+	Body:
+		JSON data containing the following fields:
+	
+	Parameters:
+		folder_id (int): A int containing the id of the folder in interest.
+	
+	Returns:
+		JSON Object: {'message', 'file_id'},
+		HTTP status code
+	'''
 	token = get_token(request)	
 	user_id = v.validate_token(token)
 
@@ -143,6 +299,19 @@ def upload_file(folder_id):
 # fetch a file
 @app.route('/courses/download-file/<int:file_id>', methods=['GET'])
 def get_file(file_id):
+	'''
+	get a file from a folder within a course.
+
+	Body:
+		None
+	
+	Parameters:
+		file_id (int): A int containing the id of the file in interest.
+	
+	Returns:
+		JSON Object: {'message', 'file_id'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	v.validate_token(token)
 
@@ -150,6 +319,19 @@ def get_file(file_id):
 
 @app.route('/course/<int:course_id>/content', methods=['GET'])
 def get_course_content(course_id):
+	'''
+	Get the content of a course.
+
+	Body:
+		None
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'message', 'file_id'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -157,14 +339,43 @@ def get_course_content(course_id):
 
 @app.route('/course/<int:course_id>/content/search/<string:query>', methods=['GET'])
 def search_content(course_id, query):
+	'''
+	Search a query for the content of a course.
+
+	Body:
+		None
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'message', 'file_id'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	v.validate_token(token)
 
 	return content.search(course_id, query)
 
-# Assignments
+
+
+# ASSIGNMENTS
 @app.route('/courses/<int:course_id>/assignments/create', methods=['POST'])
 def create_assignment(course_id):
+	'''
+	Create an assignment within a course.
+
+	Body:
+		JSON data containing the following fields:
+			{ "title", "description", "dueDate", "maxMarks" }
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'message', 'assignment_id'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -175,8 +386,23 @@ def create_assignment(course_id):
 
 	return assignment.create(user_id, course_id, title, description, due_date, max_marks)
 
+
 @app.route('/courses/assignments/<int:assignment_id>/edit', methods=['PUT'])
 def edit_assignment(assignment_id):
+	'''
+	Eidt an assignment within a course.
+
+	Body:
+		JSON data containing the following fields:
+			{ "title", "description" }
+	
+	Parameters:
+		assignment_id (int): A int containing the id of the assignment in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -187,6 +413,20 @@ def edit_assignment(assignment_id):
 
 @app.route('/courses/assignments/<int:assignment_id>/specification', methods=['PUT'])
 def upload_spec(assignment_id):
+	'''
+	Uplaod a specification file for an assignment.
+
+	Body:
+		JSON data containing the following fields:
+			{ "file" }
+	
+	Parameters:
+		assignment_id (int): A int containing the id of the assignment in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -195,6 +435,19 @@ def upload_spec(assignment_id):
 
 @app.route('/courses/<int:course_id>/assignments', methods=['GET'])
 def get_assignments(course_id):
+	'''
+	Get all assignments within a course.
+
+	Body:
+		None
+
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'assignments': [{'id', 'title', 'description', 'due_date', 'max_marks'}...]},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -202,6 +455,19 @@ def get_assignments(course_id):
 
 @app.route('/courses/assignments/<int:assignment_id>/submit', methods=['PUT'])
 def submit_assignment(assignment_id):
+	'''
+	Submit an assignment.
+
+	Body:
+		JSON data containing the following fields:
+
+	Parameters:
+		assignment_id (int): A int containing the id of the assignment in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -210,6 +476,19 @@ def submit_assignment(assignment_id):
 
 @app.route('/courses/assignments/<int:assignment_id>/submissions', methods=['GET'])
 def fetch_submissions(assignment_id):
+	'''
+	Fetch all submissions for an assignment.
+
+	Body:
+		None
+	
+	Parameters:
+		assignment_id (int): A int containing the id of the assignment in interest.
+	
+	Returns:
+		JSON Object: {'submissions': [{'id', 'student_id', 'student_email', 'submission_time', 'score'}...]},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -217,6 +496,20 @@ def fetch_submissions(assignment_id):
 
 @app.route('/courses/assignments/mark/<int:submission_id>', methods=['PUT'])
 def update_score(submission_id):
+	'''
+	Update the score of a submission.
+
+	Body:
+		JSON data containing the following fields:
+			{ "score" }
+	
+	Parameters:
+		submission_id (int): A int containing the id of the submission in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -225,7 +518,20 @@ def update_score(submission_id):
 	return assignment.update_score(user_id, submission_id, score)
 
 @app.route('/courses/assignments/score/<int:submission_id>', methods=['GET']) 
-def fetch_score(submission_id): 
+def fetch_score(submission_id):
+	'''
+	Fetch the score of a submission.
+
+	Body:
+		None
+	
+	Parameters:
+		submission_id (int): A int containing the id of the submission in interest.
+
+	Returns:
+		JSON Object: {'score'},
+		HTTP status code
+	''' 
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -234,6 +540,20 @@ def fetch_score(submission_id):
 # QUIZZES
 @app.route('/courses/<int:course_id>/quiz/create', methods=['POST'])
 def create_quiz(course_id):
+	'''
+	Create a quiz within a course.
+
+	Body:
+		JSON data containing the following fields:
+			{ "quizName", "dueDate", "timeLimit" }
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'message', 'quiz_id'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -338,6 +658,19 @@ def submit_quiz(quiz_id):
 # LEADERBOARD
 @app.route('/courses/<int:course_id>/leaderboards', methods=['GET'])
 def get_leaderboards(course_id):
+	'''
+	Get the leaderboards for a course.
+
+	Body:
+		None
+
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'leaderboards': [{'name', 'median', 'mean', 'curr_student', 'top_ten' : []}...]},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -346,6 +679,18 @@ def get_leaderboards(course_id):
 # TIMELINE
 @app.route('/dashboard/timeline', methods=['GET'])
 def dashboard_timeline():
+	'''
+	dashboard timeline
+
+	Body:
+		None
+	
+	Parameters:
+		None
+
+	Returns:
+		JSON Object: {'timeline': [{'id', 'type', 'title', 'description', 'date', 'course_id', 'class_id', 'quiz_id', 'assignment_id', 'forum_post_id', 'forum_reply_id'}...]},
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -382,8 +727,7 @@ def reply_forum_post(forum_post_id):
 	return forums.reply(user_id, forum_post_id, answer)
 
 
-#TODO: Check if phrase is empty/null (if so, return all results under category and course_id)
-#TODO: If category = 'all', return everything, otherwise filter on category 
+
 @app.route('/courses/<int:course_id>/forums/category/<string:category>/search/', methods=['GET'])
 @app.route('/courses/<int:course_id>/forums/category/<string:category>/search/<string:phrase>', methods=['GET'])
 def get_forum_posts(course_id, category, phrase=None):
@@ -396,8 +740,6 @@ def get_forum_posts(course_id, category, phrase=None):
 	return forums.get_posts(user_id, course_id, category, phrase)
 
 
-#TODO: ensure user is part of the course, ensure post is part of the course
-#TODO: post.course_id = course_id
 @app.route('/courses/<int:course_id>/forums/post/<int:post_id>', methods=['GET'])
 def get_forum_post_replies(course_id, post_id):
 	token = get_token(request)

@@ -51,7 +51,6 @@ def edit(user_id, assignment_id, title, description):
 
 	assignment = Assignment.query.get(assignment_id)
 	assignment.title = title
-	#TODO: update file name
 	assignment.description = description
 	db.session.commit()
 
