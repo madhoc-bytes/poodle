@@ -67,12 +67,59 @@ def logout():
 	token = request.headers.get('Authorization')
 	return auth.logout(token)
 
-# COURSES: BASICS
+
+
+# COURSES
+'''
+Fetch a list of courses a user is part of (for both teachers and students).
+
+Args: None.
+
+Returns: 
+	flask.Response: A JSON response that contains the name and id of courses the active user belongs to.
+
+Raises: 
+- Unauthorized: If the provided token is invalid or expired
+- InternalServerError: If there was an issue while retrieving the user's courses.
+
+Example Request: 
+GET /dashboard/course-list
+	Content-Type: application/json
+	Authorization: Bearer <valid_token>
+
+Example Return:
+[{'name:' 'COMP3900', 'id': 1}, {'name': 'COMP9444', 'id': 2}]
+'''
+
 @app.route('/dashboard/course-list', methods=['GET'])
 def user_courses():
 	token = get_token(request)
 	user_id = v.validate_token(token)	
 	return courses.user_courses(user_id)
+
+
+'''
+Fetch the name of a course given a course_id.
+
+Args: 
+	course_id (int): the id of a particular course.
+
+Returns: 
+	str: The name of the course with the provided course_id.
+
+Raises: 
+- Unauthorized: If the provided token is invalid or expired
+- InternalServerError: If there was an issue while retrieving the user's courses.
+
+Example Request: 
+GET /courses/1/name
+	Content-Type: application/json
+	Authorization: Bearer <valid_token>
+
+Example Return:
+'COMP3900'
+
+'''
 
 @app.route('/courses/<int:course_id>/name', methods=['GET'])
 def get_course_name(course_id):
@@ -81,6 +128,37 @@ def get_course_name(course_id):
 
 	return courses.id_to_name(course_id)
 
+
+'''
+Create a new course for the authenticated user. 
+
+Args:
+	courseName (str): A string containing the desired name for the course to be created.
+
+Returns:
+	flask.Response: A JSON response that includes a message indicating the result of the course creation process,
+	and the id of the cnewly created course.
+
+Raises:
+	Unauthorized: If the provided token is invalid, expired, or if the user is not a teacher.
+	BadRequest: If the 'courseName' field is missing or empty in the JSON data.
+	InternalServerError: If there was an issue while creating the course in the database.
+
+Example Request:
+	POST /courses/create
+	Content-Type: application/json
+	Authorization: Bearer <valid_token>
+	{
+		"courseName": "Introduction to Python"
+	}
+
+Example Response:
+	{
+		'message': 'Course created successfully', 
+		'course_id': 3
+	}
+'''
+    
 @app.route('/courses/create', methods=['POST'])
 def create_course():
 	token = get_token(request)
@@ -90,6 +168,36 @@ def create_course():
 	
 	return courses.create(course_name, user_id)
 
+
+'''
+Invite a student to a course. 
+
+Args:
+	email (str): A string containing the email of the student to be added.
+
+Returns:
+	flask.Response: A JSON response that includes a message indicating the result of the invitation process.
+
+Raises:
+	Unauthorized: If the provided token is invalid, expired, or if the user is not a teacher.
+	NotFound: If there does not exist a student with the provided email address.
+	BadRequest: If the provided email belongs to a teacher, or if the student is already part of the course.
+	InternalServerError: If there was an issue while creating the course in the database.
+
+Example Request:
+	POST /courses/1/invite
+	Content-Type: application/json
+	Authorization: Bearer <valid_token>
+	{
+		"email": "mechypoodle@gmail.com"
+	}
+
+Example Response (200, OK):
+	{
+	'message': 'User enrolled in the course successfully'
+	}
+'''
+   
 @app.route('/courses/<int:course_id>/invite', methods=['POST'])
 def add_user(course_id):
 	token = get_token(request)
@@ -98,6 +206,31 @@ def add_user(course_id):
 
 	return courses.invite(user_id, course_id, student_email) 
 
+
+'''
+Fetch the details of all students that belong to a particular course. 
+
+Args:
+	course_id (int): A int containing the id of the course in interest.
+
+Returns:
+	flask.Response: A JSON response that contains details of all students that belong to the course.
+
+Raises:
+	Unauthorized: If the provided token is invalid, expired.
+	NotFound: If there does not exist a course with the provided course_id.
+	InternalServerError: If there was an issue while creating the course in the database.
+
+Example Request:
+	GET /courses/1/students
+	Content-Type: application/json
+	Authorization: Bearer <valid_token>
+
+Example Response (200, OK):
+	[{'first_name': 'John', 'last_name': 'Smith', 'email': 'john.smith@example.com'},
+	{'first_name': 'Jane', 'last_name': 'Smith', 'email': 'jane.smith@example.com'}]
+'''
+
 @app.route('/courses/<int:course_id>/students', methods=['GET'])
 def all_students(course_id):
 	token = get_token(request)
@@ -105,7 +238,36 @@ def all_students(course_id):
 
 	return courses.all_students(course_id) 
 
-# COURSES: ONLINE CLASSES
+
+'''
+Create an online class within a course. 
+
+Args:
+	course_id (int): A int containing the id of the course in interest.
+	className (str): A string containing the name of the new online class.
+
+Returns:
+	flask.Response: A JSON response that includes a message indicating the result of the class creation process, 
+	and the id of the class.
+
+Raises:
+	Unauthorized: If the provided token is invalid, expired.
+	NotFound: If there does not exist a course with the provided course_id.
+	InternalServerError: If there was an issue while creating the course in the database.
+
+Example Request:
+	POST /courses/1/create-class
+	Content-Type: application/json
+	Authorization: Bearer <valid_token>
+	className = 'Room 1'
+
+Example Response (200, OK):
+	{
+		'message': 'Class successfully created', 
+		'class_id': 1
+	}
+'''
+
 @app.route('/courses/<int:course_id>/create-class', methods=['POST'])
 def create_class(course_id):
 	token = get_token(request)
@@ -113,6 +275,29 @@ def create_class(course_id):
 	class_name = request.json['className']
 
 	return classes.create(course_id, class_name) 
+
+
+'''
+Fetch all online classes within a course. 
+
+Args:
+	course_id (int): A int containing the id of the course in interest.
+
+Returns:
+	flask.Response: A JSON response containing relevant information about all online classes belonging to a course.
+
+Raises:
+	Unauthorized: If the provided token is invalid, expired.
+	InternalServerError: If there was an issue while creating the course in the database.
+
+Example Request:
+	GET /courses/1/classes
+	Content-Type: application/json
+	Authorization: Bearer <valid_token>
+
+Example Response (200, OK):
+	[{'id': 1, 'name': Andy's study hub, 'course_id': 1}, {'id': 2, 'name': Eddy's study space, 'course_id': 1}]
+'''
 
 @app.route('/courses/<int:course_id>/classes', methods=['GET'])
 def course_classes(course_id):
@@ -162,7 +347,47 @@ def search_content(course_id, query):
 
 	return content.search(course_id, query)
 
-# Assignments
+
+
+# ASSIGNMENTS
+'''
+Create an assignment within a course. 
+
+Args:
+	course_id (int): A int containing the id of the course in interest.
+	title (str): The title of the assignment to be created.
+	description (str): A description of the assignment.
+	dueDate (date): The date and time the assignment is due.
+	maxMarks (int): The maximum number of marks that can be achieved for the assignment.
+
+Returns:
+	flask.Response: A JSON reponse that includes a message indicating the result of the assignment creation process, 
+	and the id of the assignment.
+
+Raises:
+	Unauthorized: If the provided token is invalid, expired, or if the user is not a teacher.
+	BadRequest: If the 'title', 'description', 'dueDate', 'maxMarks' fields are missing or empty in the JSON data, or 
+	if the 'course_id' is not provided.
+	InternalServerError: If there was an issue while creating the course in the database.
+
+Example Request:
+	POST /courses/1/assignments/create
+	Content-Type: application/json
+	Authorization: Bearer <valid_token>
+	title (str): 'Deom A'
+	description (str): 'Demonstrate you're project'
+	dueDate (date): '01-01-2024'
+	maxMarks (int): 100
+
+
+Example Response (201, OK):
+	{
+		'message': 'Assignment created successfully', 
+		'assignment_id': 1
+	}
+	
+'''
+
 @app.route('/courses/<int:course_id>/assignments/create', methods=['POST'])
 def create_assignment(course_id):
 	token = get_token(request)
@@ -175,6 +400,39 @@ def create_assignment(course_id):
 
 	return assignment.create(user_id, course_id, title, description, due_date, max_marks)
 
+
+'''
+Edit the title of description of an assignment within a course. 
+
+Args:
+	course_id (int): A int containing the id of the course in interest.
+	title (str): The title of the assignment to be created.
+	description (str): A description of the assignment.
+
+Returns:
+	flask.Response: A JSON reponse that includes a message indicating the result of the assignment editing process, 
+	and the id of the assignment.
+
+Raises:
+	Unauthorized: If the provided token is invalid, expired, or if the user is not a teacher.
+	BadRequest: If the 'title' or 'description' fields are missing or empty in the JSON data.
+	InternalServerError: If there was an issue while creating the course in the database.
+
+Example Request:
+	POST /courses/1/assignments/create
+	Content-Type: application/json
+	Authorization: Bearer <valid_token>
+	title (str): 'Demo A'
+	description (str): 'Demonstrate your project'
+
+Example Response (201, OK):
+	{
+		'message': 'Assignment edited successfully', 
+		'assignment_id': 1
+	}
+	
+'''
+
 @app.route('/courses/assignments/<int:assignment_id>/edit', methods=['PUT'])
 def edit_assignment(assignment_id):
 	token = get_token(request)
@@ -185,6 +443,37 @@ def edit_assignment(assignment_id):
 
 	return assignment.edit(user_id, assignment_id, title, description)
 
+
+'''
+Upload the specification for an assignment. 
+
+Args:
+	assignment_id (int): A int containing the id of the assignment in interest.
+	file (str): The title of the assignment to be created.
+
+Returns:
+	flask.Response: A JSON reponse that includes a message indicating the result of the assignment editing process, 
+	and the id of the assignment.
+
+Raises:
+	Unauthorized: If the provided token is invalid, expired, or if the user is not a teacher.
+	BadRequest: If the 'title' or 'description' fields are missing or empty in the JSON data.
+	InternalServerError: If there was an issue while creating the course in the database.
+
+Example Request:
+	POST /courses/1/assignments/create
+	Content-Type: application/json
+	Authorization: Bearer <valid_token>
+	title (str): 'Demo A'
+	description (str): 'Demonstrate your project'
+
+Example Response (201, OK):
+	{
+		'message': 'Assignment edited successfully', 
+		'assignment_id': 1
+	}
+	
+'''
 @app.route('/courses/assignments/<int:assignment_id>/specification', methods=['PUT'])
 def upload_spec(assignment_id):
 	token = get_token(request)
@@ -382,8 +671,7 @@ def reply_forum_post(forum_post_id):
 	return forums.reply(user_id, forum_post_id, answer)
 
 
-#TODO: Check if phrase is empty/null (if so, return all results under category and course_id)
-#TODO: If category = 'all', return everything, otherwise filter on category 
+
 @app.route('/courses/<int:course_id>/forums/category/<string:category>/search/', methods=['GET'])
 @app.route('/courses/<int:course_id>/forums/category/<string:category>/search/<string:phrase>', methods=['GET'])
 def get_forum_posts(course_id, category, phrase=None):
@@ -396,8 +684,6 @@ def get_forum_posts(course_id, category, phrase=None):
 	return forums.get_posts(user_id, course_id, category, phrase)
 
 
-#TODO: ensure user is part of the course, ensure post is part of the course
-#TODO: post.course_id = course_id
 @app.route('/courses/<int:course_id>/forums/post/<int:post_id>', methods=['GET'])
 def get_forum_post_replies(course_id, post_id):
 	token = get_token(request)
