@@ -565,6 +565,20 @@ def create_quiz(course_id):
 
 @app.route('/quiz/<int:quiz_id>/edit', methods=['PUT'])
 def update_quiz(quiz_id):
+	'''
+	Update a quiz's details
+
+	Body:
+		JSON data containing the following fields:
+			{ "quizName", "quizDueDate", "quizTimeLimit", "newQuestions" }
+	
+	Parameters:
+		quiz_id (int): A int containing the id of the quiz in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -577,6 +591,20 @@ def update_quiz(quiz_id):
 
 @app.route('/quiz/<int:quiz_id>/create-question', methods=['PUT'])
 def create_question(quiz_id):
+	'''
+	Create a question in the quiz
+
+	Body:
+		JSON data containing the following fields:
+			{ "questionName", "isMulti", "answers", "correctAnswer" }
+	
+	Parameters:
+		quiz_id (int): A int containing the id of the quiz in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -590,6 +618,20 @@ def create_question(quiz_id):
 
 @app.route('/quiz/<int:quiz_id>/delete', methods=['DELETE'])
 def delete_quiz(quiz_id):
+	'''
+	Delete a quiz
+
+	Body:
+		JSON data containing the following fields:
+			{ "questionName", "isMulti", "answers", "correctAnswer" }
+	
+	Parameters:
+		quiz_id (int): A int containing the id of the quiz in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -597,6 +639,21 @@ def delete_quiz(quiz_id):
 
 @app.route('/courses/<int:course_id>/quiz/names', methods=['GET'])
 def get_quiz_names_teacher(course_id):
+	'''
+	Get a list of names of quizzes in a course
+
+	Body:
+		None
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		List of JSON Objects: [
+			{'id', 'name', 'deployed'},...
+		],
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -605,6 +662,19 @@ def get_quiz_names_teacher(course_id):
 
 @app.route('/quiz/<int:quiz_id>/info', methods=['GET'])
 def get_quiz_info(quiz_id):
+	'''
+	Get the information of quiz
+
+	Body:
+		None
+	
+	Parameters:
+		quiz_id (int): A int containing the id of the quiz in interest.
+	
+	Returns:
+		JSON Object: {'message', 'quiz'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -612,6 +682,19 @@ def get_quiz_info(quiz_id):
 
 @app.route('/quiz/<int:quiz_id>/deploy', methods=['PUT'])
 def deploy_quiz(quiz_id):
+	'''
+	Deploy a quiz to students
+
+	Body:
+		None
+	
+	Parameters:
+		quiz_id (int): A int containing the id of the quiz in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -620,6 +703,19 @@ def deploy_quiz(quiz_id):
 # STUDENT QUIZ
 @app.route('/quiz/<int:quiz_id>/student-attempt', methods=['POST'])
 def attempt_quiz(quiz_id):
+	'''
+	Attempt a quiz (for student)
+
+	Body:
+		None
+	
+	Parameters:
+		quiz_id (int): A int containing the id of the quiz in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -627,6 +723,21 @@ def attempt_quiz(quiz_id):
 
 @app.route('/courses/<int:course_id>/quiz/student-details', methods=['GET'])
 def get_quizzes_student(course_id):
+	'''
+	Get quiz information 
+
+	Body:
+		None
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		List of JSON Objects: [
+			{'name', 'score', 'dueDate', 'status', 'maxMarks', 'timeLimit'},...
+		],
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -634,6 +745,19 @@ def get_quizzes_student(course_id):
 
 @app.route('/quiz/<int:quiz_id>/studentinfo', methods=['GET'])
 def get_quiz_info_student(quiz_id):
+	'''
+	Get quiz information for student
+
+	Body:
+		None
+	
+	Parameters:
+		quiz_id (int): A int containing the id of the quiz in interest.
+	
+	Returns:
+		JSON Object: {'message', 'quizInfo'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -641,6 +765,20 @@ def get_quiz_info_student(quiz_id):
 
 @app.route('/quiz/<int:quiz_id>/update-score', methods=['PUT'])
 def update_quiz_score(quiz_id):
+	'''
+	Update a student's score in a quiz attempt
+
+	Body:
+		JSON data containing the following fields:
+			{ "score" }
+	
+	Parameters:
+		quiz_id (int): A int containing the id of the quiz in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -650,6 +788,19 @@ def update_quiz_score(quiz_id):
 
 @app.route('/quiz/<int:quiz_id>/submit', methods=['PUT'])
 def submit_quiz(quiz_id):
+	'''
+	Submit a student's attempt
+
+	Body:
+		None
+	
+	Parameters:
+		quiz_id (int): A int containing the id of the quiz in interest.
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -699,6 +850,20 @@ def dashboard_timeline():
 # FORUMS
 @app.route('/courses/<int:course_id>/forums/post-forum', methods=['POST'])
 def create_forum_post(course_id):
+	'''
+	Create a post in the forum
+
+	Body:
+		JSON data containing the following fields:
+			{ "title", "category", "description" }
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+	
+	Returns:
+		JSON Object: {'message', 'post_id'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -710,6 +875,20 @@ def create_forum_post(course_id):
 
 @app.route('/courses/forums/post/<int:post_id>/attach-file', methods=['PUT'])
 def upload_forum_multimedia(post_id):
+	'''
+	Upload content into the forum
+
+	Body:
+		JSON data containing the following fields:
+			{ "file" }
+	
+	Parameters:
+		post_id (int): A int containing the id of the post in interest.
+	
+	Returns:
+		JSON Object: {'message', 'file'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -719,6 +898,20 @@ def upload_forum_multimedia(post_id):
 
 @app.route('/courses/forums/<int:forum_post_id>/post-answer', methods=['POST'])
 def reply_forum_post(forum_post_id):
+	'''
+	Reply to a post in the forum
+
+	Body:
+		JSON data containing the following fields:
+			{ "answer"}
+	
+	Parameters:
+		forum_post_id (int): A int containing the id of the forum_post in interest.
+	
+	Returns:
+		JSON Object: {'message', 'forum_reply_id'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -731,6 +924,24 @@ def reply_forum_post(forum_post_id):
 @app.route('/courses/<int:course_id>/forums/category/<string:category>/search/', methods=['GET'])
 @app.route('/courses/<int:course_id>/forums/category/<string:category>/search/<string:phrase>', methods=['GET'])
 def get_forum_posts(course_id, category, phrase=None):
+	'''
+	Get forum posts for a course
+
+	Body:
+		None
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+		category (string): A string of the category of the forum post.
+		phrase (string): A string of the phrase to search for.
+	
+	Returns:
+		List of JSON Object: [
+			{'title', 'post_id', 'category', 'first_name', 'last_name', 
+			'date_posted', 'num_replies'},...
+		],
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -742,6 +953,21 @@ def get_forum_posts(course_id, category, phrase=None):
 
 @app.route('/courses/<int:course_id>/forums/post/<int:post_id>', methods=['GET'])
 def get_forum_post_replies(course_id, post_id):
+	'''
+	Get replies to a forum post
+
+	Body:
+		None
+	
+	Parameters:
+		course_id (int): A int containing the id of the course in interest.
+		post_id (int): A int containing the id of the post in interest.
+	
+	Returns:
+		JSON Object: {'post_id', 'title', 'category', 'author_id', 'first_name',
+		'last_name', 'file_id', 'date_posted', 'description', 'replies'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -750,6 +976,20 @@ def get_forum_post_replies(course_id, post_id):
 # Profile
 @app.route('/profile/edit', methods=['PUT'])
 def edit_profile():
+	'''
+	Edit a user's profile
+
+	Body:
+		JSON data containing the following fields:
+			{ "firstName", "lastName", "password"}
+	
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -761,6 +1001,19 @@ def edit_profile():
 
 @app.route('/profile/stars', methods=['GET'])
 def get_stars():
+	'''
+	Get a user's stars
+
+	Body:
+		None
+	
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'stars'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -768,6 +1021,20 @@ def get_stars():
 
 @app.route('/profile/stars/add', methods=['PUT'])
 def add_stars():
+	'''
+	Add stars to the user's profile
+
+	Body:
+		JSON data containing the following fields:
+			{ "stars" }
+	
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -777,6 +1044,19 @@ def add_stars():
 
 @app.route('/profile/info', methods=['GET'])
 def get_my_info():
+	'''
+	Get a user's information
+
+	Body:
+		None
+	
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object of User Schema,
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -784,6 +1064,19 @@ def get_my_info():
 
 @app.route('/profile/info/<int:user_id>', methods=['GET'])
 def get_user_info(user_id):
+	'''
+	Get another user's information
+
+	Body:
+		None
+	
+	Parameters:
+		user_id (int): A int containing the id of the user in interest.
+	
+	Returns:
+		JSON Object of User Schema,
+		HTTP status code
+	'''
 	token = get_token(request)
 	v.validate_token(token)
 
@@ -792,6 +1085,19 @@ def get_user_info(user_id):
 # AVATAR
 @app.route('/profile/avatar/preview', methods=['GET'])
 def get_avatar_preview():
+	'''
+	Get current attributes of an avatar
+
+	Body:
+		None
+	
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'curr_atts'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -799,6 +1105,19 @@ def get_avatar_preview():
      
 @app.route('/profile/avatar/preview/<int:user_id>', methods=['GET'])
 def get_target_avatar(user_id):
+	'''
+	Get current attributes of another avatar
+
+	Body:
+		None
+	
+	Parameters:
+		user_id (int): A int containing the id of the user in interest.
+	
+	Returns:
+		JSON Object: {'curr_atts'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	v.validate_token(token)
 
@@ -806,6 +1125,20 @@ def get_target_avatar(user_id):
 
 @app.route('/profile/avatar/unlock', methods=['PUT'])
 def unlock_attribute():
+	'''
+	Unlock an attribute
+
+	Body:
+		JSON data containing the following fields:
+			{ "attribute", "style" }
+	
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -816,6 +1149,20 @@ def unlock_attribute():
 
 @app.route('/profile/avatar/update', methods=['PUT'])
 def update_avatar():
+	'''
+	Update a user's avatar
+
+	Body:
+		JSON data containing the following fields:
+			{ "attributes" }
+	
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -825,6 +1172,19 @@ def update_avatar():
 
 @app.route('/profile/avatar/attributes', methods=['GET'])
 def get_attributes():
+	'''
+	Get all unlocked attributes of an avatar
+
+	Body:
+		None
+	
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -833,6 +1193,19 @@ def get_attributes():
 # BADGES
 @app.route('/profile/badges/tallies', methods=['GET'])
 def get_tallies():
+	'''
+	Get badge tallies of a user
+
+	Body:
+		None
+	
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'message', 'tallies'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
@@ -841,6 +1214,20 @@ def get_tallies():
 
 @app.route('/profile/badges/update', methods=['PUT'])
 def update_badges():
+	'''
+	Update badge tallies of a user
+
+	Body:
+		JSON data containing the following fields:
+			{ "efficient", "academic", "helpful" }
+	
+	Parameters:
+		None
+	
+	Returns:
+		JSON Object: {'message'},
+		HTTP status code
+	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
