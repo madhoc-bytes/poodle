@@ -6,3 +6,24 @@ Confirmed novel ideas of gamification, and chatbot with tutor. Discussed the log
 
 Week 3
 Finished figma storyboards for gamification features. Finished uploading user stories onto the Jira backlog. Wrote the system architecture section of the proposal with Yang. Finished story categories and descriptions and discussion of novelty. 
+
+Week 4
+Proposed and changed our intended database engine to SQLite. Designed database schema with Yang. Set up a basic Flask app that connects to the frontend. 
+
+Week 5 
+Wrote the basis of the models file for SQLite database and Flask app.  Wrote app routes and logic for user authentication, including token validation, register, login and logout. Debugged logic for online classes and courses with Yang. Refactored the backend to move courses out of the main file. Edited app routes to ensure compatibility with the front end. 
+
+Week 6
+Created new classes, File and Folder, for handling course content. Wrote functions for creating folders and files, and pseudocode for retrieving all the content from a course. 
+
+Week 7
+Designed our local file system hierarchy, which was discussed and approved by Yang. Finished content retrieval functions. Wrote functions for searching content for chatbot. Debugged file storage functions with Yang and Eddy. 
+
+Week 8
+Wrote several assignment related functions for the backend, including create, upload_spec, submit, retrieve_submissions and mark_submissions. Collaborated with Andy and Eddy to ensure compatibility with the front end. Designed database schema for assessment timeline and leaderboards with Andy, and wrote baseline logic for relevant functions. 
+
+Week 9
+Wrote ‘Purpose and Features’ and ‘architecture’ sections of the final report. Completed assessment timeline and leaderboards functionality with Andy. Added docstrings and comments for all authentication and content functions and app routes. 
+
+Week 10
+Planned final demo with the team. Wrote script and made basic powerpoint slides for ‘Technical Quality’ and ‘Excellent Engineering Practices’ of the presentation. Edited system architecture diagram. Finished ‘Implementation Challenges’ section of the report.
