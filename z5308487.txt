@@ -42,3 +42,12 @@ Week 9
 - Started and finished routes for Avatar
 	- Still needs some tweaking, as some functionalities are not working
 - Started on badges for profile
+
+Week 10
+- Finished the badge tallies
+- Eddy tweaked some logic in badge and avatar
+	- There was an issue in badge, which was looking at the mark to be e.g. >75, however it needed to be >0.75*max_mark
+- Prepared for demonstration and ran through what parts to do
+	- I was doing classes, quizzes and timeline
+- Need to finish up the final report
+	- I'm doing the functionalities mainly
