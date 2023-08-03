@@ -463,7 +463,7 @@ const MyProfilePage = () => {
   };
 
   return (
-    <>
+    <Box sx={{width: "100vw", height: "100%",}}>
       <NavBar />
       <Toolbar />
       {!isLoading && (
@@ -475,6 +475,7 @@ const MyProfilePage = () => {
             p: 20,
             justifyContent: "center",
             alignItems: "center",
+
           }}
         >
           {/* Left section: Avatar */}
@@ -829,7 +830,8 @@ const MyProfilePage = () => {
         open={openEditAvatar}
         onClose={handleCloseEditAvatar}
         TransitionComponent={Transition}
-      >
+        fullWidth
+        maxWidth="sm">
         <Toolbar />
         {!userDetails.is_teacher && (
           <Box
@@ -925,7 +927,7 @@ const MyProfilePage = () => {
                   position="static"
                   sx={{
                     background: "black",
-                    width: "1200px",
+                    width: "100%",
                     margin: "50px 0 0 0",
                     marginRight: "auto",
                     borderRadius: "10px",
@@ -975,7 +977,7 @@ const MyProfilePage = () => {
           </Box>
         </Box>
       </Dialog>
-    </>
+    </Box>
   );
 };
 

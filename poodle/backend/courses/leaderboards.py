@@ -121,7 +121,7 @@ def get_mean(students_ranked):
     marks = []
     # get the median
     for student in students_ranked:
-        if (student['mark']):
+        if (student['mark'] != None):
             student['mark'] = int(student['mark'])
             marks.append(student['mark'])
     if marks == []:

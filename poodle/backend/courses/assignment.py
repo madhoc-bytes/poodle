@@ -252,11 +252,11 @@ def update_score(user_id, submission_id, score):
 
 	prev = badge.academic
 	# Update academic badge
-	if (scoreInt >= 95):
+	if (scoreInt/assignment.max_marks >= 0.95):
 		badge.academic += 3
-	elif (scoreInt >= 85):
+	elif (scoreInt/assignment.max_marks >= 0.85):
 		badge.academic += 2
-	elif (scoreInt >= 75):
+	elif (scoreInt/assignment.max_marks >= 0.75):
 		badge.academic += 1
 
 	curr = badge.academic
