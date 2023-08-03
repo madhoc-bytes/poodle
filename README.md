@@ -15,7 +15,7 @@ We have provided a pre-filled database in the zip file, which will be automatica
 
 If you want to start with an empty database or want to use your own data, you can follow these steps:
 
-1. Delete the instance folder located in poodle/backend.
+1. Delete the instance folder located in /poodle/backend.
 2. Run the following command to rebuild the Docker containers with an empty database:
 ```docker-compose up --build```
 
