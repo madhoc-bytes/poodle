@@ -64,14 +64,13 @@ const ProfilePage = () => {
       console.log("ERROR");
     } else {
       setUserAvatar(data);
-      console.log(data);
       setIsLoading(false);
     }
   };
 
   const fetchBadges = async () => {
     const response = await fetch(
-      new URL(`/profile/badges/tallies`, "http://localhost:5000"),
+      new URL(`/profile/badges/tallies/${userId}`, "http://localhost:5000"),
       {
         method: "GET",
         headers: {
@@ -85,7 +84,6 @@ const ProfilePage = () => {
       console.log("ERROR");
     } else {
       setBadges(data.tallies);
-      console.log(data);
     }
   };
 

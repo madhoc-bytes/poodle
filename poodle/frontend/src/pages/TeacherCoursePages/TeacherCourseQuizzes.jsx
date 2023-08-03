@@ -104,7 +104,6 @@ const TeacherCourseQuizzes = () => {
         dueDate: newQuizDueDate,
         timeLimit: newQuizTimeLimit,
       };
-      console.log(JSON.stringify(a));
 
       const response = await fetch(
         // Change the URL when backend is ready
@@ -121,8 +120,6 @@ const TeacherCourseQuizzes = () => {
       const data = await response.json();
       if (data.error) {
         console.log("ERROR");
-      } else {
-        console.log(data);
       }
       handleCloseModal();
       fetchQuizzes();

@@ -152,7 +152,6 @@ const CourseForums = () => {
     } else setIsTeacher(data.is_teacher);
   };
   const fetchForumPosts = async () => {
-    console.log("hi");
     const response = await fetch(
       new URL(
         `/courses/${courseId}/forums/category/${selectedCategory}/search/${searchPost}`,
@@ -170,9 +169,7 @@ const CourseForums = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
-      console.log(data);
       setForumPosts(data);
-      console.log("SUCCESS");
     }
   };
 
@@ -201,9 +198,7 @@ const CourseForums = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
-      console.log(data);
       setCurrPost(data);
-      console.log("SUCCESS");
     }
   };
 
@@ -246,7 +241,6 @@ const CourseForums = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
-      console.log("SUCCESS");
       handleUploadPostFile(data.post_id);
       setOpenModal(false);
       setNewPostTitle("");
@@ -258,8 +252,6 @@ const CourseForums = () => {
   };
 
   const handleUploadPostFile = async (postId) => {
-    console.log(postId);
-
     if (!newPostFile) {
       return;
     }
@@ -283,7 +275,6 @@ const CourseForums = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
-      console.log("SUCCESS");
       setNewPostFile(null);
     }
   };
@@ -303,7 +294,6 @@ const CourseForums = () => {
     if (data.error) {
       console.log("error");
     } else {
-      console.log(data);
       let url = window.URL.createObjectURL(data);
       window.open(url);
     }
@@ -334,7 +324,6 @@ const CourseForums = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
-      console.log("SUCCESS");
       setReplyAnswer("");
       fetchForumPosts();
       fetchForumPostandAnswers();

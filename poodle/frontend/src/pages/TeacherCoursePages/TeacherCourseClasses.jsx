@@ -85,11 +85,8 @@ const TeacherCourseClasses = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
-      console.log(data);
       window.open(`/OnlineClass/${courseId}/${data.class_id}`, "_blank");
     }
-    console.log("start class");
-
     // Make a fetch to get the classId from class name
 
     setClassName("");

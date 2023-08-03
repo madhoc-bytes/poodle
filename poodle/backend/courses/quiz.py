@@ -80,8 +80,6 @@ def update_quiz(user_id, quiz_id, quiz_name, due_date, time_limit, questions):
 	else:
 		quiz.questions = []
   
-	print(quiz_name)
-
 	db.session.commit()
 
 	return jsonify({'message': 'Quiz updated successfully'}), 200

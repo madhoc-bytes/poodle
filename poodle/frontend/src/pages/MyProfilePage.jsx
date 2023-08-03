@@ -185,7 +185,6 @@ const MyProfilePage = () => {
       console.log("ERROR");
     } else {
       setUserAttributes(data);
-      console.log(data);
     }
   };
 
@@ -205,7 +204,6 @@ const MyProfilePage = () => {
       console.log("ERROR");
     } else {
       setUserStars(data.stars);
-      console.log(data);
     }
   };
 
@@ -225,7 +223,6 @@ const MyProfilePage = () => {
       console.log("ERROR");
     } else {
       setBadges(data.tallies);
-      console.log(data);
     }
   };
 
@@ -446,7 +443,6 @@ const MyProfilePage = () => {
     } else {
       fetchAvatar();
       handleCloseEditAvatar();
-      console.log(data);
     }
   };
 
@@ -463,7 +459,7 @@ const MyProfilePage = () => {
   };
 
   return (
-    <Box sx={{width: "100vw", height: "100%",}}>
+    <Box sx={{ width: "100vw", height: "100%" }}>
       <NavBar />
       <Toolbar />
       {!isLoading && (
@@ -475,7 +471,6 @@ const MyProfilePage = () => {
             p: 20,
             justifyContent: "center",
             alignItems: "center",
-
           }}
         >
           {/* Left section: Avatar */}
@@ -831,7 +826,8 @@ const MyProfilePage = () => {
         onClose={handleCloseEditAvatar}
         TransitionComponent={Transition}
         fullWidth
-        maxWidth="sm">
+        maxWidth="sm"
+      >
         <Toolbar />
         {!userDetails.is_teacher && (
           <Box

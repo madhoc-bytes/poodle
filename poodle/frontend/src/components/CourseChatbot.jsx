@@ -47,7 +47,6 @@ const CourseChatbot = ({ courseId }) => {
           const data = await response.json();
           const pages = data.query.pages;
           const pageId = Object.keys(pages)[0];
-          console.log(pages[pageId]);
           const extract = pages[pageId].extract;
           const regex = /<p>(.*?)<\/p>/; // Regex to extract the first paragraph
           const match = regex.exec(extract);
@@ -82,9 +81,6 @@ const CourseChatbot = ({ courseId }) => {
     const [searchFiles, setSearchFiles] = useState([]);
 
     const fetchSearchFiles = async () => {
-      console.log(courseId);
-      console.log(searchInput);
-      console.log(localStorage.getItem("token"));
       const response = await fetch(
         new URL(
           `/course/${courseId}/content/search/${searchInput}`,
@@ -228,7 +224,6 @@ const CourseChatbot = ({ courseId }) => {
       console.log("ERROR");
     } else {
       setUserAvatar(data);
-      console.log(data);
     }
   };
 

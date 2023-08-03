@@ -91,7 +91,6 @@ const TeacherCourseAssignments = () => {
       console.log("ERROR");
     } else {
       setAssignments(data);
-      console.log(data);
     }
   };
 
@@ -135,7 +134,6 @@ const TeacherCourseAssignments = () => {
       if (data.error) {
         console.log("ERROR");
       } else {
-        console.log(dueDate);
         setSelectedAssignmentId(data.assignment_id);
         handleUploadSpec(data.assignment_id);
         fetchAssignments();
@@ -212,7 +210,6 @@ const TeacherCourseAssignments = () => {
       if (data.error) {
         console.log("ERROR");
       } else {
-        console.log("success");
         fetchAssignments();
       }
     }
@@ -233,7 +230,6 @@ const TeacherCourseAssignments = () => {
     if (data.error) {
       console.log("error");
     } else {
-      console.log(data);
       let url = window.URL.createObjectURL(data);
       window.open(url);
     }

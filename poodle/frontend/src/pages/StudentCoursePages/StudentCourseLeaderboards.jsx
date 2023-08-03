@@ -77,7 +77,6 @@ const StudentCourseLeaderboards = () => {
       if (data.length > 0) {
         setCurrLeaderboard(0);
       }
-      console.log(data);
     }
   };
 
@@ -182,7 +181,8 @@ const StudentCourseLeaderboards = () => {
                     </Table>
                   </TableContainer>
                   {leaderboards[currLeaderboard].curr_student.mark !== -1 &&
-                    leaderboards[currLeaderboard].curr_student.mark && (
+                    leaderboards[currLeaderboard].curr_student.mark !==
+                      null && (
                       <TableContainer
                         component={Paper}
                         sx={{ marginTop: "100px" }}

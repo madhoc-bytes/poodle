@@ -92,7 +92,6 @@ const RegisterPage = () => {
         setAlert(true);
         setAlertContent("Email taken. Please use a different email");
       } else {
-        console.log("Success");
         navigate("/login");
         alert("Successfully registered an account");
       }

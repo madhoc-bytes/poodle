@@ -6,8 +6,6 @@ const OnlineClass = () => {
   const courseId = useParams().courseId;
   const roomId = useParams().roomId;
 
-  console.log(courseId);
-
   const myMeeting = async (element) => {
     const appID = 158040060;
     const serverSecret = "819c35e5261398cd9022f17d2d5fdd98";
@@ -30,7 +28,6 @@ const OnlineClass = () => {
 
   return (
     <div className="room-page">
-      {/* <button onClick={() => { console.log(roomId, courseId) }}>Press</button> */}
       <div ref={myMeeting} />
     </div>
   );

@@ -91,7 +91,6 @@ const TeacherGradeAssignment = () => {
     if (data.error) {
       console.log("error");
     } else {
-      console.log(data);
       let url = window.URL.createObjectURL(data);
       window.open(url);
     }
@@ -106,7 +105,6 @@ const TeacherGradeAssignment = () => {
 
   const handleMarkAssignment = async (submissionId) => {
     const score = scores[submissionId];
-    console.log(score);
     const response = await fetch(
       new URL(
         `/courses/assignments/mark/${submissionId}`,
@@ -126,7 +124,6 @@ const TeacherGradeAssignment = () => {
       console.log("ERROR");
       alert("Mark out of range");
     } else {
-      console.log("Assignment marked successfully");
       fetchAssignmentSubmissions();
     }
   };

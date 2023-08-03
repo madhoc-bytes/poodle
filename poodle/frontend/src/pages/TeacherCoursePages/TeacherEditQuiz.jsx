@@ -61,7 +61,6 @@ const TeacherEditQuiz = () => {
       alert("Quiz cannot contain no questions");
       return;
     }
-    console.log("quiz deployed");
     const response = await fetch(
       new URL(`/quiz/${quizId}/deploy`, "http://localhost:5000/"),
       {
@@ -105,7 +104,6 @@ const TeacherEditQuiz = () => {
         quizTimeLimit: newQuizTimeLimit,
         newQuestions: quizQuestions,
       };
-      console.log(a);
       const response = await fetch(
         new URL(`/quiz/${quizId}/edit`, "http://localhost:5000/"),
         {
@@ -128,9 +126,7 @@ const TeacherEditQuiz = () => {
       } else {
         fetchQuiz();
         setOpenModal(false);
-        console.log(newQuizName);
       }
-      // TODO: PUT fetch goes here
     }
   };
 
@@ -208,7 +204,6 @@ const TeacherEditQuiz = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
-      console.log(newQuestionJson);
       fetchQuiz();
       setCurrQuestion("");
       setCurrQuestionType(true);
@@ -275,7 +270,6 @@ const TeacherEditQuiz = () => {
       alert(`edited question ${currQuestionIndex + 1}`);
       fetchQuiz();
     }
-    console.log(newQuestions);
   };
 
   const handleDeleteQuestion = async () => {
@@ -332,25 +326,21 @@ const TeacherEditQuiz = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
-      console.log(data);
       setQuizName(data.quiz.name);
       setQuizTimeLimit(data.quiz.time_limit);
       setQuizDueDate(data.quiz.due_date);
       setQuizQuestions(data.quiz.questions);
-      console.log(quizDueDate);
     }
   };
 
   const addAnswer = () => {
     setCurrQuestionAnswers([...currQuestionAnswers, ""]);
-    console.log(currQuestionAnswers);
   };
 
   const updateAnswers = (value, index) => {
     const newAnswers = [...currQuestionAnswers];
     newAnswers[index] = value;
     setCurrQuestionAnswers(newAnswers);
-    console.log(currQuestionAnswers);
   };
 
   const deleteAnswer = (index) => {
@@ -424,7 +414,7 @@ const TeacherEditQuiz = () => {
             },
           }}
         >
-            <List>
+          <List>
             <ListItemButton
               onClick={() => setCurrQuestionIndex(null)}
               sx={{
@@ -628,7 +618,6 @@ const TeacherEditQuiz = () => {
             label="Time Limit (min)"
             value={newQuizTimeLimit}
             onChange={(e) => {
-              console.log(newQuizTimeLimit);
               setNewQuizTimeLimit(e.target.value);
             }}
             fullWidth

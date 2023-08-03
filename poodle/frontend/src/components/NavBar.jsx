@@ -63,7 +63,6 @@ const NavBar = () => {
       console.log("ERROR");
     } else {
       setUserAvatar(data);
-      console.log(data);
       setIsLoading(false);
     }
   };
@@ -88,7 +87,6 @@ const NavBar = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
-      console.log(data);
       if (data.is_teacher) navigate("/teacher/dashboard");
       else navigate("/student/dashboard");
     }

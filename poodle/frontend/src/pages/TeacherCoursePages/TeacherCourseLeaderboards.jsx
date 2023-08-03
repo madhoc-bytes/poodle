@@ -75,7 +75,6 @@ const TeacherCourseLeaderboards = () => {
       if (data.length > 0) {
         setCurrLeaderboard(0);
       }
-      console.log(data);
     }
   };
 

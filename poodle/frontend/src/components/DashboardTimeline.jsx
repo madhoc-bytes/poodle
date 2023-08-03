@@ -29,7 +29,6 @@ const DashboardTimeline = () => {
       console.log("ERROR");
     } else {
       setTimeline(data);
-      console.log(data);
     }
   };
 

@@ -7,8 +7,9 @@ const UserAvatar = ({ userId, token }) => {
   const [userAvatar, setUserAvatar] = useState("");
 
   useEffect(() => {
+    setUserAvatar("");
     fetchAvatar();
-  }, []);
+  }, [userId]);
 
   const fetchAvatar = async () => {
     const response = await fetch(

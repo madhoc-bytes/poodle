@@ -46,7 +46,6 @@ const StudentCourseContent = () => {
     const chatbotContainer = document.getElementById("chatbot");
     if (chatbotContainer) {
       render(<CourseChatbot courseId={courseId} />, chatbotContainer);
-      console.log("chatbot container found");
     } else {
       console.log("chatbot container not found");
     }
@@ -117,7 +116,6 @@ const StudentCourseContent = () => {
     if (data.error) {
       console.log("eerrrr");
     } else {
-      console.log(data);
       setContent(data);
     }
   };
@@ -141,7 +139,6 @@ const StudentCourseContent = () => {
     if (data.error) {
       console.log("error");
     } else {
-      console.log(data);
       let url = window.URL.createObjectURL(data);
       window.open(url);
     }

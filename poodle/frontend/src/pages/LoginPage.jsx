@@ -49,7 +49,6 @@ const LoginPage = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("email", formValues["email"]);
 
-      console.log(localStorage.getItem("token"));
       navigate(`/${data.is_teacher ? "teacher" : "student"}/dashboard`);
     }
   };

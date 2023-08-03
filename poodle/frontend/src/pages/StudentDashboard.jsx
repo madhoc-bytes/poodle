@@ -70,7 +70,6 @@ const StudentDashboard = () => {
       console.log("ERROR");
     } else {
       setCourses(data);
-      console.log(data);
     }
   };
 

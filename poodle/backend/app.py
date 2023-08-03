@@ -945,9 +945,6 @@ def get_forum_posts(course_id, category, phrase=None):
 	token = get_token(request)
 	user_id = v.validate_token(token)
 
-	print('phrase: ', phrase)
-	print('category: ', category)
-
 	return forums.get_posts(user_id, course_id, category, phrase)
 
 
@@ -1208,6 +1205,26 @@ def get_tallies():
 	'''
 	token = get_token(request)
 	user_id = v.validate_token(token)
+
+	return badges.get_tallies(user_id)
+
+@app.route('/profile/badges/tallies/<int:user_id>', methods=['GET'])
+def get_user_tallies(user_id):
+	'''
+	Get badge tallies of a user
+
+	Body:
+		None
+	
+	Parameters:
+		user_id (int): A int containing the id of the user in interest.
+	
+	Returns:
+		JSON Object: {'message', 'tallies'},
+		HTTP status code
+	'''
+	token = get_token(request)
+	v.validate_token(token)
 
 	return badges.get_tallies(user_id)
 

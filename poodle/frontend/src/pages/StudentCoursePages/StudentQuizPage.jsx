@@ -67,7 +67,6 @@ const StudentQuizPage = () => {
       }
     );
     const data = await response.json();
-    console.log(data);
     navigate(`/student/${courseId}/Quizzes`);
     // This will probably redirect you to another page saying test submitted
   };
@@ -92,7 +91,6 @@ const StudentQuizPage = () => {
       setQuizTimeLimit(data.quizInfo.timeLimit);
       setQuizTimeStarted(data.quizInfo.timeStarted);
       setQuizQuestions(data.quizInfo.questions);
-      console.log(data);
     }
   };
 

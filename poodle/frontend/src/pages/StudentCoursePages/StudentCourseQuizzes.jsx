@@ -24,7 +24,6 @@ const StudentCourseQuizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
 
   useEffect(() => {
-    // console.log("useEffect called");
     fetchQuizzes();
   }, []);
 
@@ -69,9 +68,6 @@ const StudentCourseQuizzes = () => {
     if (data.error) {
       console.log("ERROR");
     } else {
-      // TODO: Uncomment this when backend is ready
-      console.log(data);
-
       setQuizzes(data);
     }
   };

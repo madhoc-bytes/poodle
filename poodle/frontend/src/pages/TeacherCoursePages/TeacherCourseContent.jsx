@@ -15,7 +15,6 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import NavBar from "../../components/NavBar";
 import CourseSidebar from "../../components/CourseSidebar";
 import FolderIcon from "@mui/icons-material/Folder";
@@ -24,7 +23,6 @@ import ListItemText from "@mui/material/ListItemText";
 import List from "@mui/material/List";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { ExpandMore, ExpandLess } from "@mui/icons-material";
-import { Delete } from "@mui/icons-material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useParams } from "react-router";
 import { render } from "react-dom";
@@ -51,13 +49,12 @@ const TeacherCourseContent = () => {
     const chatbotContainer = document.getElementById("chatbot");
     if (chatbotContainer) {
       render(<CourseChatbot courseId={courseId} />, chatbotContainer);
-      console.log("chatbot container found");
     } else {
       console.log("chatbot container not found");
     }
   }, []);
 
-  const FolderListItem = ({ folder, onDelete, onDeleteFile }) => {
+  const FolderListItem = ({ folder }) => {
     const token = localStorage.getItem("token");
 
     const [open, setOpen] = useState(false);
@@ -67,15 +64,6 @@ const TeacherCourseContent = () => {
 
     const handleToggle = () => {
       setOpen(!open);
-    };
-
-    const handleDeleteFolder = (event) => {
-      event.stopPropagation();
-      onDelete(folder.id);
-    };
-
-    const handleDeleteFile = (fileId) => {
-      onDeleteFile(fileId);
     };
 
     const handleOpenModal = () => {
@@ -94,7 +82,6 @@ const TeacherCourseContent = () => {
       formData.append("fileName", newFileTitle);
       formData.append("file", newFile);
 
-      console.log(formData);
       const response = await fetch(
         new URL(`/courses/${folder.id}/create-file`, "http://localhost:5000/"),
         {
@@ -109,7 +96,6 @@ const TeacherCourseContent = () => {
       if (data.error) {
         console.log("ERROR");
       } else {
-        console.log(data.message);
         getContent();
       }
 
@@ -132,9 +118,6 @@ const TeacherCourseContent = () => {
             <FolderIcon />
           </ListItemIcon>
           <ListItemText primary={folder.name} />
-          {/* <IconButton edge="end" onClick={handleDeleteFolder}>
-            <DeleteIcon />
-          </IconButton> */}
           <ListItemSecondaryAction>
             <IconButton edge="end" onClick={handleToggle}>
               {open ? <ExpandLess /> : <ExpandMore />}
@@ -158,14 +141,6 @@ const TeacherCourseContent = () => {
                   }}
                   onClick={() => handleOpenFile(file.id)}
                 />
-                {/* <ListItemSecondaryAction>
-                  <IconButton
-                    edge="end"
-                    onClick={() => handleDeleteFile(file.id)}
-                  >
-                    <Delete />
-                  </IconButton>
-                </ListItemSecondaryAction> */}
               </ListItem>
             ))}
             <ListItem sx={{ pl: 4 }}>
@@ -230,7 +205,6 @@ const TeacherCourseContent = () => {
     if (data.error) {
       console.log("eerrrr");
     } else {
-      console.log(data);
       setContent(data);
     }
   };
@@ -258,8 +232,6 @@ const TeacherCourseContent = () => {
       if (data.error) {
         console.log("eerrrr");
       } else {
-        console.log(data.folder_id);
-        console.log("Creating folder with name: " + folderName);
         setFolderName("");
         getContent();
       }
@@ -271,14 +243,6 @@ const TeacherCourseContent = () => {
   useEffect(() => {
     getContent();
   }, []);
-
-  const handleDeleteFolder = (folderId) => {
-    console.log("Deleting folder with id: " + folderId);
-  };
-
-  const handleDeleteFile = (fileId) => {
-    console.log("Deleting file with id: " + fileId);
-  };
 
   const handleOpenFile = async (fileId) => {
     const response = await fetch(
@@ -295,7 +259,6 @@ const TeacherCourseContent = () => {
     if (data.error) {
       console.log("error");
     } else {
-      console.log(data);
       let url = window.URL.createObjectURL(data);
       window.open(url);
     }
@@ -333,12 +296,7 @@ const TeacherCourseContent = () => {
 
           <List style={folderListStyle}>
             {content.map((folder) => (
-              <FolderListItem
-                key={folder.id}
-                folder={folder}
-                onDelete={handleDeleteFolder}
-                onDeleteFile={handleDeleteFile}
-              />
+              <FolderListItem key={folder.id} folder={folder} />
             ))}
           </List>
         </Box>

@@ -67,7 +67,6 @@ const StudentCourseAssignments = () => {
       console.log("ERROR");
     } else {
       setAssignments(data);
-      console.log(data);
     }
   };
 
@@ -84,8 +83,6 @@ const StudentCourseAssignments = () => {
 
     const formData = new FormData();
     formData.append("file", selectedFile);
-
-    console.log(selectedFile);
 
     const response = await fetch(
       new URL(
@@ -105,7 +102,6 @@ const StudentCourseAssignments = () => {
       alert("Due date is already past");
       console.log("ERROR");
     } else {
-      console.log("success");
       fetchAssignments();
       handleCloseModal();
     }
@@ -126,7 +122,6 @@ const StudentCourseAssignments = () => {
     if (data.error) {
       console.log("error");
     } else {
-      console.log(data);
       let url = window.URL.createObjectURL(data);
       window.open(url);
     }
