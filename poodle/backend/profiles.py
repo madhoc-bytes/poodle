@@ -1,7 +1,6 @@
-from http.client import BAD_REQUEST
 from flask import jsonify
 from models import *
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, BadRequest
 from datetime import datetime
 
 def edit(user_id, first_name, last_name, password):
@@ -36,7 +35,7 @@ def add_star(user_id, stars):
 		raise NotFound('User not found')
 	
 	if stars <= 0:
-		raise BAD_REQUEST('Invalid number of stars')
+		raise BadRequest('Invalid number of stars')
 
 	user.stars += stars
 	db.session.commit()
