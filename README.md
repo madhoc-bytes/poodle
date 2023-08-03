@@ -22,4 +22,4 @@ If you want to start with an empty database or want to use your own data, you ca
 **Caution:** Please be aware that running the command above will reset the database and any data you previously added will be lost.
 
 ## Running Multiple Users
-*Note:* When testing multiple users, it's important to use different browsers for each user session. This is because the authentication token used for logging in is stored per browser. You can use browsers like Edge, Chrome, Firefox, or Safari for separate user sessions.
+*Note:* When testing multiple users, it's important to use different browsers for each user session. This is because the authentication token used for logging in is stored per browser. Please use either Edge or Chrome for separate user sessions.
