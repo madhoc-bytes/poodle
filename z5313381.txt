@@ -35,7 +35,7 @@ Implemented Forums with Andy. Began working on the report following Eddy's deleg
 
 
 Week 10
-
+Finished documentation and comments. Worked on developing the system architecture diagram and documentation for the using the system in the formal report. Personally, I thought the final demo went well and I was satisfied that we were able to satisfy all of our user stories.
 
 
 
