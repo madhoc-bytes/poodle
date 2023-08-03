@@ -75,3 +75,13 @@ Week 9
 - Completed frontend for user profiles
 
 Week 10
+- Discussed and connected backend for profiles
+- Decided to use React svgs for the avatar creator instead of urls, as urls only worked for some configurations
+- Completed avatar creator frontend and connected with Mark's backend
+- Touched up frontend for chatbot and forums
+- Planned final demo
+- Completed final demo
+- Planned out project report
+- Completed project report
+- Completed final peer review
+
