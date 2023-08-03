@@ -10,6 +10,9 @@ To run the Poodle application using Docker, follow these steps:
 4. Open your terminal or command prompt and navigate to the root directory of the unzipped source code.
 5. Run the following command to build and start the Docker containers: ```docker-compose up --build```
 6. Once the Docker containers are up and running, open your web browser and visit http://localhost:3000/ to access the Poodle application.
+7. Use Docker Desktop to stop and restart the containers as you wish.
+
+**Caution:** Please be aware that deleting the container will reset the current database and any data you previously added will be lost.
 
 ## Pre-filled Database
 We have provided a pre-filled database in the zip file, which will be automatically loaded when you start the Docker container. This pre-filled data is intended for testing and demonstration purposes. 
